@@ -19,6 +19,8 @@ class BuatTabelPembayaran extends Migration
             $table->dateTime('waktu');
             $table->decimal('harga_bayar', 65, 2);
             $table->string('metode_bayar');
+            
+            $table->timestamps();
 
             $table->foreign('no_transaksi')
                     ->references('id')->on('transaksi')

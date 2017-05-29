@@ -21,6 +21,8 @@ class CreatePasienTable extends Migration
             $table->text('alamat');
             $table->string('no_telp');
             $table->string('usia');
+            
+            $table->timestamps();
         });
     }
 

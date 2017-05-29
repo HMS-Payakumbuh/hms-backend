@@ -22,6 +22,8 @@ class BuatTabelBpjs extends Migration
             $table->dateTime('waktu_klaim');
             $table->decimal('tarif_ina_cbg', 65, 2);
 
+            $table->timestamps();
+
             $table->foreign('id_pembayaran')
                     ->references('id')->on('pembayaran')
                     ->onDelete('cascade');
