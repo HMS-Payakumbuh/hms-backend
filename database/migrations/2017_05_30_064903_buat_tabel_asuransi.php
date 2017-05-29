@@ -20,6 +20,8 @@ class BuatTabelAsuransi extends Migration
             $table->string('status_klaim');
             $table->dateTime('waktu_klaim');
             $table->decimal('tarif_klaim', 65, 2);
+            
+            $table->timestamps();
 
             $table->foreign('id_pembayaran')
                     ->references('id')->on('pembayaran')

@@ -22,6 +22,8 @@ class BuatTabelTransaksi extends Migration
             $table->string('jenis_pasien');
             $table->string('status'); // lunas atau belum
 
+            $table->timestamps();
+
             $table->foreign('id_pasien')
                     ->references('id')->on('pasien')
                     ->onDelete('restrict');
