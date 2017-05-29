@@ -14,7 +14,7 @@ class BuatTabelTransaksi extends Migration
     public function up()
     {
         Schema::create('transaksi', function(Blueprint $table) {
-            $table->increments('id')->primary();
+            $table->increments('id');
             $table->integer('id_pasien')->unsigned();
             $table->dateTime('waktu_dibuat');
             $table->dateTime('waktu_pelunasan');
