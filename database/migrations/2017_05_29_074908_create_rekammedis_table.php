@@ -16,7 +16,7 @@ class CreateRekammedisTable extends Migration
         Schema::create('rekam_medis', function (Blueprint $table) {
             $table->integer('id_pasien')->unsigned();
             $table->datetime('tanggal_waktu');
-            $table->index(['id_pasien','tanggal_waktu']);
+            $table->primary(['id_pasien','tanggal_waktu']);
             $table->foreign('id_pasien')->references('id')->on('pasien')->onDelete('cascade');
             $table->integer('id_dokter')->unsigned();
             $table->jsonb('hasil_pemeriksaan');

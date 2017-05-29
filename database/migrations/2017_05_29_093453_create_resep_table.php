@@ -16,7 +16,8 @@ class CreateResepTable extends Migration
         Schema::create('resep', function (Blueprint $table) {
             $table->integer('id_pasien')->unsigned();
             $table->datetime('tanggal_waktu');
-            $table->foreign('id_pasien')->references('id_pasien')->on('rekam_medis')->primary()->onDelete('cascade');
+            $table->primary(['id_pasien','tanggal_waktu']);
+            $table->foreign('id_pasien')->references('id_pasien')->on('rekam_medis')->onDelete('cascade');
             $table->foreign('tanggal_waktu')->references('tanggal_waktu')->on('rekam_medis')->onDelete('cascade');
             $table->string('jenis_resep');
             $table->jsonb('daftar_obat');
