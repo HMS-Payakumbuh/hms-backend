@@ -14,7 +14,7 @@ class BuatTabelPembayaran extends Migration
     public function up()
     {
         Schema::create('pembayaran', function(Blueprint $table) {
-            $table->increments('id')->primary();
+            $table->increments('id');
             $table->integer('no_transaksi')->unsigned();
             $table->dateTime('waktu');
             $table->decimal('harga_bayar', 65, 2);
