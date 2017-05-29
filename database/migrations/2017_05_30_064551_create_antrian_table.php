@@ -14,6 +14,8 @@ class CreateAntrianTable extends Migration
     public function up()
     {
         Schema::create('antrian', function (Blueprint $table) {
+            $table->integer('no_transaksi')->unsigned();
+            $table->string('nama_layanan');
             $table->foreign('no_transaksi')->references('no_transaksi')->on('transaksi')->primary()->onDelete('cascade');
             $table->foreign('nama_layanan')->references('nama_layanan')->on('layanan')->onDelete('cascade');
             $table->timestamps('waktu_masuk_antrian');
@@ -27,6 +29,10 @@ class CreateAntrianTable extends Migration
      */
     public function down()
     {
+        Schema::table('antrian', function (Blueprint $table) {
+            $table->dropForeign('antrian_no_transaksi_foreign');
+            $table->dropForeign('antrian_nama_layanan_foreign');
+        });
         Schema::dropIfExists('antrian');
     }
 }
