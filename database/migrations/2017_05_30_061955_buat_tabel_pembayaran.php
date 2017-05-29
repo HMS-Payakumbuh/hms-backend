@@ -19,7 +19,7 @@ class BuatTabelPembayaran extends Migration
             $table->dateTime('waktu');
             $table->decimal('harga_bayar', 65, 2);
             $table->string('metode_bayar');
-            
+
             $table->timestamps();
 
             $table->foreign('no_transaksi')
@@ -35,6 +35,9 @@ class BuatTabelPembayaran extends Migration
      */
     public function down()
     {
-        Schema::drop('pembayaran');
+        Schema::table('pembayaran', function (Blueprint $table) {
+            $table->dropForeign('pembayaran_no_transaksi_foreign');
+        });
+        Schema::dropIfExists('pembayaran');
     }
 }
