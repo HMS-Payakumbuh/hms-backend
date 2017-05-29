@@ -20,7 +20,7 @@ class BuatTabelAsuransi extends Migration
             $table->string('status_klaim');
             $table->dateTime('waktu_klaim');
             $table->decimal('tarif_klaim', 65, 2);
-            
+
             $table->timestamps();
 
             $table->foreign('id_pembayaran')
@@ -36,6 +36,9 @@ class BuatTabelAsuransi extends Migration
      */
     public function down()
     {
-        Schema::drop('asuransi');
+        Schema::table('asuransi', function (Blueprint $table) {
+            $table->dropForeign('asuransi_id_pembayaran_foreign');
+        });
+        Schema::dropIfExists('asuransi');
     }
 }
