@@ -37,6 +37,9 @@ class BuatTabelBpjs extends Migration
      */
     public function down()
     {
-        Schema::drop('bpjs');
+        Schema::table('bpjs', function (Blueprint $table) {
+            $table->dropForeign('bpjs_id_pembayaran_foreign');
+        });
+        Schema::dropIfExists('bpjs');
     }
 }

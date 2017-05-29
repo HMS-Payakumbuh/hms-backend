@@ -37,6 +37,9 @@ class BuatTabelTransaksi extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('transaksi', function (Blueprint $table) {
+            $table->dropForeign('transaksi_id_pasien_foreign');
+        });
+        Schema::dropIfExists('transaksi');
     }
 }
