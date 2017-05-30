@@ -17,14 +17,12 @@ class CreateObatPasienTable extends Migration
             // $table->increments('id');
 			
 			$table->integer('id_obat')->unsigned();				
-			$table->foreign('id_obat')
-				  ->references('id')->on('obat')
-                  ->onDelete('restrict');
-			
-			$table->string('nomor_batch');
-			$table->foreign('id_obat')
-				  ->references('nomor_batch')->on('obat_masuk')
-                  ->onDelete('restrict');
+      $table->string('nomor_batch');
+      $table->dateTime('waktu_masuk'); 
+
+			$table->foreign(['id_obat','nomor_batch','waktu_masuk'])
+				    ->references(['id_obat','nomor_batch','waktu_masuk'])->on('obat_masuk')
+            ->onDelete('restrict');
 			
 			$table->dateTime('waktu_keluar');			
 			$table->integer('jumlah');	
@@ -34,18 +32,15 @@ class CreateObatPasienTable extends Migration
 			$table->foreign('no_transaksi')
 				  ->references('id')->on('transaksi')
                   ->onDelete('restrict');
-			
-			$table->integer('id_pasien')->unsigned();	
-			$table->foreign('id_pasien')
-                  ->references('id')->on('pasien')
-                  ->onDelete('restrict');		
-					
-			$table->dateTime('waktu_resep');	
-			$table->foreign('waktu_resep')
-                  ->references('tanggal_waktu')->on('resep')
-                  ->onDelete('restrict');		
-					
-            $table->timestamps();
+      
+      $table->integer('no_resep');
+			$table->integer('id_pasien')->unsigned();	      
+      $table->dateTime('tanggal_waktu_resep');  
+			$table->foreign(['no_resep','id_pasien', 'tanggal_waktu_resep'])
+                  ->references(['no_resep', 'id_pasien_resep','tanggal_waktu_resep'])->on('resep')
+                  ->onDelete('restrict');	
+
+      $table->timestamps();
 			
 			$table->primary(['id_obat', 'nomor_batch', 'waktu_keluar']); // Yakin?
         });

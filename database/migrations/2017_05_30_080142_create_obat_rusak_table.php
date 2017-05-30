@@ -16,14 +16,12 @@ class CreateObatRusakTable extends Migration
         Schema::create('obat_rusak', function (Blueprint $table) {
             // $table->increments('id');
 			
-			$table->integer('id_obat')->unsigned();				
-			$table->foreign('id_obat')
-				  ->references('id')->on('obat')
-                  ->onDelete('restrict');
-			
-			$table->string('nomor_batch');
-			$table->foreign('id_obat')
-				  ->references('nomor_batch')->on('obat_masuk')
+		    $table->integer('id_obat')->unsigned();             
+            $table->string('nomor_batch');
+            $table->dateTime('waktu_masuk'); 
+
+            $table->foreign(['id_obat','nomor_batch','waktu_masuk'])
+                  ->references(['id_obat','nomor_batch','waktu_masuk'])->on('obat_masuk')
                   ->onDelete('restrict');
 				  
 			$table->dateTime('waktu_keluar');			

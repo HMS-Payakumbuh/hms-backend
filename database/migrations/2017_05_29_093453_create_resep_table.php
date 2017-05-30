@@ -14,16 +14,17 @@ class CreateResepTable extends Migration
     public function up()
     {
         Schema::create('resep', function (Blueprint $table) {
-            $table->integer('id_pasien')->unsigned();
-            $table->datetime('tanggal_waktu');
-            $table->primary(['id_pasien','tanggal_waktu']);
-            $table->foreign('id_pasien')->references('id_pasien')->on('rekam_medis')->onDelete('cascade');
-            $table->foreign('tanggal_waktu')->references('tanggal_waktu')->on('rekam_medis')->onDelete('cascade');
+            $table->integer('no_resep');
+            $table->integer('id_pasien_resep')->unsigned();
+            $table->datetime('tanggal_waktu_resep');
+            $table->foreign(['id_pasien_resep', 'tanggal_waktu_resep'])->references(['id_pasien', 'tanggal_waktu'])->on('rekam_medis')->onDelete('cascade');
             $table->string('jenis_resep');
             $table->jsonb('daftar_obat');
             $table->string('aturan_pemakaian');
             $table->string('petunjuk_peracikan');
             $table->timestamps();
+
+            $table->primary(['no_resep', 'id_pasien_resep','tanggal_waktu_resep']);
         });
     }
 
@@ -35,8 +36,7 @@ class CreateResepTable extends Migration
     public function down()
     {
         Schema::table('resep', function (Blueprint $table) {
-            $table->dropForeign('resep_id_pasien_foreign');
-            $table->dropForeign('resep_tanggal_waktu_foreign');
+            $table->dropForeign(['id_pasien_resep', 'tanggal_waktu_resep']);
         });
         Schema::dropIfExists('resep');
     }
