@@ -22,6 +22,7 @@ class CreateTindakan extends Migration
             $table->integer('nomor_transaksi');
             $table->string('nama_layanan');
             $table->integer('id_tenaga_medis');
+            $table->timestamps();
 
             $table->primary(['nomor_tindakan', 'nomor_transaksi']);
             $table->foreign('nomor_transaksi')->references('id')->on('transaksi')->onDelete('restrict');
