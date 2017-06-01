@@ -23,8 +23,8 @@ class LayananController extends Controller
   	$layanan->save();
   }
 
-  public function save(Request $request) {
-  	$layanan = Layanan::find($request->nama_layanan);
+  public function update(Request $request, $namaLayanan) {
+  	$layanan = Layanan::find($namaLayanan);
 
   	$layanan->nama_layanan = $request->nama_layanan;
   	$layanan->jenis = $request->jenis;
