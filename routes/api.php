@@ -20,3 +20,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::resource('layanan', 'LayananController');
 Route::resource('jenis_obat', 'JenisObatController');
+Route::resource('lokasi_obat', 'LokasiObatController');
