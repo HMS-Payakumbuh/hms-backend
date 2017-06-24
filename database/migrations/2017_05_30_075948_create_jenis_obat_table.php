@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateObatTable extends Migration
+class CreateJenisObatTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateObatTable extends Migration
      */
     public function up()
     {
-        Schema::create('obat', function (Blueprint $table) {
+        Schema::create('jenis_obat', function (Blueprint $table) {
             $table->increments('id');
 			$table->string('merek_obat');			
 			$table->string('nama_generik');	
+            $table->string('pembuat');
 			$table->string('golongan');				
 			$table->string('satuan');				
 			$table->decimal('harga_jual_satuan', 12, 2);
@@ -31,6 +32,6 @@ class CreateObatTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('obat');
+        Schema::dropIfExists('jenis_obat');
     }
 }
