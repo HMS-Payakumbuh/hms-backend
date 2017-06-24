@@ -14,22 +14,29 @@ class CreateObatRusakTable extends Migration
     public function up()
     {
         Schema::create('obat_rusak', function (Blueprint $table) {
-            // $table->increments('id');
-			
-		    $table->integer('id_obat')->unsigned();             
-            $table->string('nomor_batch');
-            $table->dateTime('waktu_masuk'); 
-
-            $table->foreign(['id_obat','nomor_batch','waktu_masuk'])
-                  ->references(['id_obat','nomor_batch','waktu_masuk'])->on('obat_masuk')
+            $table->increments('id');
+            
+            $table->integer('id_jenis_obat')->unsigned();
+            $table->foreign('id_jenis_obat')
+                  ->references('id')->on('jenis_obat')
+                  ->onDelete('restrict');                        
+            
+            $table->integer('id_obat_masuk')->unsigned();
+            $table->foreign('id_obat_masuk')
+                  ->references('id')->on('obat_masuk')
                   ->onDelete('restrict');
-				  
-			$table->dateTime('waktu_keluar');			
-			$table->integer('jumlah');	
-			$table->string('keterangan');		
-            $table->timestamps();
-			
-			$table->primary(['id_obat', 'nomor_batch', 'waktu_keluar']); // Yakin?
+                  
+            $table->dateTime('waktu_keluar');   // Atau pakai timestamp?    
+            $table->integer('jumlah');  
+            $table->string('alasan');   
+            $table->string('keterangan');   
+            
+            $table->integer('asal')->unsigned();                     
+            $table->foreign('asal')
+                  ->references('id')->on('lokasi_obat')
+                  ->onDelete('restrict');
+                  
+            $table->timestamps();               
         });
     }
 
