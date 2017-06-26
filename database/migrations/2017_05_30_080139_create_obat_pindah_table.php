@@ -6,46 +6,51 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateObatPindahTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
-    {
-        Schema::create('obat_pindah', function (Blueprint $table) {
-            // $table->increments('id');
-			
-            $table->integer('id_obat')->unsigned();             
-            $table->string('nomor_batch');
-            $table->dateTime('waktu_masuk'); 
+  /**
+   * Run the migrations.
+   *
+   * @return void
+   */
+  public function up()
+  {
+    Schema::create('obat_pindah', function (Blueprint $table) {
+      $table->increments('id');
 
-            $table->foreign(['id_obat','nomor_batch','waktu_masuk'])
-                  ->references(['id_obat','nomor_batch','waktu_masuk'])->on('obat_masuk')
-                  ->onDelete('restrict');
-				  
-			$table->dateTime('waktu_pindah');			
+      $table->integer('id_jenis_obat')->unsigned();
+      $table->foreign('id_jenis_obat')
+            ->references('id')->on('jenis_obat')
+            ->onDelete('restrict');             
+      
+      $table->integer('id_obat_masuk')->unsigned();
+      $table->foreign('id_obat_masuk')
+            ->references('id')->on('obat_masuk')
+            ->onDelete('restrict');
+	  
+			$table->dateTime('waktu_pindah');	// Atau pakai timestamp?	
 			$table->integer('jumlah');	
 			$table->string('keterangan');	
-			
-			$table->integer('tujuan_obat')->unsigned();						
-			$table->foreign('tujuan_obat')
-				  ->references('id')->on('lokasi_obat')
-                  ->onDelete('restrict');
-				  
-            $table->timestamps();			
-			
-			$table->primary(['id_obat', 'nomor_batch', 'waktu_pindah']); // Yakin?
-        });
-    }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::dropIfExists('obat_pindah');
-    }
+      $table->integer('asal')->unsigned();                     
+      $table->foreign('asal')
+            ->references('id')->on('lokasi_obat')
+            ->onDelete('restrict');
+
+			$table->integer('tujuan')->unsigned();						
+			$table->foreign('tujuan')
+	          ->references('id')->on('lokasi_obat')
+            ->onDelete('restrict');
+	  
+      $table->timestamps();						
+    });
+  }
+
+  /**
+   * Reverse the migrations.
+   *
+   * @return void
+   */
+  public function down()
+  {
+      Schema::dropIfExists('obat_pindah');
+  }
 }

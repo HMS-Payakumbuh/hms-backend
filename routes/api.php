@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\LayananController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,3 +19,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::resource('transactions', 'TransactionController');
+Route::resource('layanan', 'LayananController');
+Route::resource('jenis_obat', 'JenisObatController');
+Route::resource('lokasi_obat', 'LokasiObatController');
