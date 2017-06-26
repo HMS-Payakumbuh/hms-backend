@@ -19,5 +19,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::resource('layanan', 'LayananController');
-Route::resource('jenis_obat', 'JenisObatController');
+
+Route::get('jenis_obat/search', 'JenisObatController@search')->middleware('cors');
+
+Route::group(['middleware' => 'cors'], function() {
+  Route::resource('jenis_obat', 'JenisObatController');
+});
+
 Route::resource('lokasi_obat', 'LokasiObatController');
