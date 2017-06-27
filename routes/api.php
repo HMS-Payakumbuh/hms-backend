@@ -22,3 +22,11 @@ Route::resource('transactions', 'TransactionController');
 Route::resource('layanan', 'LayananController');
 Route::resource('jenis_obat', 'JenisObatController');
 Route::resource('lokasi_obat', 'LokasiObatController');
+
+Route::get('jenis_obat/search', 'JenisObatController@search')->middleware('cors');
+
+Route::group(['middleware' => 'cors'], function() {
+  Route::resource('jenis_obat', 'JenisObatController');
+});
+
+Route::resource('lokasi_obat', 'LokasiObatController');
