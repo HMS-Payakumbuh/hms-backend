@@ -178,6 +178,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+		// CORS Handler - https://github.com/barryvdh/laravel-cors
+		Barryvdh\Cors\ServiceProvider::class,
     ],
 
     /*

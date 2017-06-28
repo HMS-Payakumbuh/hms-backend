@@ -74,6 +74,14 @@ class JenisObatController extends Controller
     {
     	$jenis_obat = JenisObat::find($id);
     	$jenis_obat->delete();
-    	return response ($id + ' deleted', 200);
+    	return response ($id.' deleted', 200);
+    }
+
+    public function search(Request $request)
+    {
+        $jenis_obat = JenisObat::where('merek_obat','LIKE','%'.$request->input('merek_obat').'%')
+                                ->get();
+        return response ($jenis_obat, 200)
+                -> header('Content-Type', 'application/json');
     }
 }
