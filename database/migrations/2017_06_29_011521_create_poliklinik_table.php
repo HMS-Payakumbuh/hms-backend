@@ -18,7 +18,7 @@ class CreatePoliklinikTable extends Migration
         $table->string('kategori_antrian');
         $table->integer('kapasitas_pelayanan');
         $table->integer('sisa_pelayanan');
-        $table->string('id_lokasi');
+        $table->integer('id_lokasi');
 
         $table->foreign('id_lokasi')->references('id')->on('lokasi_obat')->onDelete('cascade');
         $table->timestamps();

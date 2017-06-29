@@ -14,7 +14,7 @@ class CreateTenagaMedisTable extends Migration
     public function up()
     {
         Schema::create('tenaga_medis', function (Blueprint $table) {
-            $table->integer('no_pegawai')->primary();
+            $table->string('no_pegawai')->primary();
             $table->string('nama');
             $table->string('jabatan');
             $table->timestamps();
