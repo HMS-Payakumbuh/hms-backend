@@ -28,7 +28,7 @@ class CreateObatTebusTable extends Migration
                   
             $table->dateTime('waktu_keluar');   // Atau pakai timestamp?    
             $table->integer('jumlah');  
-            $table->string('keterangan');   
+            $table->string('keterangan')->nullable();   
             
             $table->integer('asal')->unsigned();                     
             $table->foreign('asal')
