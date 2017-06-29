@@ -14,7 +14,7 @@ class ObatTindakanController extends Controller
      */
     public function index()
     {
-        return ObatTindakan::all();
+        return ObatTindakan::with('obatMasuk','jenisObat','lokasiAsal')->get();
     }
 
     /**
@@ -31,6 +31,7 @@ class ObatTindakanController extends Controller
         $obat_tindakan->waktu_keluar = $request->input('waktu_keluar');
         $obat_tindakan->jumlah = $request->input('jumlah');       
         $obat_tindakan->keterangan = $request->input('keterangan');
+        $obat_tebus->asal = $request->input('asal');
         $obat_tindakan->id_transaksi = $request->input('id_transaksi');
         $obat_tindakan->id_tindakan = $request->input('id_tindakan');        
         $obat_tindakan->save();
@@ -45,7 +46,7 @@ class ObatTindakanController extends Controller
      */
     public function show($id)
     {
-        return ObatTindakan::findOrFail($id);
+        return ObatTindakan::with('obatMasuk','jenisObat','lokasiAsal')->findOrFail($id);
     }
 
     /**
@@ -63,6 +64,7 @@ class ObatTindakanController extends Controller
         $obat_tindakan->waktu_keluar = $request->input('waktu_keluar');
         $obat_tindakan->jumlah = $request->input('jumlah');       
         $obat_tindakan->keterangan = $request->input('keterangan');
+        $obat_tebus->asal = $request->input('asal');
         $obat_tindakan->id_transaksi = $request->input('id_transaksi');
         $obat_tindakan->id_tindakan = $request->input('id_tindakan');       
         $obat_tindakan->save();

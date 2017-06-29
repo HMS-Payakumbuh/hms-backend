@@ -14,7 +14,7 @@ class ObatPindahController extends Controller
      */
     public function index()
     {
-        return ObatPindah::all();
+        return ObatPindah::with('obatMasuk','jenisObat','lokasiAsal','lokasiTujuan')->get();
     }
 
     /**
@@ -45,7 +45,7 @@ class ObatPindahController extends Controller
      */
     public function show($id)
     {
-        return ObatPindah::findOrFail($id);
+        return ObatPindah::with('obatMasuk','jenisObat','lokasiAsal','lokasiTujuan')->findOrFail($id);
     }
 
     /**

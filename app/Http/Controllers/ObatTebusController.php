@@ -14,7 +14,7 @@ class ObatTebusController extends Controller
      */
     public function index()
     {
-        return ObatTebus::all();
+        return ObatTebus::with('obatMasuk','jenisObat','lokasiAsal')->get();
     }
 
     /**
@@ -31,6 +31,7 @@ class ObatTebusController extends Controller
         $obat_tebus->waktu_keluar = $request->input('waktu_keluar');
         $obat_tebus->jumlah = $request->input('jumlah');       
         $obat_tebus->keterangan = $request->input('keterangan');
+        $obat_tebus->asal = $request->input('asal');
         $obat_tebus->id_transaksi = $request->input('id_transaksi');
         $obat_tebus->id_tindakan = $request->input('id_tindakan');        
         $obat_tebus->id_resep = $request->input('id_resep');
@@ -47,7 +48,7 @@ class ObatTebusController extends Controller
      */
     public function show($id)
     {
-        return ObatTebus::findOrFail($id);
+        return ObatTebus::with('obatMasuk','jenisObat','lokasiAsal')->findOrFail($id);
     }
 
     /**
@@ -65,6 +66,7 @@ class ObatTebusController extends Controller
         $obat_tebus->waktu_keluar = $request->input('waktu_keluar');
         $obat_tebus->jumlah = $request->input('jumlah');       
         $obat_tebus->keterangan = $request->input('keterangan');
+        $obat_tebus->asal = $request->input('asal');
         $obat_tebus->id_transaksi = $request->input('id_transaksi');
         $obat_tebus->id_tindakan = $request->input('id_tindakan');        
         $obat_tebus->id_resep = $request->input('id_resep');

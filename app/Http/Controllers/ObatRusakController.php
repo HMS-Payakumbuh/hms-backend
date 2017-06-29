@@ -14,7 +14,7 @@ class ObatRusakController extends Controller
      */
     public function index()
     {
-        return ObatRusak::all();
+        return ObatRusak::with('obatMasuk','jenisObat','lokasiAsal')->get();
     }
 
     /**
@@ -45,7 +45,7 @@ class ObatRusakController extends Controller
      */
     public function show($id)
     {
-        return ObatRusak::findOrFail($id);
+        return ObatRusak::with('obatMasuk','jenisObat','lokasiAsal')->findOrFail($id);
     }
 
     /**

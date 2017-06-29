@@ -14,9 +14,10 @@ class StokObatController extends Controller
      */
     public function index()
     {
-        return StokObat::all();
+        return StokObat::with('obatMasuk','jenisObat','lokasiData')->get();
     }
 
+    // TO-DO: Remove as updates will be done by other controllers
     /**
      * Store a newly created resource in storage.
      *
@@ -42,9 +43,10 @@ class StokObatController extends Controller
      */
     public function show($id)
     {
-        return StokObat::findOrFail($id);
+        return StokObat::with('obatMasuk','jenisObat','lokasiData')->findOrFail($id);
     }
 
+    // TO-DO: Remove as updates will be done by other controllers
     /**
      * Update the specified resource in storage.
      *

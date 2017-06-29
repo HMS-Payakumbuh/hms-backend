@@ -14,7 +14,7 @@ class ObatMasukController extends Controller
      */
     public function index()
     {
-        return ObatMasuk::all();
+        return ObatMasuk::with('jenisObat')->get();
     }
 
     /**
@@ -44,7 +44,7 @@ class ObatMasukController extends Controller
      */
     public function show($id)
     {
-        return ObatMasuk::findOrFail($id);
+        return ObatMasuk::with('jenisObat')->findOrFail($id);
     }
 
     /**
