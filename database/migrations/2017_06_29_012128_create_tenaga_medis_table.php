@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTenagaMedis extends Migration
+class CreateTenagaMedisTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class CreateTenagaMedis extends Migration
     public function up()
     {
         Schema::create('tenaga_medis', function (Blueprint $table) {
-            $table->increments('id');
+            $table->integer('no_pegawai')->primary();
             $table->string('nama');
             $table->string('jabatan');
             $table->timestamps();
