@@ -14,7 +14,7 @@ class CreateAmbulansTable extends Migration
     public function up()
     {
         Schema::create('ambulans', function (Blueprint $table) {
-            $table->string('nama');
+            $table->string('nama')->primary();
             $table->string('status');
             $table->timestamps();
         });

@@ -21,6 +21,7 @@ class CreateTindakanTable extends Migration
             $table->string('keterangan')->nullable();
             $table->integer('id_pembayaran')->nullable();
             $table->string('kode_tindakan');
+            $table->integer('id_pasien')->nullable();
             $table->dateTime('tanggal_waktu')->nullable();
             $table->string('np_tenaga_medis')->nullable();
             $table->string('nama_poli')->nullable();
@@ -32,7 +33,13 @@ class CreateTindakanTable extends Migration
             $table->foreign('no_transaksi')->references('id')->on('transaksi')->onDelete('restrict');
             $table->foreign('id_pembayaran')->references('id')->on('pembayaran')->onDelete('restrict');
             $table->foreign('kode_tindakan')->references('kode')->on('daftar_tindakan')->onDelete('restrict');
-            $table->foreign('tanggal_waktu')->references('tanggal_waktu')->on('rekam_medis')->onDelete('restrict');
+
+            $table
+              ->foreign(array('id_pasien', 'tanggal_waktu'))
+              ->references(array('id_pasien', 'tanggal_waktu'))
+              ->on('rekam_medis')
+              ->onDelete('restrict');
+
             $table->foreign('np_tenaga_medis')->references('no_pegawai')->on('tenaga_medis')->onDelete('restrict');
             $table->foreign('nama_poli')->references('nama')->on('poliklinik')->onDelete('restrict');
             $table->foreign('nama_lab')->references('nama')->on('laboratorium')->onDelete('restrict');
@@ -51,7 +58,7 @@ class CreateTindakanTable extends Migration
             $table->dropForeign(['no_transaksi']);
             $table->dropForeign(['id_pembayaran']);
             $table->dropForeign(['kode_tindakan']);
-            $table->dropForeign(['tanggal_waktu']);
+            $table->dropForeign(['id_pasien', 'tanggal_waktu']);
             $table->dropForeign(['np_tenaga_medis']);
             $table->dropForeign(['nama_poli']);
             $table->dropForeign(['nama_lab']);

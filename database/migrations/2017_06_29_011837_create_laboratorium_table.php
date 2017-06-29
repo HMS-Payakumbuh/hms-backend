@@ -14,7 +14,7 @@ class CreateLaboratoriumTable extends Migration
     public function up()
     {
         Schema::create('laboratorium', function (Blueprint $table) {
-            $table->string('nama')->primary;
+            $table->string('nama')->primary();
             $table->string('kategori_antrian');
             $table->timestamps();
         });
