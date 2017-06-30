@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\ObatRusak;
+use App\StokObat;
 
 class ObatRusakController extends Controller
 {
@@ -24,7 +25,9 @@ class ObatRusakController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
+    {        
+        // TO-DO: Make into transaction?
+        // TO-DO: Restriction checking (jumlah > 0 etc.)
         $obat_rusak = new ObatRusak;
         $obat_rusak->id_jenis_obat = $request->input('id_jenis_obat');
         $obat_rusak->id_obat_masuk = $request->input('id_obat_masuk');
@@ -34,6 +37,13 @@ class ObatRusakController extends Controller
         $obat_rusak->keterangan = $request->input('keterangan');
         $obat_rusak->asal = $request->input('asal');
         $obat_rusak->save();
+
+        $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_rusak->id_obat_masuk)
+                                    ->where('lokasi', $obat_rusak->asal)
+                                    ->first(); //TO-DO: Error handling - firstOrFail?
+        $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_rusak->jumlah);
+        $stok_obat_asal->save();
+
         return response ($obat_rusak, 201);
     }
 

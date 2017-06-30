@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\ObatPindah;
+use App\StokObat;
 
 class ObatPindahController extends Controller
 {
@@ -25,6 +26,8 @@ class ObatPindahController extends Controller
      */
     public function store(Request $request)
     {
+        // TO-DO: Make into transaction?
+        // TO-DO: Restriction checking (jumlah > 0 etc.)
         $obat_pindah = new ObatPindah;
         $obat_pindah->id_jenis_obat = $request->input('id_jenis_obat');
         $obat_pindah->id_obat_masuk = $request->input('id_obat_masuk');
@@ -34,6 +37,27 @@ class ObatPindahController extends Controller
         $obat_pindah->asal = $request->input('asal');
         $obat_pindah->tujuan = $request->input('tujuan');
         $obat_pindah->save();
+
+        $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_pindah->id_obat_masuk)
+                                    ->where('lokasi', $obat_pindah->asal)
+                                    ->first(); //TO-DO: Error handling - firstOrFail?
+        $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_pindah->jumlah);
+
+        $stok_obat_tujuan = StokObat::where('id_obat_masuk', $obat_pindah->id_obat_masuk)
+                                    ->where('lokasi', $obat_pindah->tujuan)
+                                    ->first(); //TO-DO: Error handling - firstOrFail?
+        if (!$stok_obat_tujuan) {
+            $stok_obat_tujuan = new StokObat;
+        } 
+
+        $stok_obat_tujuan->id_jenis_obat = $obat_pindah->id_jenis_obat; 
+        $stok_obat_tujuan->id_obat_masuk = $obat_pindah->id_obat_masuk;
+        $stok_obat_tujuan->jumlah =  ($stok_obat_tujuan->jumlah) + ($obat_pindah->jumlah);       
+        $stok_obat_tujuan->lokasi = $obat_pindah->tujuan;
+
+        $stok_obat_asal->save();
+        $stok_obat_tujuan->save();
+
         return response ($obat_pindah, 201);
     }
 
