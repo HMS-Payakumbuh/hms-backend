@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateLayanan extends Migration
+class CreateDaftarDiagnosisTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,9 @@ class CreateLayanan extends Migration
      */
     public function up()
     {
-        Schema::create('layanan', function (Blueprint $table) {
-            $table->string('nama_layanan')->primary();
-            $table->string('jenis');
-            $table->string('kategori');
-            $table->integer('kapasitas_pelayanan');
-            $table->integer('sisa_pelayanan');
+        Schema::create('daftar_diagnosis', function (Blueprint $table) {
+            $table->string('kode')->primary();
+            $table->string('nama');
             $table->timestamps();
         });
     }
@@ -30,6 +27,6 @@ class CreateLayanan extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('layanan');
+        Schema::dropIfExists('daftar_diagnosis');
     }
 }

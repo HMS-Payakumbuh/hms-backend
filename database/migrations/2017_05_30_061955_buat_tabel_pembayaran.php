@@ -15,14 +15,13 @@ class BuatTabelPembayaran extends Migration
     {
         Schema::create('pembayaran', function(Blueprint $table) {
             $table->increments('id');
-            $table->integer('no_transaksi')->unsigned();
-            $table->dateTime('waktu');
+            $table->integer('id_transaksi')->unsigned();
             $table->decimal('harga_bayar', 65, 2);
-            $table->string('metode_bayar');
+            $table->string('metode_bayar'); //tunai atau dengan asuransi
 
             $table->timestamps();
 
-            $table->foreign('no_transaksi')
+            $table->foreign('id_transaksi')
                     ->references('id')->on('transaksi')
                     ->onDelete('cascade');
         });
@@ -36,7 +35,7 @@ class BuatTabelPembayaran extends Migration
     public function down()
     {
         Schema::table('pembayaran', function (Blueprint $table) {
-            $table->dropForeign('pembayaran_no_transaksi_foreign');
+            $table->dropForeign('pembayaran_id_transaksi_foreign');
         });
         Schema::dropIfExists('pembayaran');
     }

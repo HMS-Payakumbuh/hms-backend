@@ -14,17 +14,15 @@ class BuatTabelAsuransi extends Migration
     public function up()
     {
         Schema::create('asuransi', function(Blueprint $table) {
-            $table->string('no_anggota')->primary();
-            $table->integer('id_pembayaran')->unsigned();
+            $table->increments('id');
+            $table->string('no_kartu')->unique();
+            $table->integer('id_pasien')->unsigned();
             $table->string('nama_asuransi');
-            $table->string('status_klaim');
-            $table->dateTime('waktu_klaim');
-            $table->decimal('tarif_klaim', 65, 2);
 
             $table->timestamps();
 
-            $table->foreign('id_pembayaran')
-                    ->references('id')->on('pembayaran')
+            $table->foreign('id_pasien')
+                    ->references('id')->on('pasien')
                     ->onDelete('cascade');
         });
     }
@@ -37,7 +35,7 @@ class BuatTabelAsuransi extends Migration
     public function down()
     {
         Schema::table('asuransi', function (Blueprint $table) {
-            $table->dropForeign('asuransi_id_pembayaran_foreign');
+            $table->dropForeign('asuransi_id_pasien_foreign');
         });
         Schema::dropIfExists('asuransi');
     }

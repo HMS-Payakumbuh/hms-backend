@@ -18,11 +18,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::resource('transactions', 'TransactionController');
+Route::resource('transaksi', 'TransaksiController');
+Route::resource('klaim', 'TransaksiController');
+Route::resource('pembayaran', 'TransaksiController');
+Route::resource('asuransi', 'TransaksiController');
 Route::resource('layanan', 'LayananController');
-Route::resource('jenis_obat', 'JenisObatController');
-Route::resource('lokasi_obat', 'LokasiObatController');
-
 Route::get('jenis_obat/search', 'JenisObatController@search')->middleware('cors');
 
 Route::group(['middleware' => 'cors'], function() {
@@ -30,3 +30,12 @@ Route::group(['middleware' => 'cors'], function() {
 });
 
 Route::resource('lokasi_obat', 'LokasiObatController');
+Route::get('jenis_obat/search', 'JenisObatController@search');
+Route::resource('jenis_obat', 'JenisObatController');
+Route::resource('lokasi_obat', 'LokasiObatController');
+Route::resource('obat_masuk', 'ObatMasukController');
+Route::resource('stok_obat', 'StokObatController');
+Route::resource('obat_pindah', 'ObatPindahController');
+Route::resource('obat_rusak', 'ObatRusakController');
+Route::resource('obat_tebus', 'ObatTebusController');
+Route::resource('obat_tindakan', 'ObatTindakanController');
