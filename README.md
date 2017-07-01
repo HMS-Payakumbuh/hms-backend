@@ -14,3 +14,8 @@ To install:
 ```sh
 $ composer require barryvdh/laravel-cors
 ```
+## Use doctrine/dbal
+To install:
+```sh
+$ composer require doctrine/dbal
+```
