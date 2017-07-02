@@ -27,6 +27,14 @@ Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
   'edit', 'create'
 ]]);
 
+Route::resource('daftar_diagnosis', 'DaftarDiagnosisController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('poliklinik', 'PoliklinikController', ['except' => [
+  'edit', 'create'
+]]);
+
 Route::get('jenis_obat/search', 'JenisObatController@search')->middleware('cors');
 
 Route::group(['middleware' => 'cors'], function() {
