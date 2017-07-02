@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\DaftarDiagnosis;
+use App\Ambulans;
 use Illuminate\Http\Request;
 
-class DaftarDiagnosisController extends Controller
+class AmbulansController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +14,7 @@ class DaftarDiagnosisController extends Controller
      */
     public function index()
     {
-      return DaftarDiagnosis::all();
+      return Ambulans::all();
     }
 
     /**
@@ -25,51 +25,51 @@ class DaftarDiagnosisController extends Controller
      */
     public function store(Request $request)
     {
-      $daftarDiagnosis = new daftarDiagnosis;
-      $daftarDiagnosis->kode = $request->input('kode');
-      $daftarDiagnosis->nama = $request->input('nama');
-      $daftarDiagnosis->save();
+      $ambulans = new Ambulans;
+      $ambulans->nama = $request->input('nama');
+      $ambulans->status = $request->input('status');
+      $ambulans->save();
 
-      return response($daftarDiagnosis, 201);
+      return response($ambulans, 201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  string  $kode
+     * @param  string  $nama
      * @return \Illuminate\Http\Response
      */
-    public function show($kode)
+    public function show($nama)
     {
-      return DaftarDiagnosis::findOrFail($kode);
+      return Ambulans::findOrFail($nama);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  string  $kode
+     * @param  string  $nama
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $kode)
+    public function update(Request $request, $nama)
     {
-      $daftarDiagnosis = DaftarDiagnosis::findOrFail($kode);
-      $daftarDiagnosis->kode = $request->input('kode');
-      $daftarDiagnosis->nama = $request->input('nama');
-      $daftarDiagnosis->save();
+      $ambulans = Ambulans::findOrFail($nama);
+      $ambulans->nama = $request->input('nama');
+      $ambulans->status = $request->input('status');
+      $ambulans->save();
 
-      return response($daftarDiagnosis, 200);
+      return response($ambulans, 201);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  string  $kode
+     * @param  string  $nama
      * @return \Illuminate\Http\Response
      */
-    public function destroy($kode)
+    public function destroy($nama)
     {
-      DaftarDiagnosis::destroy($kode);
+      Ambulans::destroy($nama);
       return response('', 204);
     }
 }

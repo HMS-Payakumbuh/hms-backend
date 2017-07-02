@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\DaftarDiagnosis;
+use App\Dokter;
 use Illuminate\Http\Request;
 
-class DaftarDiagnosisController extends Controller
+class DokterController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +14,7 @@ class DaftarDiagnosisController extends Controller
      */
     public function index()
     {
-      return DaftarDiagnosis::all();
+      return Dokter::all();
     }
 
     /**
@@ -25,51 +25,49 @@ class DaftarDiagnosisController extends Controller
      */
     public function store(Request $request)
     {
-      $daftarDiagnosis = new daftarDiagnosis;
-      $daftarDiagnosis->kode = $request->input('kode');
-      $daftarDiagnosis->nama = $request->input('nama');
-      $daftarDiagnosis->save();
+      $dokter = new dokter;
+      $dokter->no_pegawai = $request->input('no_pegawai');
+      $dokter->save();
 
-      return response($daftarDiagnosis, 201);
+      return response($dokter, 201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  string  $kode
+     * @param  string  $no_pegawai
      * @return \Illuminate\Http\Response
      */
-    public function show($kode)
+    public function show($no_pegawai)
     {
-      return DaftarDiagnosis::findOrFail($kode);
+      return Dokter::findOrFail($no_pegawai);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  string  $kode
+     * @param  string  $no_pegawai
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $kode)
+    public function update(Request $request, $no_pegawai)
     {
-      $daftarDiagnosis = DaftarDiagnosis::findOrFail($kode);
-      $daftarDiagnosis->kode = $request->input('kode');
-      $daftarDiagnosis->nama = $request->input('nama');
-      $daftarDiagnosis->save();
+      $dokter = Dokter::findOrFail($no_pegawai);
+      $dokter->no_pegawai = $request->input('no_pegawai');
+      $dokter->save();
 
-      return response($daftarDiagnosis, 200);
+      return response($dokter, 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  string  $kode
+     * @param  string  $no_pegawai
      * @return \Illuminate\Http\Response
      */
-    public function destroy($kode)
+    public function destroy($no_pegawai)
     {
-      DaftarDiagnosis::destroy($kode);
+      Dokter::destroy($no_pegawai);
       return response('', 204);
     }
 }

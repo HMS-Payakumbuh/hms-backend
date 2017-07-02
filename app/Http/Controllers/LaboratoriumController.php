@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\DaftarDiagnosis;
+use App\Laboratorium;
 use Illuminate\Http\Request;
 
-class DaftarDiagnosisController extends Controller
+class LaboratoriumController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +14,7 @@ class DaftarDiagnosisController extends Controller
      */
     public function index()
     {
-      return DaftarDiagnosis::all();
+      return Laboratorium::all();
     }
 
     /**
@@ -25,51 +25,51 @@ class DaftarDiagnosisController extends Controller
      */
     public function store(Request $request)
     {
-      $daftarDiagnosis = new daftarDiagnosis;
-      $daftarDiagnosis->kode = $request->input('kode');
-      $daftarDiagnosis->nama = $request->input('nama');
-      $daftarDiagnosis->save();
+      $laboratorium = new Laboratorium;
+      $laboratorium->nama = $request->input('nama');
+      $laboratorium->kategori_antrian = $request->input('kategori_antrian');
+      $laboratorium->save();
 
-      return response($daftarDiagnosis, 201);
+      return response($laboratorium, 201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  string  $kode
+     * @param  string  $nama
      * @return \Illuminate\Http\Response
      */
-    public function show($kode)
+    public function show($nama)
     {
-      return DaftarDiagnosis::findOrFail($kode);
+      return Laboratorium::findOrFail($nama);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  string  $kode
+     * @param  string  $nama
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $kode)
+    public function update(Request $request, $nama)
     {
-      $daftarDiagnosis = DaftarDiagnosis::findOrFail($kode);
-      $daftarDiagnosis->kode = $request->input('kode');
-      $daftarDiagnosis->nama = $request->input('nama');
-      $daftarDiagnosis->save();
+      $laboratorium = Laboratorium::findOrFail($nama);
+      $laboratorium->nama = $request->input('nama');
+      $laboratorium->kategori_antrian = $request->input('kategori_antrian');
+      $laboratorium->save();
 
-      return response($daftarDiagnosis, 200);
+      return response($laboratorium, 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  string  $kode
+     * @param  string  $nama
      * @return \Illuminate\Http\Response
      */
-    public function destroy($kode)
+    public function destroy($nama)
     {
-      DaftarDiagnosis::destroy($kode);
+      Laboratorium::destroy($nama);
       return response('', 204);
     }
 }

@@ -14,7 +14,7 @@ class PoliklinikController extends Controller
      */
     public function index()
     {
-        return Poliklinik::all();
+      return Poliklinik::all();
     }
 
     /**
@@ -25,15 +25,15 @@ class PoliklinikController extends Controller
      */
     public function store(Request $request)
     {
-        $poliklinik = new Poliklinik;
-        $poliklinik->nama = $request->input('nama');
-        $poliklinik->kategori_antrian = $request->input('kategori_antrian');
-        $poliklinik->kapasitas_pelayanan = $request->input('kapasitas_pelayanan');
-        $poliklinik->sisa_pelayanan = $request->input('sisa_pelayanan');
-        $poliklinik->id_lokasi = $request->input('id_lokasi');
-        $poliklinik->save();
+      $poliklinik = new Poliklinik;
+      $poliklinik->nama = $request->input('nama');
+      $poliklinik->kategori_antrian = $request->input('kategori_antrian');
+      $poliklinik->kapasitas_pelayanan = $request->input('kapasitas_pelayanan');
+      $poliklinik->sisa_pelayanan = $request->input('sisa_pelayanan');
+      $poliklinik->id_lokasi = $request->input('id_lokasi');
+      $poliklinik->save();
 
-        return response($poliklinik, 201);
+      return response($poliklinik, 201);
     }
 
     /**
@@ -44,7 +44,7 @@ class PoliklinikController extends Controller
      */
     public function show($nama)
     {
-        return Poliklinik::findOrFail($nama);
+      return Poliklinik::findOrFail($nama);
     }
 
     /**
@@ -56,15 +56,15 @@ class PoliklinikController extends Controller
      */
     public function update(Request $request, $nama)
     {
-        $poliklinik = Poliklinik::findOrFail($nama);
-        $poliklinik->nama = $request->input('nama');
-        $poliklinik->kategori_antrian = $request->input('kategori_antrian');
-        $poliklinik->kapasitas_pelayanan = $request->input('kapasitas_pelayanan');
-        $poliklinik->sisa_pelayanan = $request->input('sisa_pelayanan');
-        $poliklinik->id_lokasi = $request->input('id_lokasi');
-        $poliklinik->save();
+      $poliklinik = Poliklinik::findOrFail($nama);
+      $poliklinik->nama = $request->input('nama');
+      $poliklinik->kategori_antrian = $request->input('kategori_antrian');
+      $poliklinik->kapasitas_pelayanan = $request->input('kapasitas_pelayanan');
+      $poliklinik->sisa_pelayanan = $request->input('sisa_pelayanan');
+      $poliklinik->id_lokasi = $request->input('id_lokasi');
+      $poliklinik->save();
 
-        return response($poliklinik, 200);
+      return response($poliklinik, 200);
     }
 
     /**
@@ -75,7 +75,7 @@ class PoliklinikController extends Controller
      */
     public function destroy($string)
     {
-        Poliklinik::destroy($nama);
-        return response('', 204);
+      Poliklinik::destroy($nama);
+      return response('', 204);
     }
 }
