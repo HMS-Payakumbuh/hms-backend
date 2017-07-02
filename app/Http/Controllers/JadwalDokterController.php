@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\JadwalDokter;
 use Illuminate\Http\Request;
 
 class JadwalDokterController extends Controller
@@ -39,6 +40,7 @@ class JadwalDokterController extends Controller
      * Display the specified resource.
      *
      * @param  string  $nama_poli
+     * @param  string  $np_dokter
      * @return \Illuminate\Http\Response
      */
     public function show($nama_poli, $np_dokter)
@@ -53,9 +55,10 @@ class JadwalDokterController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  string  $nama_poli
+     * @param  string  $np_dokter
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $nama_poli)
+    public function update(Request $request, $nama_poli, $np_dokter)
     {
       $jadwalDokter = JadwalDokter::where('nama_poli', '=', $nama_poli)
         ->where('np_dokter', '=', $np_dokter)
@@ -74,13 +77,15 @@ class JadwalDokterController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  string  $nama_poli
+     * @param  string  $np_dokter
      * @return \Illuminate\Http\Response
      */
-    public function destroy($nama_poli)
+    public function destroy($nama_poli, $np_dokter)
     {
       $deletedRows = JadwalDokter::where('nama_poli', '=', $nama_poli)
         ->where('np_dokter', '=', $np_dokter)
-        ->first()->delete;
+        ->first()
+        ->delete();
       return response('', 204);
     }
 }

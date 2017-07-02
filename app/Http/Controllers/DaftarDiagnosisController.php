@@ -41,7 +41,7 @@ class DaftarDiagnosisController extends Controller
      */
     public function show($kode)
     {
-      return DaftarDiagnosis::findOrFail($kode)
+      return DaftarDiagnosis::findOrFail($kode);
     }
 
     /**
