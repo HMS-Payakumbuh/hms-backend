@@ -22,7 +22,11 @@ Route::resource('transaksi', 'TransaksiController');
 Route::resource('klaim', 'TransaksiController');
 Route::resource('pembayaran', 'TransaksiController');
 Route::resource('asuransi', 'TransaksiController');
-Route::resource('layanan', 'LayananController');
+
+Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
+  'edit', 'create'
+]]);
+
 Route::get('jenis_obat/search', 'JenisObatController@search')->middleware('cors');
 
 Route::group(['middleware' => 'cors'], function() {
