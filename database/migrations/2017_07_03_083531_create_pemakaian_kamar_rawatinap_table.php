@@ -15,11 +15,11 @@ class CreatePemakaianKamarRawatinapTable extends Migration
     {
         Schema::create('pemakaian_kamar_rawatinap', function (Blueprint $table) {
             $table->string('no_kamar');
-            $table->integer('no_tempat_tidur')->nullable();
+            $table->integer('no_tempat_tidur');
             $table->integer('no_transaksi');
             $table->integer('no_pembayaran');
             $table->dateTime('waktu_masuk');
-            $table->dateTime('waktu_keluar');
+            $table->dateTime('waktu_keluar')->nullable();
             $table->integer('harga');
             $table->string('no_pegawai');
 
