@@ -23,6 +23,43 @@ Route::resource('klaim', 'KlaimController');
 Route::resource('pembayaran', 'PembayaranController');
 Route::resource('asuransi', 'AsuransiController');
 Route::resource('layanan', 'LayananController');
+
+Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('daftar_diagnosis', 'DaftarDiagnosisController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('poliklinik', 'PoliklinikController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('ambulans', 'AmbulansController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('tenaga_medis', 'TenagaMedisController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('dokter', 'DokterController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::get('jadwal_dokter/{nama_poli}/{np_dokter}', 'JadwalDokterController@show');
+Route::put('jadwal_dokter/{nama_poli}/{np_dokter}', 'JadwalDokterController@update');
+Route::delete('jadwal_dokter/{nama_poli}/{np_dokter}', 'JadwalDokterController@destroy');
+
+Route::resource('jadwal_dokter', 'JadwalDokterController', ['except' => [
+  'edit', 'create', 'show', 'update', 'destroy'
+]]);
+
 Route::get('jenis_obat/search', 'JenisObatController@search')->middleware('cors');
 
 Route::group(['middleware' => 'cors'], function() {

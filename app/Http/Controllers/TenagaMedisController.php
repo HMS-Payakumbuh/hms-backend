@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\TenagaMedis;
 use Illuminate\Http\Request;
 
 class TenagaMedisController extends Controller
@@ -13,17 +14,7 @@ class TenagaMedisController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+      return TenagaMedis::all();
     }
 
     /**
@@ -34,51 +25,53 @@ class TenagaMedisController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      $tenagaMedis = new TenagaMedis;
+      $tenagaMedis->no_pegawai = $request->input('no_pegawai');
+      $tenagaMedis->nama = $request->input('nama');
+      $tenagaMedis->jabatan = $request->input('jabatan');
+      $tenagaMedis->save();
+
+      return response($tenagaMedis, 201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  string  $no_pegawai
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($no_pegawai)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+      return TenagaMedis::findOrFail($no_pegawai);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  string  $no_pegawai
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $no_pegawai)
     {
-        //
+      $tenagaMedis = TenagaMedis::findOrFail($no_pegawai);
+      $tenagaMedis->no_pegawai = $request->input('no_pegawai');
+      $tenagaMedis->nama = $request->input('nama');
+      $tenagaMedis->jabatan = $request->input('jabatan');
+      $tenagaMedis->save();
+
+      return response($tenagaMedis, 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  string  $no_pegawai
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($no_pegawai)
     {
-        //
+      TenagaMedis::destroy($no_pegawai);
+      return response('', 204);
     }
 }

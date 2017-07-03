@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Dokter;
 use Illuminate\Http\Request;
 
-class AnggotaLayananController extends Controller
+class DokterController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -13,17 +14,7 @@ class AnggotaLayananController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+      return Dokter::all();
     }
 
     /**
@@ -34,51 +25,49 @@ class AnggotaLayananController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      $dokter = new dokter;
+      $dokter->no_pegawai = $request->input('no_pegawai');
+      $dokter->save();
+
+      return response($dokter, 201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  string  $no_pegawai
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($no_pegawai)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+      return Dokter::findOrFail($no_pegawai);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  string  $no_pegawai
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $no_pegawai)
     {
-        //
+      $dokter = Dokter::findOrFail($no_pegawai);
+      $dokter->no_pegawai = $request->input('no_pegawai');
+      $dokter->save();
+
+      return response($dokter, 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  string  $no_pegawai
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($no_pegawai)
     {
-        //
+      Dokter::destroy($no_pegawai);
+      return response('', 204);
     }
 }
