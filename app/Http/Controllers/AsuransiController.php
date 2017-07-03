@@ -48,9 +48,9 @@ class AsuransiController extends Controller
     {
         $payload = $request->input('asuransi');
         $asuransi = new Asuransi;
-        $asuransi->id_pasien = $payload->id_pasien;
-        $asuransi->no_kartu = $payload->no_kartu;
-        $asuransi->nama_asuransi = $payload->nama_asuransi;
+        $asuransi->id_pasien = $payload['id_pasien'];
+        $asuransi->no_kartu = $payload['no_kartu'];
+        $asuransi->nama_asuransi = $payload['nama_asuransi'];
         $asuransi->save();
 
         return response()->json([
@@ -93,9 +93,9 @@ class AsuransiController extends Controller
     {
         $payload = $request->input('asuransi');
         $asuransi = Asuransi::findOrFail($id);
-        $asuransi->id_pasien = $payload->id_pasien;
-        $asuransi->no_kartu = $payload->no_kartu;
-        $asuransi->nama_asuransi = $payload->nama_asuransi;
+        $asuransi->id_pasien = $payload['id_pasien'];
+        $asuransi->no_kartu = $payload['no_kartu'];
+        $asuransi->nama_asuransi = $payload['nama_asuransi'];
         $asuransi->save();
         
         return response()->json([

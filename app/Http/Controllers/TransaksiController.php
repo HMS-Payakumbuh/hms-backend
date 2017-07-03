@@ -48,14 +48,14 @@ class TransaksiController extends Controller
     {
         $payload = $request->input('transaksi');
         $transaksi = new Transaksi;
-        $transaksi->id_pasien = $payload->id_pasien;
+        $transaksi->id_pasien = $payload['id_pasien'];
         $transaksi->no_transaksi = str_random(8);
-        $transaksi->no_sep = $payload->no_sep;
+        $transaksi->no_sep = $payload['no_sep'];
         $transaksi->harga_total = 0;
-        $transaksi->asuransi_pasien = $payload->asuransi_pasien;
-        $transaksi->kode_jenis_pasien = $payload->kode_jenis_pasien; //1: pasien umum, 2: pasien asuransi
-        $transaksi->jenis_rawat = $payload->jenis_rawat; //1: rawat inap, 2: rawat jalan
-        $transaksi->kelas_rawat = $payload->kelas_rawat; //kelas perawatan saat pasien mendaftar
+        $transaksi->asuransi_pasien = $payload['asuransi_pasien'];
+        $transaksi->kode_jenis_pasien = $payload['kode_jenis_pasien']; //1: pasien umum, 2: pasien asuransi
+        $transaksi->jenis_rawat = $payload['jenis_rawat']; //1: rawat inap, 2: rawat jalan
+        $transaksi->kelas_rawat = $payload['kelas_rawat']; //kelas perawatan saat pasien mendaftar
         $transaksi->status_naik_kelas = 1; //1: pasien tidak naik kelas, 2: pasien naik kelas
         $transaksi->status = 'open'; //status transaksi (open/closed)
         $transaksi->save();
@@ -100,16 +100,16 @@ class TransaksiController extends Controller
     {
         $payload = $request->input('transaksi');
         $transaksi = Transaksi::findOrFail($id);
-        $transaksi->id_pasien = $payload->id_pasien;
-        $transaksi->no_transaksi = $payload->no_transaksi;
-        $transaksi->no_sep = $payload->no_sep;
-        $transaksi->harga_total = $payload->harga_total;
-        $transaksi->asuransi_pasien = $payload->asuransi_pasien;
-        $transaksi->kode_jenis_pasien = $payload->kode_jenis_pasien; //1: pasien umum, 2: pasien asuransi
-        $transaksi->jenis_rawat = $payload->jenis_rawat; //1: rawat inap, 2: rawat jalan
-        $transaksi->kelas_rawat = $payload->kelas_rawat; //kelas perawatan saat pasien mendaftar
-        $transaksi->status_naik_kelas = $payload->status_naik_kelas; //1: pasien tidak naik kelas, 2: pasien naik kelas
-        $transaksi->status = $payload->status; //status transaksi (open/closed)
+        $transaksi->id_pasien = $payload['id_pasien'];
+        $transaksi->no_transaksi = $payload['no_transaksi'];
+        $transaksi->no_sep = $payload['no_sep'];
+        $transaksi->harga_total = $payload['harga_total'];
+        $transaksi->asuransi_pasien = $payload['asuransi_pasien'];
+        $transaksi->kode_jenis_pasien = $payload['kode_jenis_pasien']; //1: pasien umum, 2: pasien asuransi
+        $transaksi->jenis_rawat = $payload['jenis_rawat']; //1: rawat inap, 2: rawat jalan
+        $transaksi->kelas_rawat = $payload['kelas_rawat']; //kelas perawatan saat pasien mendaftar
+        $transaksi->status_naik_kelas = $payload['status_naik_kelas']; //1: pasien tidak naik kelas, 2: pasien naik kelas
+        $transaksi->status = $payload['status']; //status transaksi (open/closed)
         $transaksi->save();
 
         return response()->json([
