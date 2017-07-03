@@ -19,3 +19,11 @@ To install:
 ```sh
 $ composer require doctrine/dbal
 ```
+
+## Use Guzzle
+Guzzle is used for calling another api
+To install:
+```sh
+$ composer require guzzlehttp/guzzle
+$ composer require symfony/psr-http-message-bridge
+```
