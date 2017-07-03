@@ -73,7 +73,7 @@ class PoliklinikController extends Controller
      * @param  string  $nama
      * @return \Illuminate\Http\Response
      */
-    public function destroy($string)
+    public function destroy($nama)
     {
       Poliklinik::destroy($nama);
       return response('', 204);
