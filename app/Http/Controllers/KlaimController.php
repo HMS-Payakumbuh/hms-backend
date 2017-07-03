@@ -48,10 +48,10 @@ class KlaimController extends Controller
     {
         $payload = $request->input('klaim');
         $klaim = new Klaim;
-        $klaim->id_pembayaran = $payload->id_pembayaran;
-        $klaim->id_asuransi = $payload->id_asuransi;
-        $klaim->status = $payload->status;
-        $klaim->tarif = $payload->tarif;
+        $klaim->id_pembayaran = $payload['id_pembayaran'];
+        $klaim->id_asuransi = $payload['id_asuransi'];
+        $klaim->status = $payload['status'];
+        $klaim->tarif = $payload['tarif'];
         $klaim->save();
 
         return response()->json([
@@ -94,10 +94,10 @@ class KlaimController extends Controller
     {
         $payload = $request->input('klaim');
         $klaim = Klaim::findOrFail($id);
-        $klaim->id_pembayaran = $payload->id_pembayaran;
-        $klaim->id_asuransi = $payload->id_asuransi;
-        $klaim->status = $payload->status;
-        $klaim->tarif = $payload->tarif;
+        $klaim->id_pembayaran = $payload['id_pembayaran'];
+        $klaim->id_asuransi = $payload['id_asuransi'];
+        $klaim->status = $payload['status'];
+        $klaim->tarif = $payload['tarif'];
         $klaim->save();
 
         return response()->json([
