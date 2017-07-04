@@ -23,7 +23,6 @@ Route::resource('transaksi', 'TransaksiController');
 Route::resource('klaim', 'KlaimController');
 Route::resource('pembayaran', 'PembayaranController');
 Route::resource('asuransi', 'AsuransiController');
-Route::resource('layanan', 'LayananController');
 
 Route::resource('setting_bpjs', 'SettingBpjsController', ['except' => [
   'edit', 'create'

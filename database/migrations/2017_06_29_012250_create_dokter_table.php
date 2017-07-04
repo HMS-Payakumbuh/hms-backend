@@ -17,7 +17,7 @@ class CreateDokterTable extends Migration
             $table->string('no_pegawai')->primary();
             $table->timestamps();
 
-            $table->foreign('no_pegawai')->references('no_pegawai')->on('tenaga_medis')->onDelete('cascade');
+            $table->foreign('no_pegawai')->references('no_pegawai')->on('tenaga_medis')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

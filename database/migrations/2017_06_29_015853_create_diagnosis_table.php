@@ -24,9 +24,10 @@ class CreateDiagnosisTable extends Migration
               ->foreign(array('id_pasien', 'tanggal_waktu'))
               ->references(array('id_pasien', 'tanggal_waktu'))
               ->on('rekam_medis')
-              ->onDelete('restrict');
+              ->onDelete('restrict')
+              ->onUpdate('cascade');
 
-            $table->foreign('kode_diagnosis')->references('kode')->on('daftar_diagnosis')->onDelete('restrict');
+            $table->foreign('kode_diagnosis')->references('kode')->on('daftar_diagnosis')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();
         });
     }

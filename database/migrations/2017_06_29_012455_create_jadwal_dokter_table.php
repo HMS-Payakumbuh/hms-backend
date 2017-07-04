@@ -21,8 +21,8 @@ class CreateJadwalDokterTable extends Migration
             $table->time('waktu_selesai_praktik');
 
             $table->primary(['nama_poli', 'np_dokter']);
-            $table->foreign('nama_poli')->references('nama')->on('poliklinik')->onDelete('cascade');
-            $table->foreign('np_dokter')->references('no_pegawai')->on('dokter')->onDelete('cascade');
+            $table->foreign('nama_poli')->references('nama')->on('poliklinik')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('np_dokter')->references('no_pegawai')->on('dokter')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }
