@@ -30,9 +30,9 @@ class CreateTindakanTable extends Migration
             $table->timestamps();
 
             $table->primary(['no_transaksi', 'no_tindakan']);
-            $table->foreign('no_transaksi')->references('id')->on('transaksi')->onDelete('restrict');
-            $table->foreign('id_pembayaran')->references('id')->on('pembayaran')->onDelete('restrict');
-            $table->foreign('kode_tindakan')->references('kode')->on('daftar_tindakan')->onDelete('restrict');
+            $table->foreign('no_transaksi')->references('id')->on('transaksi')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreign('id_pembayaran')->references('id')->on('pembayaran')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreign('kode_tindakan')->references('kode')->on('daftar_tindakan')->onDelete('restrict')->onUpdate('cascade');
 
             $table
               ->foreign(array('id_pasien', 'tanggal_waktu'))

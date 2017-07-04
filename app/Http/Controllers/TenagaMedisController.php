@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\TenagaMedis;
+use App\Dokter;
 use Illuminate\Http\Request;
 
 class TenagaMedisController extends Controller
@@ -31,6 +32,12 @@ class TenagaMedisController extends Controller
       $tenagaMedis->jabatan = $request->input('jabatan');
       $tenagaMedis->save();
 
+      if ($request->input('jabatan') == 'Dokter') {
+        $dokter = new Dokter;
+        $dokter->no_pegawai = $request->input('no_pegawai');
+        $dokter->save();
+      }
+
       return response($tenagaMedis, 201);
     }
 
@@ -55,10 +62,33 @@ class TenagaMedisController extends Controller
     public function update(Request $request, $no_pegawai)
     {
       $tenagaMedis = TenagaMedis::findOrFail($no_pegawai);
-      $tenagaMedis->no_pegawai = $request->input('no_pegawai');
-      $tenagaMedis->nama = $request->input('nama');
-      $tenagaMedis->jabatan = $request->input('jabatan');
-      $tenagaMedis->save();
+
+      if ($request->input('jabatan') == 'Dokter' && $tenagaMedis->jabatan != 'Dokter') {
+        $dokter = new Dokter;
+        $dokter->no_pegawai = $request->input('no_pegawai');
+
+        $tenagaMedis->no_pegawai = $request->input('no_pegawai');
+        $tenagaMedis->nama = $request->input('nama');
+        $tenagaMedis->jabatan = $request->input('jabatan');
+
+        $tenagaMedis->save();
+        $dokter->save();
+      }
+      else if ($request->input('jabatan') != 'Dokter' && $tenagaMedis->jabatan == 'Dokter') {
+        Dokter::destroy($tenagaMedis->no_pegawai);
+
+        $tenagaMedis->no_pegawai = $request->input('no_pegawai');
+        $tenagaMedis->nama = $request->input('nama');
+        $tenagaMedis->jabatan = $request->input('jabatan');
+
+        $tenagaMedis->save();
+      }
+      else {
+        $tenagaMedis->no_pegawai = $request->input('no_pegawai');
+        $tenagaMedis->nama = $request->input('nama');
+        $tenagaMedis->jabatan = $request->input('jabatan');
+        $tenagaMedis->save();
+      }
 
       return response($tenagaMedis, 200);
     }
