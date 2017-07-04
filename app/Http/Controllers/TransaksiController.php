@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Transaksi;
+use App\BpjsManager;
+use App\SettingBpjs;
 
 class TransaksiController extends Controller
 {
@@ -60,6 +62,10 @@ class TransaksiController extends Controller
         $transaksi->status = 'open'; //status transaksi (open/closed)
         $transaksi->save();
 
+        $coder_nik = SettingBpjs::findOrFail(1)->coder_nik;
+        $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+        
+        
         return response()->json([
             'transaksi' => $transaksi->toJson()
         ], 201);
