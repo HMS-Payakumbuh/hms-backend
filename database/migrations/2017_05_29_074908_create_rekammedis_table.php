@@ -14,6 +14,7 @@ class CreateRekammedisTable extends Migration
     public function up()
     {
         Schema::create('rekam_medis', function (Blueprint $table) {
+            $table->increments('id');
             $table->integer('id_pasien')->unsigned();
             $table->dateTime('tanggal_waktu');
             $table->foreign('id_pasien')->references('id')->on('pasien')->onDelete('cascade');
@@ -27,7 +28,7 @@ class CreateRekammedisTable extends Migration
             $table->binary('dokumen_penunjang');
             $table->timestamps();
 
-            $table->primary(['id_pasien','tanggal_waktu']);
+            $table->unique(['id_pasien','tanggal_waktu']);
         });
     }
 
