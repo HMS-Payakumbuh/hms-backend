@@ -40,6 +40,14 @@ Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
   'edit', 'create'
 ]]);
 
+Route::resource('tindakan', 'TindakanController', ['except' => [
+  'edit', 'create', 'show', 'update', 'destroy'
+]]);
+
+Route::get('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@show');
+Route::put('tindakan/{no_transaksi}/{no_tindakan}', 'TindakanController@update');
+Route::delete('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@destroy');
+
 Route::resource('daftar_diagnosis', 'DaftarDiagnosisController', ['except' => [
   'edit', 'create'
 ]]);
