@@ -81,7 +81,8 @@ class StokObatController extends Controller
 
     public function search(Request $request)
     {
-        $stok_obat = StokObat::where('id_obat_masuk', $request->input('id_obat_masuk'))
+        $stok_obat = StokObat::with('jenisObat')
+                                ->where('id_obat_masuk', $request->input('id_obat_masuk'))
                                 ->where('lokasi', $request->input('lokasi'))
                                 ->first();
         return response ($stok_obat, 200)
