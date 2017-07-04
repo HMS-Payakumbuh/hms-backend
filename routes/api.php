@@ -25,6 +25,18 @@ Route::resource('pembayaran', 'PembayaranController');
 Route::resource('asuransi', 'AsuransiController');
 Route::resource('layanan', 'LayananController');
 
+Route::resource('setting_bpjs', 'SettingBpjsController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('jaminan', 'JaminanController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('cob', 'CobController', ['except' => [
+  'edit', 'create'
+]]);
+
 Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
   'edit', 'create'
 ]]);
