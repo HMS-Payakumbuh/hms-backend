@@ -20,7 +20,7 @@ class CreatePoliklinikTable extends Migration
         $table->integer('sisa_pelayanan');
         $table->integer('id_lokasi');
 
-        $table->foreign('id_lokasi')->references('id')->on('lokasi_obat')->onDelete('cascade');
+        $table->foreign('id_lokasi')->references('id')->on('lokasi_obat')->onDelete('cascade')->onUpdate('cascade');
         $table->timestamps();
       });
     }
