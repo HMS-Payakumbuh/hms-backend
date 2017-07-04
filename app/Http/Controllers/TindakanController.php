@@ -91,7 +91,7 @@ class TindakanController extends Controller
       $tindakan->nama_lab = $request->input('nama_lab');
       $tindakan->nama_ambulans = $request->input('nama_ambulans');
       $tindakan->save();
-      return response($tindakan, 201);
+      return response($tindakan, 200);
     }
 
     /**

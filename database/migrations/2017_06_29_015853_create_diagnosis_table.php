@@ -14,11 +14,12 @@ class CreateDiagnosisTable extends Migration
     public function up()
     {
         Schema::create('diagnosis', function (Blueprint $table) {
+            $table->increments('id');
             $table->integer('id_pasien');
             $table->dateTime('tanggal_waktu');
             $table->string('kode_diagnosis');
 
-            $table->primary(['id_pasien', 'tanggal_waktu', 'kode_diagnosis']);
+            $table->unique(['id_pasien', 'tanggal_waktu', 'kode_diagnosis']);
 
             $table
               ->foreign(array('id_pasien', 'tanggal_waktu'))
