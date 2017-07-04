@@ -23,7 +23,6 @@ Route::resource('transaksi', 'TransaksiController');
 Route::resource('klaim', 'KlaimController');
 Route::resource('pembayaran', 'PembayaranController');
 Route::resource('asuransi', 'AsuransiController');
-Route::resource('layanan', 'LayananController');
 
 Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
   'edit', 'create'
