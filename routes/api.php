@@ -80,17 +80,12 @@ Route::resource('jadwal_dokter', 'JadwalDokterController', ['except' => [
   'edit', 'create', 'show', 'update', 'destroy'
 ]]);
 
-Route::get('jenis_obat/search', 'JenisObatController@search')->middleware('cors');
-
-Route::group(['middleware' => 'cors'], function() {
-  Route::resource('jenis_obat', 'JenisObatController');
-});
-
-Route::resource('lokasi_obat', 'LokasiObatController');
 Route::get('jenis_obat/search', 'JenisObatController@search');
 Route::resource('jenis_obat', 'JenisObatController');
 Route::resource('lokasi_obat', 'LokasiObatController');
+Route::get('obat_masuk/search', 'ObatMasukController@search');
 Route::resource('obat_masuk', 'ObatMasukController');
+Route::get('stok_obat/search', 'StokObatController@search');
 Route::resource('stok_obat', 'StokObatController');
 Route::resource('obat_pindah', 'ObatPindahController');
 Route::resource('obat_rusak', 'ObatRusakController');

@@ -31,7 +31,10 @@ class ObatTebusController extends Controller
         $obat_tebus = new ObatTebus;
         $obat_tebus->id_jenis_obat = $request->input('id_jenis_obat');
         $obat_tebus->id_obat_masuk = $request->input('id_obat_masuk');
-        $obat_tebus->waktu_keluar = $request->input('waktu_keluar');
+
+        date_default_timezone_set('Asia/Jakarta');
+        $obat_tebus->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
+        
         $obat_tebus->jumlah = $request->input('jumlah');       
         $obat_tebus->keterangan = $request->input('keterangan');
         $obat_tebus->asal = $request->input('asal');
