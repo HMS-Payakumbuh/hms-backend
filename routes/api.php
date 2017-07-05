@@ -18,14 +18,35 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::post('bpjs', 'BpjsController@process');
 Route::resource('transaksi', 'TransaksiController');
-Route::resource('klaim', 'TransaksiController');
-Route::resource('pembayaran', 'TransaksiController');
-Route::resource('asuransi', 'TransaksiController');
+Route::resource('klaim', 'KlaimController');
+Route::resource('pembayaran', 'PembayaranController');
+Route::resource('asuransi', 'AsuransiController');
+
+Route::resource('setting_bpjs', 'SettingBpjsController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('jaminan', 'JaminanController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('cob', 'CobController', ['except' => [
+  'edit', 'create'
+]]);
 
 Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
   'edit', 'create'
 ]]);
+
+Route::resource('tindakan', 'TindakanController', ['except' => [
+  'edit', 'create', 'show', 'update', 'destroy'
+]]);
+
+Route::get('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@show');
+Route::put('tindakan/{no_transaksi}/{no_tindakan}', 'TindakanController@update');
+Route::delete('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@destroy');
 
 Route::resource('daftar_diagnosis', 'DaftarDiagnosisController', ['except' => [
   'edit', 'create'
@@ -59,17 +80,12 @@ Route::resource('jadwal_dokter', 'JadwalDokterController', ['except' => [
   'edit', 'create', 'show', 'update', 'destroy'
 ]]);
 
-Route::get('jenis_obat/search', 'JenisObatController@search')->middleware('cors');
-
-Route::group(['middleware' => 'cors'], function() {
-  Route::resource('jenis_obat', 'JenisObatController');
-});
-
-Route::resource('lokasi_obat', 'LokasiObatController');
 Route::get('jenis_obat/search', 'JenisObatController@search');
 Route::resource('jenis_obat', 'JenisObatController');
 Route::resource('lokasi_obat', 'LokasiObatController');
+Route::get('obat_masuk/search', 'ObatMasukController@search');
 Route::resource('obat_masuk', 'ObatMasukController');
+Route::get('stok_obat/search', 'StokObatController@search');
 Route::resource('stok_obat', 'StokObatController');
 Route::resource('obat_pindah', 'ObatPindahController');
 Route::resource('obat_rusak', 'ObatRusakController');

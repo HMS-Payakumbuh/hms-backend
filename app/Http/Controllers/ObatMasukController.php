@@ -31,10 +31,18 @@ class ObatMasukController extends Controller
         $obat_masuk = new ObatMasuk;
         $obat_masuk->id_jenis_obat = $request->input('id_jenis_obat');
         $obat_masuk->nomor_batch = $request->input('nomor_batch');
-        $obat_masuk->waktu_masuk = $request->input('waktu_masuk');
+
+        date_default_timezone_set('Asia/Jakarta');
+        $obat_masuk->waktu_masuk = date("Y-m-d H:i:s"); // Use default in DB instead?
+        
         $obat_masuk->jumlah = $request->input('jumlah');
         $obat_masuk->harga_beli_satuan = $request->input('harga_beli_satuan');
         $obat_masuk->kadaluarsa = $request->input('kadaluarsa');
+
+        $id_jenis_append = sprintf("%05d", $request->input('id_jenis_obat'));
+        $kadaluarsa_clean = str_replace(["-", "–"], '', $request->input('kadaluarsa'));
+
+        $obat_masuk->barcode = $id_jenis_append.$request->input('nomor_batch').$kadaluarsa_clean;
 
         $stok_obat = new StokObat;
         $stok_obat->id_jenis_obat = $request->input('id_jenis_obat');
@@ -56,7 +64,7 @@ class ObatMasukController extends Controller
      */
     public function show($id)
     {
-        return ObatMasuk::with('jenisObat')->findOrFail($id);
+        return ObatMasuk::with('ObatMasuk')->findOrFail($id);
     }
 
     // TO-DO: Remove or restrict updates
@@ -70,7 +78,7 @@ class ObatMasukController extends Controller
     public function update(Request $request, $id)
     {
         $obat_masuk = ObatMasuk::findOrFail($id);
-        $obat_masuk->id_jenis_obat = $request->input('id_jenis_obat');
+        $obat_masuk->id_obat_masuk = $request->input('id_obat_masuk');
         $obat_masuk->nomor_batch = $request->input('nomor_batch');
         $obat_masuk->waktu_masuk = $request->input('waktu_masuk');
         $obat_masuk->jumlah = $request->input('jumlah');
@@ -92,5 +100,13 @@ class ObatMasukController extends Controller
         $obat_masuk = ObatMasuk::find($id);
         $obat_masuk->delete();
         return response ($id.' deleted', 200);
+    }
+
+    public function search(Request $request)
+    {
+        $obat_masuk = ObatMasuk::where('barcode','LIKE','%'.$request->input('barcode').'%')
+                                ->first();
+        return response ($obat_masuk, 200)
+                -> header('Content-Type', 'application/json');
     }
 }

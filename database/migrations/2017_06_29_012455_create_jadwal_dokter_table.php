@@ -14,15 +14,16 @@ class CreateJadwalDokterTable extends Migration
     public function up()
     {
         Schema::create('jadwal_dokter', function (Blueprint $table) {
+            $table->increments('id');
             $table->string('nama_poli');
             $table->string('np_dokter');
             $table->dateTime('tanggal');
             $table->time('waktu_mulai_praktik');
             $table->time('waktu_selesai_praktik');
 
-            $table->primary(['nama_poli', 'np_dokter']);
-            $table->foreign('nama_poli')->references('nama')->on('poliklinik')->onDelete('cascade');
-            $table->foreign('np_dokter')->references('no_pegawai')->on('dokter')->onDelete('cascade');
+            $table->unique(['nama_poli', 'np_dokter']);
+            $table->foreign('nama_poli')->references('nama')->on('poliklinik')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('np_dokter')->references('no_pegawai')->on('dokter')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

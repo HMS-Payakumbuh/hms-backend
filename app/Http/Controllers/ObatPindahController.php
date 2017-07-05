@@ -31,7 +31,10 @@ class ObatPindahController extends Controller
         $obat_pindah = new ObatPindah;
         $obat_pindah->id_jenis_obat = $request->input('id_jenis_obat');
         $obat_pindah->id_obat_masuk = $request->input('id_obat_masuk');
-        $obat_pindah->waktu_pindah = $request->input('waktu_pindah');
+
+        date_default_timezone_set('Asia/Jakarta');
+        $obat_pindah->waktu_pindah = date("Y-m-d H:i:s"); // Use default in DB instead?
+        
         $obat_pindah->jumlah = $request->input('jumlah');
         $obat_pindah->keterangan = $request->input('keterangan');
         $obat_pindah->asal = $request->input('asal');

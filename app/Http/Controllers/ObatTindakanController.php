@@ -29,7 +29,10 @@ class ObatTindakanController extends Controller
         $obat_tindakan = new ObatTindakan;
         $obat_tindakan->id_jenis_obat = $request->input('id_jenis_obat');
         $obat_tindakan->id_obat_masuk = $request->input('id_obat_masuk');
-        $obat_tindakan->waktu_keluar = $request->input('waktu_keluar');
+
+        date_default_timezone_set('Asia/Jakarta');
+        $obat_tindakan->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
+        
         $obat_tindakan->jumlah = $request->input('jumlah');       
         $obat_tindakan->keterangan = $request->input('keterangan');
         $obat_tindakan->asal = $request->input('asal');

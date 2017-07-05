@@ -14,19 +14,21 @@ class CreateDiagnosisTable extends Migration
     public function up()
     {
         Schema::create('diagnosis', function (Blueprint $table) {
+            $table->increments('id');
             $table->integer('id_pasien');
             $table->dateTime('tanggal_waktu');
             $table->string('kode_diagnosis');
 
-            $table->primary(['id_pasien', 'tanggal_waktu', 'kode_diagnosis']);
+            $table->unique(['id_pasien', 'tanggal_waktu', 'kode_diagnosis']);
 
             $table
               ->foreign(array('id_pasien', 'tanggal_waktu'))
               ->references(array('id_pasien', 'tanggal_waktu'))
               ->on('rekam_medis')
-              ->onDelete('restrict');
+              ->onDelete('restrict')
+              ->onUpdate('cascade');
 
-            $table->foreign('kode_diagnosis')->references('kode')->on('daftar_diagnosis')->onDelete('restrict');
+            $table->foreign('kode_diagnosis')->references('kode')->on('daftar_diagnosis')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();
         });
     }

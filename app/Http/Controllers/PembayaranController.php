@@ -48,9 +48,9 @@ class PembayaranController extends Controller
     {
         $payload = $request->input('pembayaran');
         $pembayaran = new Pembayaran;
-        $pembayaran->id_transaksi = $payload->id_transaksi;
-        $pembayaran->harga_bayar = $payload->harga_bayar;
-        $pembayaran->metode_bayar = $payload->metode_bayar;
+        $pembayaran->id_transaksi = $payload['id_transaksi'];
+        $pembayaran->harga_bayar = $payload['harga_bayar'];
+        $pembayaran->metode_bayar = $payload['metode_bayar'];
         $pembayaran->save();
 
         return response()->json([
@@ -93,9 +93,9 @@ class PembayaranController extends Controller
     {
         $payload = $request->input('pembayaran');
         $pembayaran = Pembayaran::findOrFail($id);
-        $pembayaran->id_transaksi = $payload->id_transaksi;
-        $pembayaran->harga_bayar = $payload->harga_bayar;
-        $pembayaran->metode_bayar = $payload->metode_bayar;
+        $pembayaran->id_transaksi = $payload['id_transaksi'];
+        $pembayaran->harga_bayar = $payload['harga_bayar'];
+        $pembayaran->metode_bayar = $payload['metode_bayar'];
         $pembayaran->save();
 
         return response()->json([
