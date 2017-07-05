@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\TempatTidur;
 use Illuminate\Http\Request;
 
-class TempatTidur extends Controller
+class TempatTidurController extends Controller
 {
     /**
      * Display a listing of the resource.

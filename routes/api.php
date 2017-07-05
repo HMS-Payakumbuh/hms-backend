@@ -80,6 +80,12 @@ Route::resource('jadwal_dokter', 'JadwalDokterController', ['except' => [
   'edit', 'create', 'show', 'update', 'destroy'
 ]]);
 
+Route::resource('rawatinap', 'KamarRawatInapController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::get('rawatinap/{no_kamar}', 'KamarRawatInapController@show');
+
 Route::get('jenis_obat/search', 'JenisObatController@search');
 Route::resource('jenis_obat', 'JenisObatController');
 Route::resource('lokasi_obat', 'LokasiObatController');

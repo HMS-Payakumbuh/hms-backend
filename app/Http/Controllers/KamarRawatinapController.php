@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\KamarRawatinap;
+use App\TempatTidur;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
-class KamarRawatinap extends Controller
+class KamarRawatinapController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +16,14 @@ class KamarRawatinap extends Controller
      */
     public function index()
     {
-        return KamarRawatinap::all();
+        $kamarRawatinap = KamarRawatinap
+                            ::join('tempat_tidur', 'kamar_rawatinap.no_kamar', '=', 'tempat_tidur.no_kamar')
+                            ->select(DB::raw('kamar_rawatinap.no_kamar, kamar_rawatinap.kelas, kamar_rawatinap.jenis_kamar, kamar_rawatinap.harga_per_hari, count(*) as kapasitas_kamar'))
+                            ->where('status', '=', 1)
+                            ->groupBy('kamar_rawatinap.no_kamar')
+                            ->get();          
+
+        return $kamarRawatinap;
     }
 
     /**
@@ -43,7 +52,12 @@ class KamarRawatinap extends Controller
      */
     public function show($no_kamar)
     {
-        return KamarRawatinap::findOrFail($no_kamar);
+        $kamarRawatinap = KamarRawatinap
+                            ::join('tempat_tidur', 'kamar_rawatinap.no_kamar', '=', 'tempat_tidur.no_kamar')
+                            ->select(DB::raw('kamar_rawatinap.no_kamar, tempat_tidur.no_tempat_tidur, tempat_tidur.status'))
+                            ->where('tempat_tidur.no_kamar', '=', $no_kamar)
+                            ->get();
+        return $kamarRawatinap;
     }
 
     /**
