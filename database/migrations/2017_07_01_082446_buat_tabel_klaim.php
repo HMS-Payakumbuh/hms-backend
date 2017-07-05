@@ -18,12 +18,12 @@ class BuatTabelKlaim extends Migration
             $table->integer('id_pembayaran')->unsigned();
             $table->integer('id_asuransi')->unsigned();
             $table->string('status');
-            $table->decimal('tarif', 65, 2);
+            $table->decimal('tarif', 65, 2)->nullable();
 
             $table->timestamps();
 
             $table->foreign('id_pembayaran')
-                    ->references('id')->on('transaksi')
+                    ->references('id')->on('pembayaran')
                     ->onDelete('cascade');
 
             $table->foreign('id_asuransi')

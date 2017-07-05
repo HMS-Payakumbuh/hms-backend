@@ -2,17 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Pembayaran;
+use App\Klaim;
+use App\Transaksi;
+use App\Asuransi;
+use App\SettingBpjs;
+use App\BpjsManager;
 
 class PembayaranController extends Controller
 {
     private function getPembayaran($id = null)
     {
         if (isset($id)) {
-            return Pembayaran::findOrFail($id);
+            return Pembayaran::with(['transaksi', 'tindakan', 'klaim'])->findOrFail($id);
         } else {
-            return Pembayaran::all();
+            return Pembayaran::with('transaksi')->get();
         }
     }
 
@@ -24,7 +30,7 @@ class PembayaranController extends Controller
     public function index()
     {
         return response()->json([
-            'allPembayaran' => $this->getPembayaran()->toJson()
+            'allPembayaran' => $this->getPembayaran()
         ]);
     }
 
@@ -53,8 +59,33 @@ class PembayaranController extends Controller
         $pembayaran->metode_bayar = $payload['metode_bayar'];
         $pembayaran->save();
 
+        try {
+            if ($pembayaran->metode_bayar != 'tunai') {
+                if ($pembayaran->metode_bayar == 'bpjs') {
+                    $transaksi = Transaksi::findOrFail($pembayaran->id_transaksi);
+                    $coder_nik = SettingBpjs::findOrFail(1)->coder_nik;
+                    $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+                    // $bpjs->setClaimData();
+                }
+
+                $asuransi = DB::table('asuransi')->select('id')->where('nama_asuransi', $pembayaran->metode_bayar)->first();
+
+                $klaim = new Klaim;
+                $klaim->id_pembayaran = $pembayaran->id;
+                $klaim->id_asuransi = $asuransi->id;
+                $klaim->status = 'processing';
+                $klaim->save();
+            }
+        }
+        catch(\Exception $e) {
+            Pembayaran::destroy($pembayaran->id);
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
         return response()->json([
-            'pembayaran' => $pembayaran->toJson()
+            'pembayaran' => $pembayaran
         ], 201);
     }
 
@@ -67,7 +98,7 @@ class PembayaranController extends Controller
     public function show($id)
     {
         return response()->json([
-            'pembayaran' => $this->getPembayaran($id)->toJson()
+            'pembayaran' => $this->getPembayaran($id)
         ]);
     }
 
@@ -93,13 +124,12 @@ class PembayaranController extends Controller
     {
         $payload = $request->input('pembayaran');
         $pembayaran = Pembayaran::findOrFail($id);
-        $pembayaran->id_transaksi = $payload['id_transaksi'];
         $pembayaran->harga_bayar = $payload['harga_bayar'];
         $pembayaran->metode_bayar = $payload['metode_bayar'];
         $pembayaran->save();
 
         return response()->json([
-            'pembayaran' => $pembayaran->toJson()
+            'pembayaran' => $pembayaran
         ], 201);
     }
 
