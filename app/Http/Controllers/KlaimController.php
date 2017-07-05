@@ -98,7 +98,7 @@ class KlaimController extends Controller
         $klaim->status = $payload['status'];
         $klaim->tarif = $payload['tarif'];
 
-        if ($klaim->save();) {
+        if ($klaim->save()) {
             return response()->json([
                 'klaim' => $klaim
             ], 201);

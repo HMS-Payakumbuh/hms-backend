@@ -12,7 +12,7 @@ class TransaksiController extends Controller
     private function getTransaksi($id = null)
     {
         if (isset($id)) {
-            return Transaksi::with(['pasien', 'tindakan', 'obat'])->findOrFail($id);
+            return Transaksi::with(['pasien', 'tindakan'])->findOrFail($id);
         } else {
             return Transaksi::with('pasien')->get();
         }
@@ -86,7 +86,7 @@ class TransaksiController extends Controller
         $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
         $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
         $transaksi->no_transaksi = 'INV' . $code_str;
-        $transaksi->save;
+        $transaksi->save();
         
         return response()->json([
             'transaksi' => $transaksi
@@ -128,15 +128,12 @@ class TransaksiController extends Controller
     {
         $payload = $request->input('transaksi');
         $transaksi = Transaksi::findOrFail($id);
-        $transaksi->harga_total = $payload['harga_total'];
-        $transaksi->status_naik_kelas = $payload['status_naik_kelas']; //1: pasien tidak naik kelas, 2: pasien naik kelas
-        $transaksi->status = $payload['status']; //status transaksi (open/closed)
-        $transaksi->save();
+        $transaksi->update($payload);
 
         if ($transaksi->status == 'closed') {
             $coder_nik = SettingBpjs::findOrFail(1)->coder_nik;
             $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-            $bpjs->finalizeClaim();
+            // $bpjs->finalizeClaim();
         }
 
         return response()->json([

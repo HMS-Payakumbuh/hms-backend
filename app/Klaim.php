@@ -10,6 +10,6 @@ class Klaim extends Model
 
     public function pembayaran()
 	{
-		return $this->hasOne('App\Pembayaran', 'id_pembayaran');
+		return $this->hasOne('App\Pembayaran', 'id', 'id_pembayaran');
 	}
 }

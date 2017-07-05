@@ -10,6 +10,8 @@ class Transaksi extends Model
 	const CREATED_AT = 'waktu_masuk_pasien';
 	const UPDATED_AT = 'waktu_perubahan_terakhir';
 
+	protected $fillable = ['harga_total', 'status_naik_kelas', 'status'];
+
 	public function pasien()
 	{
 		return $this->belongsTo('App\Pasien', 'id_pasien');
@@ -17,7 +19,7 @@ class Transaksi extends Model
 
 	public function tindakan()
 	{
-		return $this->hasMany('App\Tindakan', 'no_transaksi');
+		return $this->hasMany('App\Tindakan', 'id_transaksi');
 	}
 
 	public function obat()
