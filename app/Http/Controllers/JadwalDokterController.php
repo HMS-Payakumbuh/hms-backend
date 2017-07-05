@@ -14,7 +14,9 @@ class JadwalDokterController extends Controller
      */
     public function index()
     {
-      return JadwalDokter::all();
+      return JadwalDokter::join('tenaga_medis', 'jadwal_dokter.np_dokter', '=', 'tenaga_medis.no_pegawai')
+        ->select('jadwal_dokter.*', 'tenaga_medis.nama AS nama_dokter')
+        ->get();
     }
 
     /**
@@ -41,12 +43,16 @@ class JadwalDokterController extends Controller
      *
      * @param  string  $nama_poli
      * @param  string  $np_dokter
+     * @param  string  $tanggal
      * @return \Illuminate\Http\Response
      */
-    public function show($nama_poli, $np_dokter)
+    public function show($nama_poli, $np_dokter, $tanggal)
     {
       return JadwalDokter::where('nama_poli', '=', $nama_poli)
         ->where('np_dokter', '=', $np_dokter)
+        ->where('tanggal', '=', $tanggal)
+        ->join('tenaga_medis', 'jadwal_dokter.np_dokter', '=', 'tenaga_medis.no_pegawai')
+        ->select('jadwal_dokter.*', 'tenaga_medis.nama AS nama_dokter')
         ->first();
     }
 
@@ -56,12 +62,14 @@ class JadwalDokterController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @param  string  $nama_poli
      * @param  string  $np_dokter
+     * @param  string  $tanggal
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $nama_poli, $np_dokter)
+    public function update(Request $request, $nama_poli, $np_dokter, $tanggal)
     {
       $jadwalDokter = JadwalDokter::where('nama_poli', '=', $nama_poli)
         ->where('np_dokter', '=', $np_dokter)
+        ->where('tanggal', '=', $tanggal)
         ->first();
       $jadwalDokter->nama_poli = $request->input('nama_poli');
       $jadwalDokter->np_dokter = $request->input('np_dokter');
@@ -78,12 +86,14 @@ class JadwalDokterController extends Controller
      *
      * @param  string  $nama_poli
      * @param  string  $np_dokter
+     * @param  string  $tanggal
      * @return \Illuminate\Http\Response
      */
-    public function destroy($nama_poli, $np_dokter)
+    public function destroy($nama_poli, $np_dokter, $tanggal)
     {
       $deletedRows = JadwalDokter::where('nama_poli', '=', $nama_poli)
         ->where('np_dokter', '=', $np_dokter)
+        ->where('tanggal', '=', $tanggal)
         ->first()
         ->delete();
       return response('', 204);

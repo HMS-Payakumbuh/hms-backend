@@ -72,9 +72,9 @@ Route::resource('dokter', 'DokterController', ['except' => [
   'edit', 'create'
 ]]);
 
-Route::get('jadwal_dokter/{nama_poli}/{np_dokter}', 'JadwalDokterController@show');
-Route::put('jadwal_dokter/{nama_poli}/{np_dokter}', 'JadwalDokterController@update');
-Route::delete('jadwal_dokter/{nama_poli}/{np_dokter}', 'JadwalDokterController@destroy');
+Route::get('jadwal_dokter/{nama_poli}/{np_dokter}/{tanggal}', 'JadwalDokterController@show');
+Route::put('jadwal_dokter/{nama_poli}/{np_dokter}/{tanggal}', 'JadwalDokterController@update');
+Route::delete('jadwal_dokter/{nama_poli}/{np_dokter}/{tanggal}', 'JadwalDokterController@destroy');
 
 Route::resource('jadwal_dokter', 'JadwalDokterController', ['except' => [
   'edit', 'create', 'show', 'update', 'destroy'
