@@ -36,7 +36,9 @@ class CreateObatTindakanTable extends Migration
                   ->onDelete('restrict');
 
             $table->integer('id_transaksi')->unsigned();  
-            $table->integer('id_tindakan')->unsigned();    
+            $table->integer('id_tindakan')->unsigned();   
+
+            $table->decimal('harga_jual_realisasi', 12, 2); 
                   
             $table->timestamps();               
         });
