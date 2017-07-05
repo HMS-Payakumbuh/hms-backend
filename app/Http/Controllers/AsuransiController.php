@@ -24,7 +24,7 @@ class AsuransiController extends Controller
     public function index()
     {
         return response()->json([
-            'allAsuransi' => $this->getAsuransi()->toJson()
+            'allAsuransi' => $this->getAsuransi()
         ]);
     }
 
@@ -54,7 +54,7 @@ class AsuransiController extends Controller
         $asuransi->save();
 
         return response()->json([
-            'asuransi' => $asuransi->toJson()
+            'asuransi' => $asuransi
         ], 201);
     }
 
@@ -67,7 +67,7 @@ class AsuransiController extends Controller
     public function show($id)
     {
         return response()->json([
-            'asuransi' => $this->getAsuransi($id)->toJson()
+            'asuransi' => $this->getAsuransi($id)
         ]);
     }
 
@@ -93,13 +93,11 @@ class AsuransiController extends Controller
     {
         $payload = $request->input('asuransi');
         $asuransi = Asuransi::findOrFail($id);
-        $asuransi->id_pasien = $payload['id_pasien'];
         $asuransi->no_kartu = $payload['no_kartu'];
-        $asuransi->nama_asuransi = $payload['nama_asuransi'];
         $asuransi->save();
         
         return response()->json([
-            'asuransi' => $asuransi->toJson()
+            'asuransi' => $asuransi
         ], 201);
     }
 

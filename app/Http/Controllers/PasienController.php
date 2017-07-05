@@ -54,7 +54,7 @@ class PasienController extends Controller
      */
     public function show($id)
     {
-        //
+        Pasien::findOrFail($id);
     }
 
     /**

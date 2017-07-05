@@ -139,6 +139,13 @@ class BpjsManager
     		'nomor_sep' => $this->nomor_sep,
     		'coder_nik' => $this->coder_nik
     	);
+
+        $payload = array(
+            'metadata' => $metadata,
+            'data' => $data
+        );
+
+        return $this->sendKlaim($payload);
     }
 
     private function sendKlaim($payload) {

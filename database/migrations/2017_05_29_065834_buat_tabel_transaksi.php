@@ -16,7 +16,7 @@ class BuatTabelTransaksi extends Migration
         Schema::create('transaksi', function(Blueprint $table) {
             $table->increments('id');
             $table->integer('id_pasien')->unsigned();
-            $table->string('no_transaksi');
+            $table->string('no_transaksi')->unique()->nullable();
             $table->string('no_sep')->nullable();
             $table->dateTime('waktu_masuk_pasien');
             $table->dateTime('waktu_perubahan_terakhir');

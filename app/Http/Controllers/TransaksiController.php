@@ -12,9 +12,9 @@ class TransaksiController extends Controller
     private function getTransaksi($id = null)
     {
         if (isset($id)) {
-            return Transaksi::findOrFail($id);
+            return Transaksi::with(['pasien', 'tindakan'])->findOrFail($id);
         } else {
-            return Transaksi::all();
+            return Transaksi::with('pasien')->get();
         }
     }
 
@@ -26,7 +26,7 @@ class TransaksiController extends Controller
     public function index()
     {
         return response()->json([
-            'allTransaksi' => $this->getTransaksi()->toJson()
+            'allTransaksi' => $this->getTransaksi()
         ]);
     }
 
@@ -51,23 +51,45 @@ class TransaksiController extends Controller
         $payload = $request->input('transaksi');
         $transaksi = new Transaksi;
         $transaksi->id_pasien = $payload['id_pasien'];
-        $transaksi->no_transaksi = str_random(8);
-        $transaksi->no_sep = $payload['no_sep'];
-        $transaksi->harga_total = 0;
-        $transaksi->asuransi_pasien = $payload['asuransi_pasien'];
+        
+        if (isset($payload['no_sep'])) {
+            $transaksi->no_sep = $payload['no_sep'];
+            $coder_nik = SettingBpjs::findOrFail(1)->coder_nik;
+            $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+            // $bpjs->newClaim();
+            // $bpjs->setClaimData();
+        }
+        
         $transaksi->kode_jenis_pasien = $payload['kode_jenis_pasien']; //1: pasien umum, 2: pasien asuransi
+
+        if ($payload['kode_jenis_pasien'] == 2) {
+            $transaksi->asuransi_pasien = $payload['asuransi_pasien'];
+        }
+        else {
+            $transaksi->asuransi_pasien = 'tunai';
+        }
+        
+        $transaksi->harga_total = 0;
         $transaksi->jenis_rawat = $payload['jenis_rawat']; //1: rawat inap, 2: rawat jalan
-        $transaksi->kelas_rawat = $payload['kelas_rawat']; //kelas perawatan saat pasien mendaftar
+        
+        if ($transaksi->jenis_rawat == 2) {
+            $transaksi->kelas_rawat = 1;
+        }
+        else {
+            $transaksi->kelas_rawat = $payload['kelas_rawat']; //kelas perawatan saat pasien mendaftar
+        }
         $transaksi->status_naik_kelas = 1; //1: pasien tidak naik kelas, 2: pasien naik kelas
         $transaksi->status = 'open'; //status transaksi (open/closed)
         $transaksi->save();
 
-        $coder_nik = SettingBpjs::findOrFail(1)->coder_nik;
-        $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-        
+        $transaksi = Transaksi::findOrFail($transaksi->id);
+        $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
+        $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
+        $transaksi->no_transaksi = 'INV' . $code_str;
+        $transaksi->save();
         
         return response()->json([
-            'transaksi' => $transaksi->toJson()
+            'transaksi' => $transaksi
         ], 201);
     }
 
@@ -80,7 +102,7 @@ class TransaksiController extends Controller
     public function show($id)
     {
         return response()->json([
-            'transaksi' => $this->getTransaksi($id)->toJson()
+            'transaksi' => $this->getTransaksi($id)
         ]);
     }
 
@@ -106,20 +128,16 @@ class TransaksiController extends Controller
     {
         $payload = $request->input('transaksi');
         $transaksi = Transaksi::findOrFail($id);
-        $transaksi->id_pasien = $payload['id_pasien'];
-        $transaksi->no_transaksi = $payload['no_transaksi'];
-        $transaksi->no_sep = $payload['no_sep'];
-        $transaksi->harga_total = $payload['harga_total'];
-        $transaksi->asuransi_pasien = $payload['asuransi_pasien'];
-        $transaksi->kode_jenis_pasien = $payload['kode_jenis_pasien']; //1: pasien umum, 2: pasien asuransi
-        $transaksi->jenis_rawat = $payload['jenis_rawat']; //1: rawat inap, 2: rawat jalan
-        $transaksi->kelas_rawat = $payload['kelas_rawat']; //kelas perawatan saat pasien mendaftar
-        $transaksi->status_naik_kelas = $payload['status_naik_kelas']; //1: pasien tidak naik kelas, 2: pasien naik kelas
-        $transaksi->status = $payload['status']; //status transaksi (open/closed)
-        $transaksi->save();
+        $transaksi->update($payload);
+
+        if ($transaksi->status == 'closed') {
+            $coder_nik = SettingBpjs::findOrFail(1)->coder_nik;
+            $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+            // $bpjs->finalizeClaim();
+        }
 
         return response()->json([
-            'transaksi' => $transaksi->toJson()
+            'transaksi' => $transaksi
         ], 201);
     }
 
