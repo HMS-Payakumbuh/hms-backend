@@ -40,6 +40,8 @@ class CreateObatTebusTable extends Migration
 
             $table->integer('id_resep')->unsigned(); 
             $table->integer('id_resep_item')->unsigned();  
+
+            $table->decimal('harga_jual_realisasi', 12, 2);
                   
             $table->timestamps();               
         });
