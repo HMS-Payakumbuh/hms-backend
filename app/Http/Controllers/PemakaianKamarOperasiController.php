@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\PemakaianKamarOperasi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PemakaianKamarOperasiController extends Controller
 {
@@ -14,7 +15,16 @@ class PemakaianKamarOperasiController extends Controller
      */
     public function index()
     {
-        return PemakaianKamarOperasi::all();
+        $pemakaianKamarOperasi = PemakaianKamarOperasi
+                            ::join('transaksi', 'pemakaian_kamar_operasi.no_transaksi', '=', 'transaksi.id')
+                            ->join('tindakan', 'pemakaian_kamar_operasi.no_tindakan', '=', 'tindakan.no_tindakan')
+                            ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
+                            ->join('tenaga_medis', 'tindakan.np_tenaga_medis', '=', 'tenaga_medis.no_pegawai')
+                            ->select(DB::raw('pemakaian_kamar_operasi.no_kamar, pasien.nama_pasien, tenaga_medis.nama, pemakaian_kamar_operasi.waktu_masuk, pemakaian_kamar_operasi.waktu_keluar'))
+                            ->get();          
+
+
+        return $pemakaianKamarOperasi;
     }
 
     /**

@@ -79,6 +79,7 @@ class KamarRawatinapController extends Controller
         return response($kamarRawatinap, 200);
     }
 
+
     /**
      * Remove the specified resource from storage.
      *
