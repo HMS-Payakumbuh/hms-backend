@@ -17,11 +17,11 @@ class CreateJadwalDokterTable extends Migration
             $table->increments('id');
             $table->string('nama_poli');
             $table->string('np_dokter');
-            $table->dateTime('tanggal');
+            $table->date('tanggal');
             $table->time('waktu_mulai_praktik');
             $table->time('waktu_selesai_praktik');
 
-            $table->unique(['nama_poli', 'np_dokter']);
+            $table->unique(['nama_poli', 'np_dokter', 'tanggal']);
             $table->foreign('nama_poli')->references('nama')->on('poliklinik')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('np_dokter')->references('no_pegawai')->on('dokter')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
