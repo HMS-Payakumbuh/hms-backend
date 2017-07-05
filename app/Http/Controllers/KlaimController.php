@@ -10,9 +10,9 @@ class KlaimController extends Controller
     private function getKlaim($id = null)
     {
         if (isset($id)) {
-            return Klaim::findOrFail($id);
+            return Klaim::with('pembayaran')->findOrFail($id);
         } else {
-            return Klaim::all();
+            return Klaim::with('pembayaran')->get();
         }
     }
 
@@ -24,7 +24,7 @@ class KlaimController extends Controller
     public function index()
     {
         return response()->json([
-            'allKlaim' => $this->getKlaim()->toJson()
+            'allKlaim' => $this->getKlaim()
         ]);
     }
 
@@ -50,13 +50,14 @@ class KlaimController extends Controller
         $klaim = new Klaim;
         $klaim->id_pembayaran = $payload['id_pembayaran'];
         $klaim->id_asuransi = $payload['id_asuransi'];
-        $klaim->status = $payload['status'];
-        $klaim->tarif = $payload['tarif'];
+        $klaim->status = 'processing';
         $klaim->save();
 
-        return response()->json([
-            'klaim' => $klaim->toJson()
-        ], 201);
+        if ($klaim->save) {
+            return response()->json([
+                'klaim' => $klaim
+            ], 201);
+        }
     }
 
     /**
@@ -68,7 +69,7 @@ class KlaimController extends Controller
     public function show($id)
     {
         return response()->json([
-            'klaim' => $this->getKlaim($id)->toJson()
+            'klaim' => $this->getKlaim($id)
         ]);
     }
 
@@ -94,15 +95,14 @@ class KlaimController extends Controller
     {
         $payload = $request->input('klaim');
         $klaim = Klaim::findOrFail($id);
-        $klaim->id_pembayaran = $payload['id_pembayaran'];
-        $klaim->id_asuransi = $payload['id_asuransi'];
         $klaim->status = $payload['status'];
         $klaim->tarif = $payload['tarif'];
-        $klaim->save();
 
-        return response()->json([
-            'klaim' => $klaim->toJson()
-        ], 201);
+        if ($klaim->save();) {
+            return response()->json([
+                'klaim' => $klaim
+            ], 201);
+        }
     }
 
     /**

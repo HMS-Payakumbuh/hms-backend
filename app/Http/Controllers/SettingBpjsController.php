@@ -14,7 +14,9 @@ class SettingBpjsController extends Controller
      */
     public function index()
     {
-        return SettingBpjs::all();
+        return response()->json([
+            'setting_bpjs' => SettingBpjs::all()
+        ], 201);
     }
 
     /**
@@ -34,7 +36,7 @@ class SettingBpjsController extends Controller
         $setting->save();
 
         return response()->json([
-            'setting_bpjs' => $setting->toJson()
+            'setting_bpjs' => $setting
         ], 201);
     }
 
@@ -46,7 +48,9 @@ class SettingBpjsController extends Controller
      */
     public function show($id)
     {
-        return SettingBpjs::findOrFail($id);
+        return response()->json([
+            'setting_bpjs' => SettingBpjs::findOrFail($id)
+        ], 201);
     }
 
     /**
@@ -67,7 +71,7 @@ class SettingBpjsController extends Controller
         $setting->save();
 
         return response()->json([
-            'setting_bpjs' => $setting->toJson()
+            'setting_bpjs' => $setting
         ], 201);
     }
 
