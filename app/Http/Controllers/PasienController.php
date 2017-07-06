@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Pasien;
+use App\Asuransi;
 use Carbon\Carbon; 
 
 class PasienController extends Controller
@@ -15,17 +16,7 @@ class PasienController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return View::make('pasien.create');
+        return Pasien::all();
     }
 
     /**
@@ -37,13 +28,29 @@ class PasienController extends Controller
     public function store(Request $request)
     {
         $pasien = new Pasien;
-        $pasien->nama = $request->input('name');
-        $pasien->tanggal_lahir = $request->input('dob');
-        $pasien->gender = $request->input('gender');
-        $pasien->alamat = $request->input('address');
-        $pasien->no_telp = $request->input('phone');
-        $pasien->usia = $pasien->age();
+        $pasien->nama_pasien = $request->input('nama_pasien');
+        $pasien->tanggal_lahir = Carbon::parse($request->input('tanggal_lahir'));
+        $pasien->jender = $request->input('jender');
+        $pasien->agama = $request->input('agama');
+        $pasien->alamat = $request->input('alamat');
+        $pasien->kontak = $request->input('kontak');
         $pasien->save();
+
+        /*try {
+            $asuransi = new Asuransi;
+            $asuransi = $request->input('asuransi');
+            $asuransi->id_pasien = $pasien->id;
+            $asuransi->save();
+        }
+        catch(\Exception $e) {
+            Pasien::destroy($pasien->id);
+            return response()->json([
+                'error' => $e->getMessage(),
+                'asuransi' => $asuransi
+            ], 500);
+        }*/
+
+        return response($pasien, 201);
     }
 
     /**
@@ -58,17 +65,6 @@ class PasienController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -77,7 +73,16 @@ class PasienController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $pasien = Pasien::findOrFail($id);
+        $pasien->nama_pasien = $request->input('nama_pasien');
+        $pasien->tanggal_lahir = Carbon::parse($request->input('tanggal_lahir'));
+        $pasien->jender = $request->input('jender');
+        $pasien->agama = $request->input('agama');
+        $pasien->alamat = $request->input('alamat');
+        $pasien->kontak = $request->input('kontak');
+        $pasien->save();
+
+        return response($pasien, 200);
     }
 
     /**
@@ -88,6 +93,7 @@ class PasienController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Pasien::destroy($id);
+        return response('', 204);
     }
 }

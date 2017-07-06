@@ -17,11 +17,10 @@ class CreatePasienTable extends Migration
             $table->increments('id');
             $table->string('nama_pasien');
             $table->date('tanggal_lahir');
-            $table->string('gender');
+            $table->integer('jender'); //0 : Laki-laki, 1: Perempuan
             $table->text('alamat');
-            $table->string('no_telp');
-            $table->string('usia');
-            
+            $table->string('agama');
+            $table->string('kontak');
             $table->timestamps();
         });
     }

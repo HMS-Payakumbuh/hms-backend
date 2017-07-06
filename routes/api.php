@@ -18,6 +18,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::resource('pasien', 'PasienController', ['except' => [
+  'edit', 'create'
+]]);
+
 Route::post('bpjs', 'BpjsController@process');
 Route::resource('transaksi', 'TransaksiController');
 Route::resource('klaim', 'KlaimController');
