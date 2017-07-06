@@ -14,22 +14,23 @@ class CreatePemakaianKamarOperasiTable extends Migration
     public function up()
     {
         Schema::create('pemakaian_kamar_operasi', function (Blueprint $table) {
+            $table->increments('id');
             $table->string('no_kamar');
-            $table->integer('no_transaksi');
-            $table->integer('no_pembayaran');
+            $table->integer('id_transaksi');
+            $table->integer('no_pembayaran')->nullable();
             $table->integer('no_tindakan');
             $table->dateTime('waktu_masuk');
             $table->dateTime('waktu_keluar');
 
             $table->timestamps();
 
-            $table->primary(['no_kamar', 'no_tindakan', 'no_transaksi', 'waktu_masuk']);
+            $table->unique(['no_kamar', 'no_tindakan', 'id_transaksi', 'waktu_masuk']);
             $table->foreign('no_kamar')
                     ->references('no_kamar')
                     ->on('kamar_operasi')
                     ->onDelete('cascade');
 
-            $table->foreign('no_transaksi')
+            $table->foreign('id_transaksi')
                     ->references('id')
                     ->on('transaksi')
                     ->onDelete('cascade');
@@ -40,7 +41,7 @@ class CreatePemakaianKamarOperasiTable extends Migration
                     ->onDelete('cascade');
 
             $table
-              ->foreign(array('no_tindakan', 'no_transaksi'))
+              ->foreign(array('no_tindakan', 'id_transaksi'))
               ->references(array('no_tindakan', 'id_transaksi'))
               ->on('tindakan')
               ->onDelete('cascade');
@@ -55,6 +56,11 @@ class CreatePemakaianKamarOperasiTable extends Migration
      */
     public function down()
     {
+        Schema::table('pemakaian_kamar_operasi', function (Blueprint $table) {
+            $table->dropForeign(['no_kamar']);
+            $table->dropForeign(['id_transaksi']);
+            $table->dropForeign(['no_pembayaran']);
+        });
         Schema::dropIfExists('pemakaian_kamar_operasi');
     }
 }

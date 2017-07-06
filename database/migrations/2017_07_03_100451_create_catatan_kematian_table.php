@@ -35,6 +35,9 @@ class CreateCatatanKematianTable extends Migration
      */
     public function down()
     {
+        Schema::table('catatan_kematian', function (Blueprint $table) {
+            $table->dropForeign(['id_pasien']);
+        });
         Schema::dropIfExists('catatan_kematian');
     }
 }

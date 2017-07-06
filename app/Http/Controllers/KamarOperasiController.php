@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\KamarOperasi;
 use Illuminate\Http\Request;
 
-class KamarOperasi extends Controller
+class KamarOperasiController extends Controller
 {
     /**
      * Display a listing of the resource.

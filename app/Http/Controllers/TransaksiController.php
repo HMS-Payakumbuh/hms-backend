@@ -18,6 +18,17 @@ class TransaksiController extends Controller
         }
     }
 
+
+    public function getRecentTransaksi($nama_pasien)
+    {
+        $transaksi = Transaksi
+                            ::join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
+                            ->orderBy('transaksi.waktu_masuk_pasien', 'desc')
+                            ->where('nama_pasien', '=', $nama_pasien)
+                            ->first();
+        return $transaksi;
+    }
+
     /**
      * Display a listing of the resource.
      *

@@ -24,6 +24,8 @@ Route::resource('pasien', 'PasienController', ['except' => [
 
 Route::post('bpjs', 'BpjsController@process');
 Route::resource('transaksi', 'TransaksiController');
+Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTransaksi');
+
 Route::resource('klaim', 'KlaimController');
 Route::resource('pembayaran', 'PembayaranController');
 Route::resource('asuransi', 'AsuransiController');
@@ -92,16 +94,33 @@ Route::resource('rawatinap', 'KamarRawatInapController', ['except' => [
   'edit', 'create'
 ]]);
 
-Route::resource('kamaroperasi', 'PemakaianKamarOperasiController', ['except' => [
+
+Route::resource('pemakaiankamaroperasi', 'PemakaianKamarOperasiController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('pemakaiankamarjenazah', 'PemakaianKamarJenazahController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('kamaroperasi', 'KamarOperasiController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('kamarjenazah', 'KamarJenazahController', ['except' => [
   'edit', 'create'
 ]]);
 
 Route::get('rawatinap/{no_kamar}', 'KamarRawatInapController@show');
-Route::get('rawatinap/{no_kamar}', 'PemakaianKamarRawatInapController@search');
+Route::put('rawatinap/{no_kamar}', 'KamarRawatInapController@update');
+Route::post('rawatinap/{no_kamar}', 'PemakaianKamarRawatInapController@store');
+
+Route::put('tempattidur/{no_kamar}/{no_tempat_tidur}', 'TempatTidurController@update');
 
 Route::resource('resep', 'ResepController');
 Route::resource('resep_item', 'ResepItemController');
 Route::resource('racikan_item', 'RacikanItemController');
+
 
 Route::get('jenis_obat/search', 'JenisObatController@search');
 Route::resource('jenis_obat', 'JenisObatController');

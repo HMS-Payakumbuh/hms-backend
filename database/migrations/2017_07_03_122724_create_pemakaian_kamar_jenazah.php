@@ -14,22 +14,23 @@ class CreatePemakaianKamarJenazah extends Migration
     public function up()
     {
         Schema::create('pemakaian_kamar_jenazah', function (Blueprint $table) {
+            $table->increments('id');
             $table->string('no_kamar');
-            $table->integer('no_transaksi');
-            $table->integer('no_pembayaran');
+            $table->integer('id_transaksi');
+            $table->integer('no_pembayaran')->nullable();
             $table->dateTime('waktu_masuk');
             $table->dateTime('waktu_keluar')->nullable();
             $table->integer('harga');
 
             $table->timestamps();
 
-            $table->primary(['no_kamar', 'no_transaksi', 'waktu_masuk']);
+            $table->unique(['no_kamar', 'no_transaksi', 'waktu_masuk']);
             $table->foreign('no_kamar')
                     ->references('no_kamar')
                     ->on('kamar_jenazah')
                     ->onDelete('cascade');
 
-            $table->foreign('no_transaksi')
+            $table->foreign('id_transaksi')
                     ->references('id')
                     ->on('transaksi')
                     ->onDelete('cascade');
@@ -48,6 +49,11 @@ class CreatePemakaianKamarJenazah extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('pemakaian_kamar_jenazah', function (Blueprint $table) {
+            $table->dropForeign(['no_kamar']);
+            $table->dropForeign(['id_transaksi']);
+            $table->dropForeign(['no_pembayaran']);
+        });
+        Schema::dropIfExists('pemakaian_kamar_jenazah');
     }
 }
