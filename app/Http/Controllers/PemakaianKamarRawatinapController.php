@@ -29,9 +29,9 @@ class PemakaianKamarRawatinapController extends Controller
         $pemakaianKamarRawatinap = new PemakaianKamarRawatinap;
         $pemakaianKamarRawatinap->no_kamar = $request->input('no_kamar');
         $pemakaianKamarRawatinap->no_tempat_tidur = $request->input('no_tempat_tidur');
-        $pemakaianKamarRawatinap->no_transaksi = $request->input('no_transaksi');
+        $pemakaianKamarRawatinap->id_transaksi = $request->input('id_transaksi');
         date_default_timezone_set('Asia/Jakarta');
-        $pemakaianKamarRawatinap->waktu_masuk = $date("Y-m-d H:i:s");
+        $pemakaianKamarRawatinap->waktu_masuk = date("Y-m-d H:i:s");
         $pemakaianKamarRawatinap->waktu_keluar = null;
         $pemakaianKamarRawatinap->harga = $request->input('harga'); 
         $pemakaianKamarRawatinap->no_pegawai= $request->input('no_pegawai');
@@ -81,15 +81,6 @@ class PemakaianKamarRawatinapController extends Controller
         $pemakaianKamarRawatinap->save();
 
         return response($pemakaianKamarRawatinap, 200);
-    }
-
-    public function search($nama_pasien)
-    {
-        $transaksi = Transaksi
-                            ::join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
-                            ->orderBy('transaksi.waktu_masuk_pasien', 'desc')
-                            ->first();
-        return $transaksi;
     }
 
     /**

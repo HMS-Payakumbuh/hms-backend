@@ -17,7 +17,7 @@ class CreateResepTable extends Migration
             $table->increments('id');
             $table->integer('id_transaksi')->unsigned();
             $table->integer('no_tindakan')->unsigned();
-            $table->integer('no_resep')->unsigned();
+            $table->integer('no_resep');
 
             $table->timestamps();
 
@@ -28,6 +28,7 @@ class CreateResepTable extends Migration
               ->onDelete('restrict');
 
             $table->unique(['no_resep', 'id_transaksi', 'no_tindakan']);
+
         });
     }
 

@@ -14,7 +14,7 @@ class TindakanController extends Controller
      */
     public function index()
     {
-      return Tindakan::all();
+      return Tindakan::with('daftarTindakan')->get();
     }
 
     /**
@@ -55,12 +55,13 @@ class TindakanController extends Controller
     public function show($id_transaksi, $no_tindakan = null)
     {
       if ($no_tindakan != null) {
-        return Tindakan::where('id_transaksi', '=', $id_transaksi)
+        return Tindakan::with('daftarTindakan')
+          ->where('id_transaksi', '=', $id_transaksi)
           ->where('no_tindakan', '=', $no_tindakan)
           ->first();
       }
       else {
-        return $response = Tindakan::where('id_transaksi', '=', $id_transaksi)->get();
+        return $response = Tindakan::with('daftarTindakan')->where('id_transaksi', '=', $id_transaksi)->get();
       }
     }
 

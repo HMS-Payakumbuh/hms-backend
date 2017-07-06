@@ -56,7 +56,7 @@ class CreateTindakanTable extends Migration
     public function down()
     {
         Schema::table('tindakan', function (Blueprint $table) {
-            $table->dropForeign(['no_transaksi']);
+            $table->dropForeign(['id_transaksi']);
             $table->dropForeign(['id_pembayaran']);
             $table->dropForeign(['kode_tindakan']);
             $table->dropForeign(['id_pasien', 'tanggal_waktu']);

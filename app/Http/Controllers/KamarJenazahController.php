@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\KamarJenazah;
 use Illuminate\Http\Request;
 
-class KamarJenazah extends Controller
+class KamarJenazahController extends Controller
 {
     /**
      * Display a listing of the resource.
