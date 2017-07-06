@@ -41,8 +41,7 @@ class PemakaianKamarOperasiController extends Controller
         $pemakaianKamarOperasi->id_transaksi = $request->input('id_transaksi');
         $pemakaianKamarOperasi->no_pembayaran = $request->input('no_pembayaran');
         $pemakaianKamarOperasi->waktu_masuk = $request->input('waktu_masuk');
-        $pemakaianKamarOperasi->waktu_keluar = null;
-        $pemakaianKamarOperasi->harga = $request->input('harga');
+        $pemakaianKamarOperasi->waktu_keluar =  $request->input('waktu_keluar');
         $pemakaianKamarOperasi->save();
 
         return response($pemakaianKamarOperasi, 201);
