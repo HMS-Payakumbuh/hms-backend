@@ -10,15 +10,16 @@ use App\Transaksi;
 use App\Asuransi;
 use App\SettingBpjs;
 use App\BpjsManager;
+use App\Tindakan;
 
 class PembayaranController extends Controller
 {
     private function getPembayaran($id = null)
     {
         if (isset($id)) {
-            return Pembayaran::with(['transaksi', 'tindakan', 'klaim'])->findOrFail($id);
+            return Pembayaran::with(['transaksi.pasien', 'tindakan.daftarTindakan', 'klaim'])->findOrFail($id);
         } else {
-            return Pembayaran::with('transaksi')->get();
+            return Pembayaran::with('transaksi.pasien')->get();
         }
     }
 
@@ -58,6 +59,14 @@ class PembayaranController extends Controller
         $pembayaran->harga_bayar = $payload['harga_bayar'];
         $pembayaran->metode_bayar = $payload['metode_bayar'];
         $pembayaran->save();
+
+        if (isset($payload['tindakan']) && count($payload['tindakan']) > 0) {
+            foreach ($payload['tindakan'] as $value) {
+                $tindakan = Tindakan::findOrFail($value);
+                $tindakan->id_pembayaran = $pembayaran->id;
+                $tindakan->save();
+            }
+        }
 
         try {
             if ($pembayaran->metode_bayar != 'tunai') {

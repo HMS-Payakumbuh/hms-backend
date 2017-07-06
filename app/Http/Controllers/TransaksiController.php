@@ -12,7 +12,7 @@ class TransaksiController extends Controller
     private function getTransaksi($id = null)
     {
         if (isset($id)) {
-            return Transaksi::with(['pasien', 'tindakan'])->findOrFail($id);
+            return Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'pembayaran'])->findOrFail($id);
         } else {
             return Transaksi::with('pasien')->get();
         }

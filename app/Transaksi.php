@@ -22,6 +22,11 @@ class Transaksi extends Model
 		return $this->hasMany('App\Tindakan', 'id_transaksi');
 	}
 
+	public function pembayaran()
+	{
+		return $this->hasMany('App\Pembayaran', 'id_transaksi');
+	}
+
 	public function obat()
 	{
 		return $this->hasMany('App\ObatTebus', 'id_transaksi');
