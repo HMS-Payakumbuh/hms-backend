@@ -12,4 +12,9 @@ class Klaim extends Model
 	{
 		return $this->hasOne('App\Pembayaran', 'id', 'id_pembayaran');
 	}
+
+	public function asuransi()
+	{
+		return $this->hasOne('App\Asuransi', 'id', 'id_asuransi');
+	}
 }

@@ -10,9 +10,9 @@ class AsuransiController extends Controller
     private function getAsuransi($id = null)
     {
         if (isset($id)) {
-            return Asuransi::findOrFail($id);
+            return Asuransi::with('pasien')->findOrFail($id);
         } else {
-            return Asuransi::all();
+            return Asuransi::with('pasien')->get();
         }
     }
 
@@ -48,7 +48,7 @@ class AsuransiController extends Controller
     {
         $payload = $request->input('asuransi');
         $asuransi = new Asuransi;
-        $asuransi->id_pasien = 1;
+        $asuransi->id_pasien = $payload['id_pasien'];
         $asuransi->no_kartu = $payload['no_kartu'];
         $asuransi->nama_asuransi = $payload['nama_asuransi'];
         $asuransi->save();
