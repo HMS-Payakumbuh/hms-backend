@@ -22,6 +22,19 @@ Route::resource('pasien', 'PasienController', ['except' => [
   'edit', 'create'
 ]]);
 
+Route::resource('antrian_front_office', 'AntrianFrontOfficeController', ['except' => [
+  'edit', 'create', 'update', 'delete'
+]]);
+Route::put('antrian_front_office/{nama_layanan}/{no_antrian}', 'AntrianFrontOfficeController@update');
+Route::delete('antrian_front_office/{nama_layanan}/{no_antrian}', 'AntrianFrontOfficeController@destroy');
+
+Route::resource('antrian', 'AntrianController', ['except' => [
+  'edit', 'show', 'create', 'update', 'delete'
+]]);
+Route::get('antrian/{nama_layanan}', 'AntrianController@show');
+Route::put('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@update');
+Route::delete('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@destroy');
+
 Route::post('bpjs', 'BpjsController@process');
 Route::resource('transaksi', 'TransaksiController');
 Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTransaksi');
@@ -29,6 +42,7 @@ Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTrans
 Route::resource('klaim', 'KlaimController');
 Route::resource('pembayaran', 'PembayaranController');
 Route::resource('asuransi', 'AsuransiController');
+Route::get('asuransi/search/{id_pasien}', 'AsuransiController@getAsuransiByIdPasien');
 
 Route::resource('setting_bpjs', 'SettingBpjsController', ['except' => [
   'edit', 'create'

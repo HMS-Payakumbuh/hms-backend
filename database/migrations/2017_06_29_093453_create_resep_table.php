@@ -15,9 +15,9 @@ class CreateResepTable extends Migration
     {
         Schema::create('resep', function (Blueprint $table) {
             $table->increments('id');
-
             $table->integer('id_transaksi')->unsigned();
             $table->integer('no_tindakan')->unsigned();
+            $table->integer('no_resep');
 
             $table->timestamps();
 
@@ -26,6 +26,9 @@ class CreateResepTable extends Migration
               ->references(array('id_transaksi', 'no_tindakan'))
               ->on('tindakan')
               ->onDelete('restrict');
+
+            $table->unique(['no_resep', 'id_transaksi', 'no_tindakan']);
+
         });
     }
 

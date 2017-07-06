@@ -14,13 +14,14 @@ class CreateAntrianFrontOfficeTable extends Migration
     public function up()
     {
         Schema::create('antrian_front_office', function (Blueprint $table) {
+            $table->increments('no_antrian');
             $table->string('nama_layanan');
-            $table->integer('no_antrian');
             $table->integer('jenis'); //0: umum, 1: khusus
             $table->string('kategori_antrian');
-            $table->timestamps();
+            $table->dateTime('waktu_masuk_antrian');
+            $table->dateTime('waktu_perubahan_antrian');
 
-            $table->primary(['nama_layanan', 'no_antrian']);
+            $table->unique(['nama_layanan', 'no_antrian']);
 
             $table->foreign('nama_layanan')
                     ->references('nama')
@@ -36,6 +37,9 @@ class CreateAntrianFrontOfficeTable extends Migration
      */
     public function down()
     {
+        Schema::table('antrian_front_office', function (Blueprint $table) {
+            $table->dropForeign(['nama_layanan']);
+        });
         Schema::dropIfExists('antrian_front_office');
     }
 }

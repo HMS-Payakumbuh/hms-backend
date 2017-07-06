@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Resep extends Model
 {
     protected $table = 'resep';
+    protected $primaryKey = 'no_resep';
 
     /**
     *	Get the ResepItem of the Resep

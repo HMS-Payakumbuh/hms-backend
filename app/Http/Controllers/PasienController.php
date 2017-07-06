@@ -28,6 +28,10 @@ class PasienController extends Controller
     public function store(Request $request)
     {
         $pasien = new Pasien;
+        if ($request->input('id')) {
+            $pasien->id = $request->input('id');
+            return response($pasien, 201);
+        }
         $pasien->nama_pasien = $request->input('nama_pasien');
         $pasien->tanggal_lahir = Carbon::parse($request->input('tanggal_lahir'));
         $pasien->jender = $request->input('jender');

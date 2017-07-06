@@ -71,6 +71,12 @@ class AsuransiController extends Controller
         ]);
     }
 
+    public function getAsuransiByIdPasien($id_pasien)
+    {
+        return Asuransi::where('id_pasien', '=', $id_pasien)
+          ->get();
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
