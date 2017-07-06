@@ -99,7 +99,9 @@ Route::resource('kamaroperasi', 'PemakaianKamarOperasiController', ['except' => 
 Route::get('rawatinap/{no_kamar}', 'KamarRawatInapController@show');
 Route::get('rawatinap/{no_kamar}', 'PemakaianKamarRawatInapController@search');
 
-
+Route::resource('resep', 'ResepController');
+Route::resource('resep_item', 'ResepItemController');
+Route::resource('racikan_item', 'RacikanItemController');
 
 Route::get('jenis_obat/search', 'JenisObatController@search');
 Route::resource('jenis_obat', 'JenisObatController');

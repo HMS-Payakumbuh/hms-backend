@@ -40,8 +40,9 @@ class ObatTebusController extends Controller
         $obat_tebus->asal = $request->input('asal');
         $obat_tebus->id_transaksi = $request->input('id_transaksi');
         $obat_tebus->id_tindakan = $request->input('id_tindakan');        
-        $obat_tebus->id_resep = $request->input('id_resep');
+        $obat_tebus->no_resep = $request->input('no_resep');
         $obat_tebus->id_resep_item = $request->input('id_resep_item');
+        $obat_tebus->id_racikan_item = $request->input('id_racikan_item');
         $obat_tebus->save();
 
         $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_tebus->id_obat_masuk)
@@ -81,9 +82,10 @@ class ObatTebusController extends Controller
         $obat_tebus->keterangan = $request->input('keterangan');
         $obat_tebus->asal = $request->input('asal');
         $obat_tebus->id_transaksi = $request->input('id_transaksi');
-        $obat_tebus->id_tindakan = $request->input('id_tindakan');        
-        $obat_tebus->id_resep = $request->input('id_resep');
+        $obat_tebus->id_tindakan = $request->input('id_tindakan');   
+        $obat_tebus->no_resep = $request->input('no_resep');
         $obat_tebus->id_resep_item = $request->input('id_resep_item');
+        $obat_tebus->id_racikan_item = $request->input('id_racikan_item');
         $obat_tebus->save();
         return response ($obat_tebus, 200)
             -> header('Content-Type', 'application/json');

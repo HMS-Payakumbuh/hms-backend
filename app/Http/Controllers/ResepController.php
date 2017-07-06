@@ -25,7 +25,15 @@ class ResepController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        foreach ($request->all() as $key => $value) {
+            $resep = new Resep;
+
+            $resep->id_transaksi = $value['id_transaksi'];
+            $resep->no_tindakan = $value['no_tindakan'];                 
+
+            $resep->save();
+        }
+        return response ($request->all(), 201);
     }
 
     /**
@@ -40,26 +48,23 @@ class ResepController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Resep  $resep
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Resep $resep)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Resep  $resep
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Resep $resep)
+    public function update(Request $request, $id)
     {
-        //
+        $resep = new Resep::findOrFail($id);
+
+        $resep->id_transaksi = $value['id_transaksi'];
+        $resep->no_tindakan = $value['no_tindakan'];                 
+
+        $resep->save();
+
+        return response ($resep, 200)
+            -> header('Content-Type', 'application/json');
     }
 
     /**
