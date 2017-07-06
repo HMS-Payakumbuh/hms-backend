@@ -10,9 +10,9 @@ class KlaimController extends Controller
     private function getKlaim($id = null)
     {
         if (isset($id)) {
-            return Klaim::with('pembayaran')->findOrFail($id);
+            return Klaim::with(['pembayaran.transaksi', 'asuransi.pasien'])->findOrFail($id);
         } else {
-            return Klaim::with('pembayaran')->get();
+            return Klaim::with(['pembayaran', 'asuransi.pasien'])->get();
         }
     }
 
