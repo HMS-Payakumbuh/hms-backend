@@ -14,10 +14,11 @@ class CreatePemakaianKamarRawatinapTable extends Migration
     public function up()
     {
         Schema::create('pemakaian_kamar_rawatinap', function (Blueprint $table) {
+            $table->increments('id');
             $table->string('no_kamar');
             $table->integer('no_tempat_tidur');
-            $table->integer('no_transaksi');
-            $table->integer('no_pembayaran');
+            $table->integer('id_transaksi');
+            $table->integer('no_pembayaran')->nullable();
             $table->dateTime('waktu_masuk');
             $table->dateTime('waktu_keluar')->nullable();
             $table->integer('harga');
@@ -25,13 +26,13 @@ class CreatePemakaianKamarRawatinapTable extends Migration
 
             $table->timestamps();
 
-            $table->primary(['no_kamar', 'no_tempat_tidur', 'no_transaksi', 'waktu_masuk']);
+            $table->unique(['no_kamar', 'no_tempat_tidur', 'id_transaksi', 'waktu_masuk']);
             $table->foreign(['no_kamar', 'no_tempat_tidur'])
                     ->references(['no_kamar', 'no_tempat_tidur'])
                     ->on('tempat_tidur')
                     ->onDelete('cascade');
 
-            $table->foreign('no_transaksi')
+            $table->foreign('id_transaksi')
                     ->references('id')
                     ->on('transaksi')
                     ->onDelete('cascade');
@@ -55,6 +56,12 @@ class CreatePemakaianKamarRawatinapTable extends Migration
      */
     public function down()
     {
+        Schema::table('pemakaian_kamar_rawatinap', function (Blueprint $table) {
+            $table->dropForeign(['no_kamar', 'no_tempat_tidur']);
+            $table->dropForeign(['no_pegawai']);
+            $table->dropForeign(['id_transaksi']);
+            $table->dropForeign(['no_pembayaran']);
+        });
         Schema::dropIfExists('pemakaian_kamar_rawatinap');
     }
 }

@@ -16,7 +16,7 @@ class PemakaianKamarOperasiController extends Controller
     public function index()
     {
         $pemakaianKamarOperasi = PemakaianKamarOperasi
-                            ::join('transaksi', 'pemakaian_kamar_operasi.no_transaksi', '=', 'transaksi.id')
+                            ::join('transaksi', 'pemakaian_kamar_operasi.id_transaksi', '=', 'transaksi.id')
                             ->join('tindakan', 'pemakaian_kamar_operasi.no_tindakan', '=', 'tindakan.no_tindakan')
                             ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
                             ->join('tenaga_medis', 'tindakan.np_tenaga_medis', '=', 'tenaga_medis.no_pegawai')
@@ -38,7 +38,7 @@ class PemakaianKamarOperasiController extends Controller
         $pemakaianKamarOperasi = new PemakaianKamarOperasi;
         $pemakaianKamarOperasi->no_kamar = $request->input('no_kamar');
         $pemakaianKamarOperasi->no_tindakan = $request->input('no_tindakan');
-        $pemakaianKamarOperasi->no_transaksi = $request->input('no_transaksi');
+        $pemakaianKamarOperasi->id_transaksi = $request->input('id_transaksi');
         $pemakaianKamarOperasi->no_pembayaran = $request->input('no_pembayaran');
         $pemakaianKamarOperasi->waktu_masuk = $request->input('waktu_masuk');
         $pemakaianKamarOperasi->waktu_keluar = null;
@@ -73,13 +73,13 @@ class PemakaianKamarOperasiController extends Controller
     {
         $pemakaianKamarOperasi = PemakaianKamarOperasi ::where('no_kamar', '=', $no_kamar)
         ->where('no_tindakan', '=', $no_tindakan)
-        ->where('no_transaksi', '=', $no_transaksi)
+        ->where('id_transaksi', '=', $id_transaksi)
         ->where('waktu_masuk', '=', $waktu_masuk)
         ->first();
 
         $pemakaianKamarOperasi->no_kamar = $request->input('no_kamar');
         $pemakaianKamarOperasi->no_tindakan = $request->input('no_tindakan');
-        $pemakaianKamarOperasi->no_transaksi = $request->input('no_transaksi');
+        $pemakaianKamarOperasi->id_transaksi = $request->input('id_transaksi');
         $pemakaianKamarOperasi->no_pembayaran = $request->input('no_pembayaran');
         $pemakaianKamarOperasi->waktu_masuk = $request->input('waktu_masuk');
         $pemakaianKamarOperasi->waktu_keluar = $request->input('waktu_keluar');
@@ -98,11 +98,11 @@ class PemakaianKamarOperasiController extends Controller
      * @param  datetime  $waktu_masuk
      * @return \Illuminate\Http\Response
      */
-    public function destroy($no_kamar, $no_tindakan, $no_transaksi, $waktu_masuk)
+    public function destroy($no_kamar, $no_tindakan, $id_transaksi, $waktu_masuk)
     {
          $deletedRows = PemakaianKamarOperasi ::where('no_kamar', '=', $no_kamar)
         ->where('no_tindakan', '=', $no_tindakan)
-        ->where('no_transaksi', '=', $no_transaksi)
+        ->where('id_transaksi', '=', $id_transaksi)
         ->where('waktu_masuk', '=', $waktu_masuk)
         ->first()
         ->delete();
