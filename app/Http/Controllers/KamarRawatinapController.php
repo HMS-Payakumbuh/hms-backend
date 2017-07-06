@@ -56,6 +56,7 @@ class KamarRawatinapController extends Controller
                             ::join('tempat_tidur', 'kamar_rawatinap.no_kamar', '=', 'tempat_tidur.no_kamar')
                             ->select(DB::raw('kamar_rawatinap.no_kamar, tempat_tidur.no_tempat_tidur, tempat_tidur.status'))
                             ->where('tempat_tidur.no_kamar', '=', $no_kamar)
+                            ->orderBy('tempat_tidur.no_tempat_tidur', 'asc')
                             ->get();
         return $kamarRawatinap;
     }
