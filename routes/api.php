@@ -42,6 +42,7 @@ Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTrans
 Route::resource('klaim', 'KlaimController');
 Route::resource('pembayaran', 'PembayaranController');
 Route::resource('asuransi', 'AsuransiController');
+Route::get('asuransi/search/{id_pasien}', 'AsuransiController@getAsuransiByIdPasien');
 
 Route::resource('setting_bpjs', 'SettingBpjsController', ['except' => [
   'edit', 'create'
