@@ -48,7 +48,7 @@ class AsuransiController extends Controller
     {
         $payload = $request->input('asuransi');
         $asuransi = new Asuransi;
-        $asuransi->id_pasien = $payload['id_pasien'];
+        $asuransi->id_pasien = 1;
         $asuransi->no_kartu = $payload['no_kartu'];
         $asuransi->nama_asuransi = $payload['nama_asuransi'];
         $asuransi->save();
