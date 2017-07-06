@@ -10,9 +10,9 @@ class AsuransiController extends Controller
     private function getAsuransi($id = null)
     {
         if (isset($id)) {
-            return Asuransi::findOrFail($id);
+            return Asuransi::with('pasien')->findOrFail($id);
         } else {
-            return Asuransi::all();
+            return Asuransi::with('pasien')->get();
         }
     }
 
@@ -69,6 +69,12 @@ class AsuransiController extends Controller
         return response()->json([
             'asuransi' => $this->getAsuransi($id)
         ]);
+    }
+
+    public function getAsuransiByIdPasien($id_pasien)
+    {
+        return Asuransi::where('id_pasien', '=', $id_pasien)
+          ->get();
     }
 
     /**

@@ -36,10 +36,29 @@ class CreateObatTebusTable extends Migration
                   ->onDelete('restrict');
 
             $table->integer('id_transaksi')->unsigned();  
-            $table->integer('id_tindakan')->unsigned();  
+            $table->foreign('id_transaksi')
+                  ->references('id')->on('transaksi')
+                  ->onDelete('restrict');
 
-            $table->integer('id_resep')->unsigned(); 
+            $table->integer('id_tindakan')->unsigned();   
+            $table->foreign('id_tindakan')
+                  ->references('id')->on('tindakan')
+                  ->onDelete('restrict');
+
+            $table->integer('no_resep')->unsigned(); 
+            $table->foreign('no_resep')
+                  ->references('id')->on('resep')
+                  ->onDelete('restrict');
+
             $table->integer('id_resep_item')->unsigned();  
+            $table->foreign('id_jenis_obat')
+                  ->references('id')->on('jenis_obat')
+                  ->onDelete('restrict');
+
+            $table->integer('id_racikan_item')->unsigned();  
+            $table->foreign('id_racikan_item')
+                  ->references('id')->on('racikan_item')
+                  ->onDelete('restrict');
 
             $table->decimal('harga_jual_realisasi', 12, 2);
                   

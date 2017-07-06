@@ -18,6 +18,23 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::resource('pasien', 'PasienController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('antrian_front_office', 'AntrianFrontOfficeController', ['except' => [
+  'edit', 'create', 'update', 'delete'
+]]);
+Route::put('antrian_front_office/{nama_layanan}/{no_antrian}', 'AntrianFrontOfficeController@update');
+Route::delete('antrian_front_office/{nama_layanan}/{no_antrian}', 'AntrianFrontOfficeController@destroy');
+
+Route::resource('antrian', 'AntrianController', ['except' => [
+  'edit', 'show', 'create', 'update', 'delete'
+]]);
+Route::get('antrian/{nama_layanan}', 'AntrianController@show');
+Route::put('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@update');
+Route::delete('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@destroy');
+
 Route::post('bpjs', 'BpjsController@process');
 Route::resource('transaksi', 'TransaksiController');
 Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTransaksi');
@@ -25,6 +42,7 @@ Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTrans
 Route::resource('klaim', 'KlaimController');
 Route::resource('pembayaran', 'PembayaranController');
 Route::resource('asuransi', 'AsuransiController');
+Route::get('asuransi/search/{id_pasien}', 'AsuransiController@getAsuransiByIdPasien');
 
 Route::resource('setting_bpjs', 'SettingBpjsController', ['except' => [
   'edit', 'create'
@@ -35,6 +53,14 @@ Route::resource('jaminan', 'JaminanController', ['except' => [
 ]]);
 
 Route::resource('cob', 'CobController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('daftar_diagnosis', 'DaftarDiagnosisController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('diagnosis', 'DiagnosisController', ['except' => [
   'edit', 'create'
 ]]);
 
@@ -49,10 +75,6 @@ Route::resource('tindakan', 'TindakanController', ['except' => [
 Route::get('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@show');
 Route::put('tindakan/{no_transaksi}/{no_tindakan}', 'TindakanController@update');
 Route::delete('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@destroy');
-
-Route::resource('daftar_diagnosis', 'DaftarDiagnosisController', ['except' => [
-  'edit', 'create'
-]]);
 
 Route::resource('poliklinik', 'PoliklinikController', ['except' => [
   'edit', 'create'
@@ -108,6 +130,10 @@ Route::put('rawatinap/{no_kamar}', 'KamarRawatInapController@update');
 Route::post('rawatinap/{no_kamar}', 'PemakaianKamarRawatInapController@store');
 
 Route::put('tempattidur/{no_kamar}/{no_tempat_tidur}', 'TempatTidurController@update');
+
+Route::resource('resep', 'ResepController');
+Route::resource('resep_item', 'ResepItemController');
+Route::resource('racikan_item', 'RacikanItemController');
 
 
 Route::get('jenis_obat/search', 'JenisObatController@search');
