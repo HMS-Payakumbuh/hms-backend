@@ -18,16 +18,6 @@ class RacikanItemController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -35,7 +25,16 @@ class RacikanItemController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        foreach ($request->all() as $key => $value) {
+            $racikan_item = new RacikanItem;
+
+            $racikan_item->id_item = $value['id_jenis_obat'];
+            $racikan_item->id_jenis_obat = $value['id_obat_masuk'];            
+            $racikan_item->jumlah = $value['jumlah'];       
+
+            $racikan_item->save();
+        }
+        return response ($request->all(), 201);
     }
 
     /**
@@ -46,18 +45,7 @@ class RacikanItemController extends Controller
      */
     public function show(RacikanItem $racikanItem)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\RacikanItem  $racikanItem
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(RacikanItem $racikanItem)
-    {
-        //
+        return RacikanItem::findOrFail($id);
     }
 
     /**
@@ -69,7 +57,16 @@ class RacikanItemController extends Controller
      */
     public function update(Request $request, RacikanItem $racikanItem)
     {
-        //
+        $racikan_item = RacikanItem::findOrFail($id);
+
+        $racikan_item->id_item = $value['id_jenis_obat'];
+        $racikan_item->id_jenis_obat = $value['id_obat_masuk'];            
+        $racikan_item->jumlah = $value['jumlah'];       
+
+        $racikan_item->save();
+
+        return response ($racikan_item, 200)
+            -> header('Content-Type', 'application/json');
     }
 
     /**
@@ -80,6 +77,8 @@ class RacikanItemController extends Controller
      */
     public function destroy(RacikanItem $racikanItem)
     {
-        //
+        $racikan_item = RacikanItem::find($id);
+        $racikan_item->delete();
+        return response ($id.' deleted', 200)
     }
 }

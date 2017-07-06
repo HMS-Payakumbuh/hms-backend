@@ -25,7 +25,16 @@ class ResepItemController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        foreach ($request->all() as $key => $value) {
+            $resep_item = new RacikanItem;
+
+            $resep_item->no_resep = $value['no_resep'];
+            $resep_item->aturan_pemakaian = $value['aturan_pemakaian'];            
+            $resep_item->petunjuk_peracikan = $value['petunjuk_peracikan'];       
+
+            $resep_item->save();
+        }
+        return response ($request->all(), 201);
     }
 
     /**
@@ -43,12 +52,21 @@ class ResepItemController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\ResepItem  $resepItem
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ResepItem $resepItem)
+    public function update(Request $request, $id)
     {
-        //
+        $resep_item = ResepItem::findOrFail($id);
+
+        $resep_item->no_resep = $value['no_resep'];
+        $resep_item->aturan_pemakaian = $value['aturan_pemakaian'];            
+        $resep_item->petunjuk_peracikan = $value['petunjuk_peracikan'];   
+
+        $resep_item->save();
+
+        return response ($resep_item, 200)
+            -> header('Content-Type', 'application/json');
     }
 
     /**
