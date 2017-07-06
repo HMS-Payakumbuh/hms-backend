@@ -14,11 +14,3 @@
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('ID/{id}',function($id){
-	echo 'ID: '.$id;
-});
-Route::resource('pasien', 'PasienController');
-Route::get('/pasien/create', function () {
-	return view('pasien/create');
-});
-Route::post('/pasien/create', array('uses'=>'PasienController@store'));

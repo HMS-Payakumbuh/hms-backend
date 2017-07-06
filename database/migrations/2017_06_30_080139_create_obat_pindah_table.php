@@ -51,6 +51,12 @@ class CreateObatPindahTable extends Migration
    */
   public function down()
   {
+      Schema::table('obat_pindah', function (Blueprint $table) {
+          $table->dropForeign('id_jenis_obat');
+          $table->dropForeign('id_obat_masuk');
+          $table->dropForeign('asal');
+          $table->dropForeign('tujuan');
+      });
       Schema::dropIfExists('obat_pindah');
   }
 }

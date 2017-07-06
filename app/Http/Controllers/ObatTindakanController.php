@@ -26,20 +26,31 @@ class ObatTindakanController extends Controller
      */
     public function store(Request $request)
     {
-        $obat_tindakan = new ObatTindakan;
-        $obat_tindakan->id_jenis_obat = $request->input('id_jenis_obat');
-        $obat_tindakan->id_obat_masuk = $request->input('id_obat_masuk');
+        foreach ($request->all() as $key => $value) {
+            $obat_tindakan = new ObatTindakan;
 
-        date_default_timezone_set('Asia/Jakarta');
-        $obat_tindakan->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
-        
-        $obat_tindakan->jumlah = $request->input('jumlah');       
-        $obat_tindakan->keterangan = $request->input('keterangan');
-        $obat_tindakan->asal = $request->input('asal');
-        $obat_tindakan->id_transaksi = $request->input('id_transaksi');
-        $obat_tindakan->id_tindakan = $request->input('id_tindakan');        
-        $obat_tindakan->save();
-        return response ($obat_tindakan, 201);
+            $obat_tindakan->id_jenis_obat = $value['id_jenis_obat'];
+            $obat_tindakan->id_obat_masuk = $value['id_obat_masuk'];
+
+            date_default_timezone_set('Asia/Jakarta');
+            $obat_tindakan->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
+            
+            $obat_tindakan->jumlah = $value['jumlah'];       
+            $obat_tindakan->keterangan = $value['keterangan'];
+            $obat_tindakan->asal = $value['asal'];
+            $obat_tindakan->harga_jual_realisasi = $value['harga_jual_realisasi'];    
+            $obat_tindakan->id_transaksi = $value['id_transaksi'];
+            $obat_tindakan->id_tindakan = $value['id_tindakan'];       
+
+            $obat_tindakan->save();
+
+            $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_tindakan->id_obat_masuk)
+                                    ->where('lokasi', $obat_tindakan->asal)
+                                    ->first(); //TO-DO: Error handling - firstOrFail?
+            $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_tindakan->jumlah);
+            $stok_obat_asal->save();
+        }
+        return response ($request->all(), 201);
     }
 
     /**
@@ -65,14 +76,15 @@ class ObatTindakanController extends Controller
         // TO-DO: Make into transaction?
         // TO-DO: Restriction checking (jumlah > 0 etc.)
         $obat_tindakan = ObatTindakan::findOrFail($id);
-        $obat_tindakan->id_jenis_obat = $request->input('id_jenis_obat');
-        $obat_tindakan->id_obat_masuk = $request->input('id_obat_masuk');
-        $obat_tindakan->waktu_keluar = $request->input('waktu_keluar');
-        $obat_tindakan->jumlah = $request->input('jumlah');       
-        $obat_tindakan->keterangan = $request->input('keterangan');
-        $obat_tindakan->asal = $request->input('asal');
-        $obat_tindakan->id_transaksi = $request->input('id_transaksi');
-        $obat_tindakan->id_tindakan = $request->input('id_tindakan');       
+
+        $obat_tindakan->id_jenis_obat = $value['id_jenis_obat'];
+        $obat_tindakan->id_obat_masuk = $value['id_obat_masuk'];        
+        $obat_tindakan->jumlah = $value['jumlah'];       
+        $obat_tindakan->keterangan = $value['keterangan'];
+        $obat_tindakan->asal = $value['asal'];
+        $obat_tindakan->harga_jual_realisasi = $value['harga_jual_realisasi'];    
+        $obat_tindakan->id_transaksi = $value['id_transaksi'];
+        $obat_tindakan->id_tindakan = $value['id_tindakan'];     
         $obat_tindakan->save();
 
         $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_tindakan->id_obat_masuk)

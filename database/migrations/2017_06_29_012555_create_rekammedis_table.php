@@ -18,17 +18,15 @@ class CreateRekammedisTable extends Migration
             $table->integer('id_pasien')->unsigned();
             $table->dateTime('tanggal_waktu');
             $table->foreign('id_pasien')->references('id')->on('pasien')->onDelete('cascade');
-            $table->integer('id_dokter')->unsigned();
+            $table->string('np_dokter')->unsigned();
+            $table->foreign('np_dokter')->references('no_pegawai')->on('dokter')->onDelete('cascade')->onUpdate('cascade');
             $table->jsonb('hasil_pemeriksaan');
-            $table->jsonb('diagnosis');
             $table->jsonb('anamnesis');
-            $table->jsonb('catatan_tindakan');
             $table->jsonb('rencana_penatalaksanaan');
             $table->jsonb('pelayanan_lain');
-            $table->binary('dokumen_penunjang');
             $table->timestamps();
 
-            $table->unique(['id_pasien','tanggal_waktu']);
+            $table->unique(['id_pasien', 'tanggal_waktu']);
         });
     }
 
@@ -40,7 +38,7 @@ class CreateRekammedisTable extends Migration
     public function down()
     {
         Schema::table('rekam_medis', function (Blueprint $table) {
-            $table->dropForeign('rekam_medis_id_pasien_foreign');
+            $table->dropForeign(['id_pasien', 'tanggal_waktu']);
         });
         Schema::dropIfExists('rekam_medis');
     }
