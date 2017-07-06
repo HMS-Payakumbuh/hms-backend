@@ -14,6 +14,7 @@ class CreateResepTable extends Migration
     public function up()
     {
         Schema::create('resep', function (Blueprint $table) {
+            $table->increments('id');
             $table->integer('id_transaksi')->unsigned();
             $table->integer('no_tindakan')->unsigned();
             $table->integer('no_resep')->unsigned();
@@ -26,7 +27,7 @@ class CreateResepTable extends Migration
               ->on('tindakan')
               ->onDelete('restrict');
 
-            $table->primary(['no_resep', 'id_transaksi', 'no_tindakan']);
+            $table->unique(['no_resep', 'id_transaksi', 'no_tindakan']);
         });
     }
 
