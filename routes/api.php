@@ -87,7 +87,19 @@ Route::resource('rawatinap', 'KamarRawatInapController', ['except' => [
 ]]);
 
 
-Route::resource('kamaroperasi', 'PemakaianKamarOperasiController', ['except' => [
+Route::resource('pemakaiankamaroperasi', 'PemakaianKamarOperasiController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('pemakaiankamarjenazah', 'PemakaianKamarJenazahController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('kamaroperasi', 'KamarOperasiController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('kamarjenazah', 'KamarJenazahController', ['except' => [
   'edit', 'create'
 ]]);
 
