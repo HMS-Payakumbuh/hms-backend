@@ -9,6 +9,6 @@ class Tindakan extends Model
   protected $table = 'tindakan';
 
   public function daftarTindakan() {
-    return $this->belongsTo('App\DaftarTindakan');
+    return $this->belongsTo('App\DaftarTindakan', 'kode_tindakan', 'kode');
   }
 }

@@ -40,6 +40,14 @@ Route::resource('cob', 'CobController', ['except' => [
   'edit', 'create'
 ]]);
 
+Route::resource('daftar_diagnosis', 'DaftarDiagnosisController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('diagnosis', 'DiagnosisController', ['except' => [
+  'edit', 'create'
+]]);
+
 Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
   'edit', 'create'
 ]]);
@@ -51,10 +59,6 @@ Route::resource('tindakan', 'TindakanController', ['except' => [
 Route::get('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@show');
 Route::put('tindakan/{no_transaksi}/{no_tindakan}', 'TindakanController@update');
 Route::delete('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@destroy');
-
-Route::resource('daftar_diagnosis', 'DaftarDiagnosisController', ['except' => [
-  'edit', 'create'
-]]);
 
 Route::resource('poliklinik', 'PoliklinikController', ['except' => [
   'edit', 'create'
