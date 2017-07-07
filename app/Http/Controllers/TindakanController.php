@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Tindakan;
+use App\Transaksi;
 use Illuminate\Http\Request;
 
 class TindakanController extends Controller
@@ -26,6 +27,7 @@ class TindakanController extends Controller
     public function store(Request $request)
     {
       foreach ($request->all() as $key => $value) {
+        
         $tindakan = new Tindakan;
         $tindakan->id_transaksi = $value['id_transaksi'];
         $tindakan->no_tindakan = $value['no_tindakan'];
@@ -40,7 +42,12 @@ class TindakanController extends Controller
         $tindakan->nama_poli = $value['nama_poli'];
         $tindakan->nama_lab = $value['nama_lab'];
         $tindakan->nama_ambulans = $value['nama_ambulans'];
-        $tindakan->save();
+        
+        if ($tindakan->save()) {
+          $transaksi = findOrFail($value['id_transaksi']);
+          $transaksi->harga_total += $value['harga'];
+          $transaksi->save();
+        }
       }
       return response($request->all(), 201);
     }
