@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\RekamMedis;
-use Carbon\Carbon; 
+use Carbon\Carbon;
 
 class RekamMedisController extends Controller
 {
@@ -67,7 +67,7 @@ class RekamMedisController extends Controller
         $rekam_medis->rencana_penatalaksanaan = $request->input('rencana_penatalaksanaan');
         $rekam_medis->pelayanan_lain = $request->input('pelayanan_lain');
         $rekam_medis->save();
-        return response($pasien, 200);
+        return response($rekam_medis, 200);
     }
 
     /**

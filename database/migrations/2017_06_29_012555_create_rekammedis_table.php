@@ -18,12 +18,12 @@ class CreateRekammedisTable extends Migration
             $table->integer('id_pasien')->unsigned();
             $table->dateTime('tanggal_waktu');
             $table->foreign('id_pasien')->references('id')->on('pasien')->onDelete('cascade');
-            $table->string('np_dokter')->unsigned();
+            $table->string('np_dokter')->unsigned()->nullable();
             $table->foreign('np_dokter')->references('no_pegawai')->on('dokter')->onDelete('cascade')->onUpdate('cascade');
-            $table->jsonb('hasil_pemeriksaan');
-            $table->jsonb('anamnesis');
-            $table->jsonb('rencana_penatalaksanaan');
-            $table->jsonb('pelayanan_lain');
+            $table->jsonb('hasil_pemeriksaan')->nullable();
+            $table->jsonb('anamnesis')->nullable();
+            $table->jsonb('rencana_penatalaksanaan')->nullable();
+            $table->jsonb('pelayanan_lain')->nullable();
             $table->timestamps();
 
             $table->unique(['id_pasien', 'tanggal_waktu']);
