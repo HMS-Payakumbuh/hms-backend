@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Antrian;
+use App\Transaksi;
+use App\Pasien;
 use Carbon\Carbon;
 
 class AntrianController extends Controller
@@ -26,11 +28,23 @@ class AntrianController extends Controller
      */
     public function store(Request $request)
     {
-        $antrian = new Antrian;
+    	$antrian = new Antrian;
+    	
+    	$transaksi = Transaksi::findOrFail($request->input('id_transaksi'));
+	    if ($transaksi) {
+	    	$pasien = Pasien::findOrFail($transaksi->id_pasien);
+	    	if ($pasien) {
+	    		$age = $pasien->age();
+		    	if ($age >= 65)
+		    		$antrian->jenis = 1;
+		    	else
+		    		$antrian->jenis = 0;
+	    	}
+	    }  
+        
         $antrian->id_transaksi = $request->input('id_transaksi');
         $antrian->nama_layanan_poli = $request->input('nama_layanan_poli');
         $antrian->nama_layanan_lab = $request->input('nama_layanan_lab');
-        $antrian->jenis = $request->input('jenis');
         $antrian->status = 0;
         $antrian->save();
 
@@ -61,9 +75,9 @@ class AntrianController extends Controller
     public function update($id_transaksi, $no_antrian)
     {
 		$antrian = Antrian::where('id_transaksi', '=', $id_transaksi)
-        ->where('no_antrian', '=', $no_antrian)
-        ->first();
-        
+	        ->where('no_antrian', '=', $no_antrian)
+	        ->first();
+
         $antrian->waktu_perubahan_antrian = Carbon::now();
         $antrian->save();
 		return response($antrian, 200);
