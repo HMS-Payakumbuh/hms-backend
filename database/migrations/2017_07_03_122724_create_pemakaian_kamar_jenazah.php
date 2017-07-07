@@ -24,7 +24,7 @@ class CreatePemakaianKamarJenazah extends Migration
 
             $table->timestamps();
 
-            $table->unique(['no_kamar', 'no_transaksi', 'waktu_masuk']);
+            $table->unique(['no_kamar', 'id_transaksi', 'waktu_masuk']);
             $table->foreign('no_kamar')
                     ->references('no_kamar')
                     ->on('kamar_jenazah')
