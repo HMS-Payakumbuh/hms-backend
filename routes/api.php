@@ -147,3 +147,4 @@ Route::resource('obat_pindah', 'ObatPindahController');
 Route::resource('obat_rusak', 'ObatRusakController');
 Route::resource('obat_tebus', 'ObatTebusController');
 Route::resource('obat_tindakan', 'ObatTindakanController');
+Route::resource('obat_eceran', 'ObatEceranController');
