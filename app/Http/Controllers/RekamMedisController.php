@@ -27,6 +27,13 @@ class RekamMedisController extends Controller
     public function store(Request $request)
     {
         $rekam_medis = new RekamMedis;
+        $rekam_medis->id_pasien = $request->input('id_pasien');
+        $rekam_medis->tanggal_waktu = Carbon::now();
+        $rekam_medis->np_dokter = $request->input('np_dokter');
+        $rekam_medis->hasil_pemeriksaan = $request->input('hasil_pemeriksaan');
+        $rekam_medis->anamnesis = $request->input('anamnesis');
+        $rekam_medis->rencana_penatalaksanaan = $request->input('rencana_penatalaksanaan');
+        $rekam_medis->pelayanan_lain = $request->input('pelayanan_lain');
         $rekam_medis->save();
 
         return response($rekam_medis, 201);
@@ -53,8 +60,13 @@ class RekamMedisController extends Controller
     public function update(Request $request, $id)
     {
         $rekam_medis = RekamMedis::findOrFail($id);
+        $rekam_medis->id_pasien = $request->input('id_pasien');
+        $rekam_medis->np_dokter = $request->input('np_dokter');
+        $rekam_medis->hasil_pemeriksaan = $request->input('hasil_pemeriksaan');
+        $rekam_medis->anamnesis = $request->input('anamnesis');
+        $rekam_medis->rencana_penatalaksanaan = $request->input('rencana_penatalaksanaan');
+        $rekam_medis->pelayanan_lain = $request->input('pelayanan_lain');
         $rekam_medis->save();
-
         return response($pasien, 200);
     }
 
