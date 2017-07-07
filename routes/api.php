@@ -22,6 +22,10 @@ Route::resource('pasien', 'PasienController', ['except' => [
   'edit', 'create'
 ]]);
 
+Route::resource('rekam_medis', 'RekamMedisController', ['except' => [
+  'edit', 'create'
+]]);
+
 Route::resource('antrian_front_office', 'AntrianFrontOfficeController', ['except' => [
   'edit', 'create', 'update', 'delete'
 ]]);
