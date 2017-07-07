@@ -16,7 +16,7 @@ class ObatEceranController extends Controller
      */
     public function index()
     {
-       return ObatEceran::with('obatEceranItem')->get();
+       return ObatEceran::with('obatEceranItem.obatMasuk','obatEceranItem.jenisObat')->get();
     }
 
     /**
@@ -58,7 +58,7 @@ class ObatEceranController extends Controller
      */
     public function show($id)
     {
-        return ObatEceran::with('obatEceranItem')->findOrFail($id);
+        return ObatEceran::with('obatEceranItem.obatMasuk','obatEceranItem.jenisObat')->findOrFail($id);
     }
 
     /**

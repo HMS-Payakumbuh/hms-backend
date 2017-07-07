@@ -32,7 +32,8 @@ class CreateObatEceranItemTable extends Migration
                   ->onDelete('restrict');
                     
             $table->integer('jumlah');  
-            $table->string('keterangan')->nullable();      
+            $table->string('keterangan')->nullable();  
+            $table->decimal('harga_jual_realisasi', 12, 2)->nullable(); 
                   
             $table->timestamps();               
         });
