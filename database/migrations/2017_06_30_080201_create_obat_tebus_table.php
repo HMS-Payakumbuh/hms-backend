@@ -51,8 +51,8 @@ class CreateObatTebusTable extends Migration
                   ->onDelete('restrict');
 
             $table->integer('id_resep_item')->unsigned();  
-            $table->foreign('id_jenis_obat')
-                  ->references('id')->on('jenis_obat')
+            $table->foreign('id_resep_item')
+                  ->references('id')->on('resep_item')
                   ->onDelete('restrict');
 
             $table->integer('id_racikan_item')->unsigned();  
