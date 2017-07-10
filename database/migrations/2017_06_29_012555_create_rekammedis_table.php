@@ -38,7 +38,7 @@ class CreateRekammedisTable extends Migration
     public function down()
     {
         Schema::table('rekam_medis', function (Blueprint $table) {
-            $table->dropForeign(['id_pasien', 'tanggal_waktu']);
+            $table->dropForeign(['id_pasien']);
             $table->dropForeign(['np_dokter']);
         });
         Schema::dropIfExists('rekam_medis');
