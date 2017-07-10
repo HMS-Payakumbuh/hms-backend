@@ -44,7 +44,7 @@ class TindakanController extends Controller
         $tindakan->nama_ambulans = $value['nama_ambulans'];
         
         if ($tindakan->save()) {
-          $transaksi = findOrFail($value['id_transaksi']);
+          $transaksi = Transaksi::findOrFail($value['id_transaksi']);
           $transaksi->harga_total += $value['harga'];
           $transaksi->save();
         }

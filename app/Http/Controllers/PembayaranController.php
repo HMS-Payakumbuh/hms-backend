@@ -70,14 +70,18 @@ class PembayaranController extends Controller
 
         try {
             if ($pembayaran->metode_bayar != 'tunai') {
+                $transaksi = Transaksi::findOrFail($pembayaran->id_transaksi);
                 if ($pembayaran->metode_bayar == 'bpjs') {
-                    $transaksi = Transaksi::findOrFail($pembayaran->id_transaksi);
-                    $coder_nik = SettingBpjs::findOrFail(1)->coder_nik;
+                    $settingBpjs = SettingBpjs::first();
+                    $coder_nik = $settingBpjs->coder_nik;
                     $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
                     // $bpjs->setClaimData();
                 }
 
-                $asuransi = DB::table('asuransi')->select('id')->where('nama_asuransi', $pembayaran->metode_bayar)->first();
+                $asuransi = DB::table('asuransi')->select('id')->where([
+                    ['nama_asuransi', '=', $pembayaran->metode_bayar],
+                    ['id_pasien', '=', $transaksi->id_pasien]
+                ])->first();
 
                 $klaim = new Klaim;
                 $klaim->id_pembayaran = $pembayaran->id;

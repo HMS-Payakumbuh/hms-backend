@@ -48,8 +48,9 @@ class SettingBpjsController extends Controller
      */
     public function show($id)
     {
+        $settings = SettingBpjs::first();
         return response()->json([
-            'setting_bpjs' => SettingBpjs::findOrFail($id)
+            'setting_bpjs' => $settings
         ], 201);
     }
 
@@ -63,7 +64,12 @@ class SettingBpjsController extends Controller
     public function update(Request $request, $id)
     {
         $payload = $request->input('setting_bpjs');
-        $setting = SettingBpjs::findOrFail($id);
+        if (SettingBpjs::first()) {
+            $setting = SettingBpjs::first();
+        }
+        else {
+            $setting = new SettingBpjs;
+        }
         $setting->tarif_rs = $payload['tarif_rs'];
         $setting->kd_tarif_rs = $payload['kd_tarif_rs'];
         $setting->coder_nik = $payload['coder_nik'];
