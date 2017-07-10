@@ -38,9 +38,6 @@ class CreateResepItemTable extends Migration
      */
     public function down()
     {
-        Schema::table('resep_item', function (Blueprint $table) {
-            $table->dropForeign('no_resep');
-        });
         Schema::dropIfExists('resep_item');
     }
 }

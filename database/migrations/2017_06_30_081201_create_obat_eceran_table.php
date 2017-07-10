@@ -17,6 +17,7 @@ class CreateObatEceranTable extends Migration
             $table->increments('id');
 
             $table->string('nama_pembeli');
+            $table->string('alamat');
             $table->dateTime('waktu_transaksi'); // Atau pakai timestamp?
                   
             $table->timestamps();               
