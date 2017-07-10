@@ -13,5 +13,10 @@ class Pasien extends Eloquent
     	$date = Carbon::parse($this->tanggal_lahir);
     	return $date->diffInYears(Carbon::now());
 	}
+
+	public function asuransi()
+	{
+		return $this->hasMany('App\Asuransi', 'id_pasien');
+	}
 }
 

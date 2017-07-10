@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use App\Transaksi;
+use App\Asuransi;
+use App\Pasien;
 use App\BpjsManager;
 use App\SettingBpjs;
 
@@ -62,18 +65,9 @@ class TransaksiController extends Controller
         $payload = $request->input('transaksi');
         $transaksi = new Transaksi;
         $transaksi->id_pasien = $payload['id_pasien'];
-        
-        if (isset($payload['no_sep'])) {
-            $transaksi->no_sep = $payload['no_sep'];
-            $coder_nik = SettingBpjs::findOrFail(1)->coder_nik;
-            $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-            // $bpjs->newClaim();
-            // $bpjs->setClaimData();
-        }
-        
         $transaksi->kode_jenis_pasien = $payload['kode_jenis_pasien']; //1: pasien umum, 2: pasien asuransi
 
-        if ($payload['kode_jenis_pasien'] == 2) {
+        if ($transaksi->kode_jenis_pasien == 2) {
             $transaksi->asuransi_pasien = $payload['asuransi_pasien'];
         }
         else {
@@ -84,14 +78,49 @@ class TransaksiController extends Controller
         $transaksi->jenis_rawat = $payload['jenis_rawat']; //1: rawat inap, 2: rawat jalan
         
         if ($transaksi->jenis_rawat == 2) {
-            $transaksi->kelas_rawat = 1;
+            $transaksi->kelas_rawat = 3;
         }
         else {
             $transaksi->kelas_rawat = $payload['kelas_rawat']; //kelas perawatan saat pasien mendaftar
         }
-        $transaksi->status_naik_kelas = 1; //1: pasien tidak naik kelas, 2: pasien naik kelas
+        $transaksi->status_naik_kelas = 0; //0: pasien tidak naik kelas, 1: pasien naik kelas
         $transaksi->status = 'open'; //status transaksi (open/closed)
         $transaksi->save();
+
+        if (isset($transaksi->no_sep)) {
+            $transaksi->no_sep = $payload['no_sep'];
+            $transaksi->save();
+
+            $settingBpjs = SettingBpjs::first();
+            $coder_nik = $settingBpjs->coder_nik;
+            $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+            
+            $asuransi = Asuransi::where('id_pasien', $transaksi->id_pasien)->where('nama_asuransi', 'bpjs')->first();
+            $pasien = Pasien::findOrFail($transaksi->id_pasien);
+            $requestNew = array(
+                'nomor_kartu' => $asuransi->no_kartu,
+                'nomor_rm' => $asuransi->id_pasien,
+                'nama_pasien' => $pasien->nama_pasien,
+                'tgl_lahir' => $pasien->tanggal_lahir,
+                'gender' => $pasien->jender + 1
+            );
+
+            // $bpjs->newClaim($requestNew);
+            $carbon = Carbon::instance($transaksi->waktu_masuk_pasien);
+            $requestSet = array(
+                'nomor_kartu' => $asuransi->no_kartu,
+                'tgl_masuk' => $carbon->toDateTimeString(),
+                'jenis_rawat' => $transaksi->jenis_rawat,
+                'kelas_rawat' => $transaksi->kelas_rawat,
+                'upgrade_class_ind' => $transaksi->status_naik_kelas,
+                'tarif_rs' => $settingBpjs->tarif_rs,
+                'kode_tarif' => $settingBpjs->kd_tarif_rs,
+                'payor_id' => 3,
+                'payor_cd' => 'JKN'
+            );
+
+            // $bpjs->setClaimData($requestSet);
+        }
 
         $transaksi = Transaksi::findOrFail($transaksi->id);
         $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
@@ -142,7 +171,7 @@ class TransaksiController extends Controller
         $transaksi->update($payload);
 
         if ($transaksi->status == 'closed') {
-            $coder_nik = SettingBpjs::findOrFail(1)->coder_nik;
+            $coder_nik = SettingBpjs::first()->coder_nik;
             $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
             // $bpjs->finalizeClaim();
         }

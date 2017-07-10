@@ -148,6 +148,23 @@ class BpjsManager
         return $this->sendKlaim($payload);
     }
 
+    public function getClaimData() {
+        $metadata = array(
+            'method' => 'get_claim_data'
+        );
+
+        $data = array(
+            'nomor_sep' => $this->nomor_sep
+        );
+
+        $payload = array(
+            'metadata' => $metadata,
+            'data' => $data
+        );
+
+        return $this->sendKlaim($payload);
+    }
+
     private function sendKlaim($payload) {
     	$client = new Client();
 
