@@ -47,11 +47,6 @@ class CreateObatRusakTable extends Migration
      */
     public function down()
     {
-        Schema::table('obat_rusak', function (Blueprint $table) {
-            $table->dropForeign('id_jenis_obat');
-            $table->dropForeign('id_obat_masuk');
-            $table->dropForeign('asal');
-        });
         Schema::dropIfExists('obat_rusak');
     }
 }

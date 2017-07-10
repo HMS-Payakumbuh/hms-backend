@@ -59,13 +59,6 @@ class CreateObatTindakanTable extends Migration
      */
     public function down()
     {
-        Schema::table('obat_tindakan', function (Blueprint $table) {
-            $table->dropForeign('id_jenis_obat');
-            $table->dropForeign('id_obat_masuk');
-            $table->dropForeign('asal');
-            $table->dropForeign('id_transaksi');
-            $table->dropForeign('id_tindakan');
-        });
         Schema::dropIfExists('obat_tindakan');
     }
 }

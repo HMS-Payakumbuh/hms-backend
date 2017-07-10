@@ -44,10 +44,6 @@ class CreateRacikanItemTable extends Migration
      */
     public function down()
     {
-        Schema::table('racikan_item', function (Blueprint $table) {
-            $table->dropForeign('no_item');
-            $table->dropForeign('id_jenis_obat');
-        });
         Schema::dropIfExists('racikan_item');
     }
 }
