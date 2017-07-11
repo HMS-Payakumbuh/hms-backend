@@ -11,4 +11,8 @@ class Tindakan extends Model
   public function daftarTindakan() {
     return $this->belongsTo('App\DaftarTindakan', 'kode_tindakan', 'kode');
   }
+
+  public function hasilLab() {
+    return $this->has('App\HasilLab', 'id_tindakan', 'id');
+  }
 }

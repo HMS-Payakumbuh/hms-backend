@@ -15,7 +15,7 @@ class TindakanController extends Controller
      */
     public function index()
     {
-      return Tindakan::with('daftarTindakan')->get();
+      return Tindakan::with('daftarTindakan', 'hasilLab')->get();
     }
 
     /**
@@ -30,7 +30,6 @@ class TindakanController extends Controller
 
         $tindakan = new Tindakan;
         $tindakan->id_transaksi = $value['id_transaksi'];
-        $tindakan->no_tindakan = $value['no_tindakan'];
         $tindakan->harga = $value['harga'];
         $tindakan->dokumen_penunjang = $value['dokumen_penunjang'];
         $tindakan->keterangan = $value['keterangan'];
@@ -56,19 +55,16 @@ class TindakanController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id_transaksi
-     * @param  int  $no_tindakan
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id_transaksi, $no_tindakan = null)
+    public function show($id_transaksi, $id = null)
     {
-      if ($no_tindakan != null) {
-        return Tindakan::with('daftarTindakan')
-          ->where('id_transaksi', '=', $id_transaksi)
-          ->where('no_tindakan', '=', $no_tindakan)
-          ->first();
+      if ($id != null) {
+        return Tindakan::with('daftarTindakan', 'hasilLab')->findOrFail($id);
       }
       else {
-        return $response = Tindakan::with('daftarTindakan')->where('id_transaksi', '=', $id_transaksi)->get();
+        return $response = Tindakan::with('daftarTindakan', 'hasilLab')->where('id_transaksi', '=', $id_transaksi)->get();
       }
     }
 
@@ -77,16 +73,15 @@ class TindakanController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id_transaksi
-     * @param  int  $no_tindakan
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id_transaksi, $no_tindakan)
+    public function update(Request $request, $id_transaksi, $id)
     {
       $tindakan = Tindakan::where('id_transaksi', '=', $id_transaksi)
-        ->where('no_tindakan', '=', $no_tindakan)
+        ->where('id', '=', $id)
         ->first();
       $tindakan->id_transaksi = $request->input('id_transaksi');
-      $tindakan->no_tindakan = $request->input('no_tindakan');
       $tindakan->harga = $request->input('harga');
       $tindakan->dokumen_penunjang = $request->input('dokumen_penunjang');
       $tindakan->keterangan = $request->input('keterangan');
@@ -106,14 +101,14 @@ class TindakanController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id_transaksi
-     * @param  int  $no_tindakan
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id_transaksi, $no_tindakan = null)
+    public function destroy($id_transaksi, $id = null)
     {
-      if($no_tindakan != null) {
+      if($id != null) {
         $deletedRows = Tindakan::where('id_transaksi', '=', $id_transaksi)
-          ->where('no_tindakan', '=', $no_tindakan)
+          ->where('id', '=', $id)
           ->first()
           ->delete();
       }

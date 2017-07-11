@@ -16,9 +16,7 @@ class CreateTindakanTable extends Migration
         Schema::create('tindakan', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('id_transaksi');
-            $table->integer('no_tindakan');
             $table->decimal('harga', 65, 2);
-            $table->binary('dokumen_penunjang')->nullable();
             $table->string('keterangan')->nullable();
             $table->integer('id_pembayaran')->nullable();
             $table->string('kode_tindakan');
@@ -30,7 +28,7 @@ class CreateTindakanTable extends Migration
             $table->string('nama_ambulans')->nullable();
             $table->timestamps();
 
-            $table->unique(['id_transaksi', 'no_tindakan']);
+            $table->unique(['id_transaksi', 'id']);
             $table->foreign('id_transaksi')->references('id')->on('transaksi')->onDelete('restrict')->onUpdate('cascade');
             $table->foreign('id_pembayaran')->references('id')->on('pembayaran')->onDelete('restrict')->onUpdate('cascade');
             $table->foreign('kode_tindakan')->references('kode')->on('daftar_tindakan')->onDelete('restrict')->onUpdate('cascade');
