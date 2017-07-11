@@ -15,8 +15,8 @@ class CreateResepTable extends Migration
     {
         Schema::create('resep', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('id_transaksi')->unsigned();
-            $table->integer('no_tindakan')->unsigned();
+            $table->integer('id_transaksi')->unsigned()->nullable();
+            $table->integer('no_tindakan')->unsigned()->nullable();
             $table->integer('no_resep');
 
             $table->timestamps();

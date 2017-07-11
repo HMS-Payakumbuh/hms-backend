@@ -16,11 +16,11 @@ class CreatePasienTable extends Migration
         Schema::create('pasien', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nama_pasien');
-            $table->date('tanggal_lahir');
+            $table->date('tanggal_lahir')->nullable();
             $table->integer('jender'); //0 : Laki-laki, 1: Perempuan
-            $table->text('alamat');
-            $table->string('agama');
-            $table->string('kontak');
+            $table->text('alamat')->nullable();
+            $table->string('agama')->nullable();
+            $table->string('kontak')->nullable();
             $table->timestamps();
         });
     }
