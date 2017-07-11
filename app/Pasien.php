@@ -17,5 +17,10 @@ class Pasien extends Eloquent
 	    	return null;
 	    }
 	}
+
+	public function asuransi()
+	{
+		return $this->hasMany('App\Asuransi', 'id_pasien');
+	}
 }
 

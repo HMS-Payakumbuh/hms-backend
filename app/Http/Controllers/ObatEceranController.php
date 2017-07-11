@@ -29,6 +29,7 @@ class ObatEceranController extends Controller
     {
         $obat_eceran = new ObatEceran;
         $obat_eceran->nama_pembeli = $request->input('nama_pembeli');
+        $obat_eceran->alamat = $request->input('alamat');
 
         date_default_timezone_set('Asia/Jakarta');
         $obat_eceran->waktu_transaksi = date("Y-m-d H:i:s"); // Use default in DB instead?
@@ -76,6 +77,7 @@ class ObatEceranController extends Controller
         ObatEceran::with('obatEceranItem')->findOrFail($id);
 
         $obat_eceran->nama_pembeli = $request->input('nama_pembeli');
+        $obat_eceran->alamat = $request->input('alamat');
 
         date_default_timezone_set('Asia/Jakarta');
         $obat_eceran->waktu_transaksi = date("Y-m-d H:i:s"); // Use default in DB instead?

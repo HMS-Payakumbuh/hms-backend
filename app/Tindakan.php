@@ -11,4 +11,20 @@ class Tindakan extends Model
   public function daftarTindakan() {
     return $this->belongsTo('App\DaftarTindakan', 'kode_tindakan', 'kode');
   }
+
+  /**
+    *	Get the Pasien of the Tindakan.
+    */
+    public function pasien()
+    {
+        return $this->belongsTo('App\Pasien', 'id_pasien');
+    }
+
+    /**
+    * Get the Transaksi of the Tindakan.
+    */
+    public function transaksi()
+    {
+        return $this->belongsTo('App\Transaksi', 'id_transaksi');
+    }
 }
