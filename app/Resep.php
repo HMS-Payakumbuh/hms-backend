@@ -15,4 +15,12 @@ class Resep extends Model
     {
     	return $this->hasMany('App\ResepItem');
     }
+
+    /**
+    * Get the Transaksi of the Resep.
+    */
+    public function transaksi()
+    {
+        return $this->belongsTo('App\Transaksi', 'id_transaksi');
+    }
 }
