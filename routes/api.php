@@ -27,8 +27,9 @@ Route::resource('rekam_medis', 'RekamMedisController', ['except' => [
 ]]);
 
 Route::resource('antrian_front_office', 'AntrianFrontOfficeController', ['except' => [
-  'edit', 'create', 'update', 'delete'
+  'edit', 'show', 'create', 'update', 'delete'
 ]]);
+Route::get('antrian_front_office/{kategori_antrian}', 'AntrianFrontOfficeController@show');
 Route::put('antrian_front_office/{nama_layanan}/{no_antrian}', 'AntrianFrontOfficeController@update');
 Route::delete('antrian_front_office/{nama_layanan}/{no_antrian}', 'AntrianFrontOfficeController@destroy');
 
