@@ -14,7 +14,7 @@ class ResepController extends Controller
      */
     public function index()
     {
-        return Resep::with('resepItem', 'racikanItem')->get();
+        return Resep::with('resepItem', 'resepItem.racikanItem')->get();
     }
 
     /**
@@ -44,7 +44,7 @@ class ResepController extends Controller
      */
     public function show($id)
     {
-        return Resep::with('resepItem', 'racikanItem')->findOrFail($id);
+        return Resep::with('resepItem', 'resepItem.racikanItem')->findOrFail($id);
     }
 
     /**
@@ -56,7 +56,7 @@ class ResepController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $resep = new Resep::findOrFail($id);
+        $resep = Resep::findOrFail($id);
 
         $resep->id_transaksi = $value['id_transaksi'];
         $resep->no_tindakan = $value['no_tindakan'];                 

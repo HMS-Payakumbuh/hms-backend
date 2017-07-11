@@ -16,7 +16,7 @@ class CreateResepItemTable extends Migration
         Schema::create('resep_item', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->integer('no_resep')->unsigned();            
+            $table->integer('resep_id')->unsigned();            
 
             $table->string('aturan_pemakaian')->nullable();
             $table->string('petunjuk_peracikan')->nullable();
@@ -24,7 +24,7 @@ class CreateResepItemTable extends Migration
             $table->timestamps();
 
             $table
-              ->foreign('no_resep')
+              ->foreign('resep_id')
               ->references('id')
               ->on('resep')
               ->onDelete('restrict');
