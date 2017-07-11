@@ -23,7 +23,7 @@ class CreateResepTable extends Migration
 
             $table
               ->foreign(array('id_transaksi', 'no_tindakan'))
-              ->references(array('id_transaksi', 'no_tindakan'))
+              ->references(array('id_transaksi', 'id'))
               ->on('tindakan')
               ->onDelete('restrict');
 

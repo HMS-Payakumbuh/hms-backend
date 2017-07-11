@@ -89,6 +89,10 @@ Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
   'edit', 'create'
 ]]);
 
+Route::resource('hasil_lab', 'HasilLabController', ['except' => [
+  'edit', 'create'
+]]);
+
 Route::resource('ambulans', 'AmbulansController', ['except' => [
   'edit', 'create'
 ]]);

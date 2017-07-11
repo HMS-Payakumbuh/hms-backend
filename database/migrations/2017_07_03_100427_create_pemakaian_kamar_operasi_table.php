@@ -42,7 +42,7 @@ class CreatePemakaianKamarOperasiTable extends Migration
 
             $table
               ->foreign(array('no_tindakan', 'id_transaksi'))
-              ->references(array('no_tindakan', 'id_transaksi'))
+              ->references(array('id', 'id_transaksi'))
               ->on('tindakan')
               ->onDelete('cascade');
 
