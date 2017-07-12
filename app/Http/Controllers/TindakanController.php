@@ -26,12 +26,12 @@ class TindakanController extends Controller
      */
     public function store(Request $request)
     {
+      $i = 0;
       foreach ($request->all() as $key => $value) {
 
         $tindakan = new Tindakan;
         $tindakan->id_transaksi = $value['id_transaksi'];
         $tindakan->harga = $value['harga'];
-        $tindakan->dokumen_penunjang = $value['dokumen_penunjang'];
         $tindakan->keterangan = $value['keterangan'];
         $tindakan->id_pembayaran = $value['id_pembayaran'];
         $tindakan->kode_tindakan = $value['kode_tindakan'];
@@ -42,13 +42,16 @@ class TindakanController extends Controller
         $tindakan->nama_lab = $value['nama_lab'];
         $tindakan->nama_ambulans = $value['nama_ambulans'];
 
+        $response[$i] = $tindakan;
+        $i++;
+        
         if ($tindakan->save()) {
           $transaksi = Transaksi::findOrFail($value['id_transaksi']);
           $transaksi->harga_total += $value['harga'];
           $transaksi->save();
         }
       }
-      return response($request->all(), 201);
+      return response($response, 201);
     }
 
     /**
@@ -83,7 +86,6 @@ class TindakanController extends Controller
         ->first();
       $tindakan->id_transaksi = $request->input('id_transaksi');
       $tindakan->harga = $request->input('harga');
-      $tindakan->dokumen_penunjang = $request->input('dokumen_penunjang');
       $tindakan->keterangan = $request->input('keterangan');
       $tindakan->id_pembayaran = $request->input('id_pembayaran');
       $tindakan->kode_tindakan = $request->input('kode_tindakan');
