@@ -34,13 +34,13 @@ class ObatTindakanController extends Controller
 
             date_default_timezone_set('Asia/Jakarta');
             $obat_tindakan->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
-            
-            $obat_tindakan->jumlah = $value['jumlah'];       
+
+            $obat_tindakan->jumlah = $value['jumlah'];
             $obat_tindakan->keterangan = $value['keterangan'];
             $obat_tindakan->asal = $value['asal'];
-            $obat_tindakan->harga_jual_realisasi = $value['harga_jual_realisasi'];    
+            $obat_tindakan->harga_jual_realisasi = $value['harga_jual_realisasi'];
             $obat_tindakan->id_transaksi = $value['id_transaksi'];
-            $obat_tindakan->id_tindakan = $value['id_tindakan'];       
+            $obat_tindakan->id_tindakan = $value['id_tindakan'];
 
             $obat_tindakan->save();
 
@@ -78,13 +78,13 @@ class ObatTindakanController extends Controller
         $obat_tindakan = ObatTindakan::findOrFail($id);
 
         $obat_tindakan->id_jenis_obat = $value['id_jenis_obat'];
-        $obat_tindakan->id_obat_masuk = $value['id_obat_masuk'];        
-        $obat_tindakan->jumlah = $value['jumlah'];       
+        $obat_tindakan->id_obat_masuk = $value['id_obat_masuk'];
+        $obat_tindakan->jumlah = $value['jumlah'];
         $obat_tindakan->keterangan = $value['keterangan'];
         $obat_tindakan->asal = $value['asal'];
-        $obat_tindakan->harga_jual_realisasi = $value['harga_jual_realisasi'];    
+        $obat_tindakan->harga_jual_realisasi = $value['harga_jual_realisasi'];
         $obat_tindakan->id_transaksi = $value['id_transaksi'];
-        $obat_tindakan->id_tindakan = $value['id_tindakan'];     
+        $obat_tindakan->id_tindakan = $value['id_tindakan'];
         $obat_tindakan->save();
 
         $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_tindakan->id_obat_masuk)
@@ -92,7 +92,7 @@ class ObatTindakanController extends Controller
                                     ->first(); //TO-DO: Error handling - firstOrFail?
         $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_tindakan->jumlah);
         $stok_obat_asal->save();
-        
+
         return response ($obat_tindakan, 200)
             -> header('Content-Type', 'application/json');
     }
