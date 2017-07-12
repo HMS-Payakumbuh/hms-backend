@@ -191,4 +191,12 @@ class TransaksiController extends Controller
     {
         Transaksi::destroy($id);
     }
+
+    public function searchByPasien(Request $request)
+    {
+        $transaksi = Transaksi::where('id_pasien', $request->input('id_pasien'))
+                                ->get();
+        return response ($transaksi, 200)
+                -> header('Content-Type', 'application/json');
+    }
 }

@@ -9,7 +9,7 @@ class ObatTebusItem extends Model
     protected $table = 'obat_tebus_item';
 
     /**
-    *	Get the ObatMasuk of the ObatTebus.
+    *	Get the ObatMasuk of the ObatTebusItem.
     */
     public function obatMasuk()
     {
@@ -17,7 +17,7 @@ class ObatTebusItem extends Model
     }
 
     /**
-    *	Get the JenisObat of the ObatTebus.
+    *	Get the JenisObat of the ObatTebusItem.
     */
     public function jenisObat()
     {
@@ -25,10 +25,18 @@ class ObatTebusItem extends Model
     }
 
     /**
-    *	Get the LokasiAsal of the ObatTebus.
+    *	Get the LokasiAsal of the ObatTebusItem.
     */
     public function lokasiAsal()
     {
         return $this->belongsTo('App\LokasiObat', 'asal');
+    }
+
+    /**
+    *   Get the RacikanItem of the ObatTebusItem.
+    */
+    public function racikanItem()
+    {
+        return $this->belongsTo('App\RacikanItem', 'id_racikan_item');
     }
 }

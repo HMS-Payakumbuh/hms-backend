@@ -15,4 +15,12 @@ class ObatTebus extends Model
     {
         return $this->hasMany('App\ObatTebusItem', 'id_obat_tebus');
     }
+
+     /**
+    *	Get the Resep of the ObatTebus.
+    */
+    public function resep()
+    {
+        return $this->belongsTo('App\Resep', 'id_resep');
+    }
 }
