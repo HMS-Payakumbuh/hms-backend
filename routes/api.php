@@ -41,6 +41,7 @@ Route::put('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@update');
 Route::delete('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@destroy');
 
 Route::post('bpjs', 'BpjsController@process');
+Route::get('transaksi/search_by_pasien', 'TransaksiController@searchByPasien');
 Route::resource('transaksi', 'TransaksiController');
 Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTransaksi');
 
@@ -140,10 +141,10 @@ Route::post('rawatinap/{no_kamar}', 'PemakaianKamarRawatInapController@store');
 
 Route::put('tempattidur/{no_kamar}/{no_tempat_tidur}', 'TempatTidurController@update');
 
+Route::get('resep/search_by_transaksi', 'ResepController@searchByTransaksi');
 Route::resource('resep', 'ResepController');
 Route::resource('resep_item', 'ResepItemController');
 Route::resource('racikan_item', 'RacikanItemController');
-
 
 Route::get('jenis_obat/search', 'JenisObatController@search');
 Route::resource('jenis_obat', 'JenisObatController');

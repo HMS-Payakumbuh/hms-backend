@@ -15,7 +15,7 @@ class ObatTebusController extends Controller
      */
     public function index()
     {
-        return ObatTebus::with('obatTebusItem')->get();
+        return ObatTebus::with('obatTebusItem','resep')->get();
     }
 
     /**
@@ -33,7 +33,7 @@ class ObatTebusController extends Controller
         $obat_tebus->id_obat_masuk = $request->input('id_obat_masuk');
         $obat_tebus->id_transaksi = $request->input('id_transaksi');
         $obat_tebus->id_tindakan = $request->input('id_tindakan');        
-        $obat_tebus->no_resep = $request->input('no_resep');
+        $obat_tebus->id_resep = $request->input('id_resep');
         $obat_tebus->save();
 
         // TO-DO: Create obat tebus item
@@ -55,7 +55,7 @@ class ObatTebusController extends Controller
      */
     public function show($id)
     {
-        return ObatTebus::with('obatTebusItem')->findOrFail($id);
+        return ObatTebus::with('obatTebusItem','resep')->findOrFail($id);
     }
 
     /**
@@ -68,11 +68,11 @@ class ObatTebusController extends Controller
     public function update(Request $request, $id)
     {
         $obat_tebus = ObatTebus::findOrFail($id);
-         $obat_tebus->id_jenis_obat = $request->input('id_jenis_obat');
+        $obat_tebus->id_jenis_obat = $request->input('id_jenis_obat');
         $obat_tebus->id_obat_masuk = $request->input('id_obat_masuk');
         $obat_tebus->id_transaksi = $request->input('id_transaksi');
         $obat_tebus->id_tindakan = $request->input('id_tindakan');        
-        $obat_tebus->no_resep = $request->input('no_resep');
+        $obat_tebus->id_resep = $request->input('id_resep');
         $obat_tebus->save();
         return response ($obat_tebus, 200)
             -> header('Content-Type', 'application/json');

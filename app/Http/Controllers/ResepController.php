@@ -79,4 +79,12 @@ class ResepController extends Controller
         $resep->delete();
         return response ($id.' deleted', 200);
     }
+
+    public function searchByTransaksi(Request $request)
+    {
+        $resep = Resep::where('id_transaksi', $request->input('id_transaksi'))
+                                ->get();
+        return response ($resep, 200)
+                -> header('Content-Type', 'application/json');
+    }
 }
