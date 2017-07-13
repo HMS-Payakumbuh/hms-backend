@@ -142,6 +142,7 @@ Route::post('rawatinap/{no_kamar}', 'PemakaianKamarRawatInapController@store');
 Route::put('tempattidur/{no_kamar}/{no_tempat_tidur}', 'TempatTidurController@update');
 
 Route::get('resep/search_by_transaksi', 'ResepController@searchByTransaksi');
+Route::get('resep/search_by_pasien_and_tanggal', 'ResepController@searchByPasienAndTanggal');
 Route::resource('resep', 'ResepController');
 Route::resource('resep_item', 'ResepItemController');
 Route::resource('racikan_item', 'RacikanItemController');

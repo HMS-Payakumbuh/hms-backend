@@ -14,7 +14,7 @@ class ResepController extends Controller
      */
     public function index()
     {
-        return Resep::with('resepItem', 'resepItem.racikanItem','transaksi','transaksi.pasien')->get();
+        return Resep::with('resepItem', 'resepItem.racikanItem', 'resepItem.racikanItem.jenisObat', 'transaksi','transaksi.pasien')->get();
     }
 
     /**
@@ -44,7 +44,7 @@ class ResepController extends Controller
      */
     public function show($id)
     {
-        return Resep::with('resepItem', 'resepItem.racikanItem','transaksi','transaksi.pasien')->findOrFail($id);
+        return Resep::with('resepItem', 'resepItem.racikanItem', 'resepItem.racikanItem.jenisObat', 'transaksi','transaksi.pasien')->findOrFail($id);
     }
 
     /**
@@ -80,10 +80,23 @@ class ResepController extends Controller
         return response ($id.' deleted', 200);
     }
 
-    public function searchByTransaksi(Request $request)
+ /*   public function searchByTransaksi(Request $request)
     {
-        $resep = Resep::where('id_transaksi', $request->input('id_transaksi'))
+        $resep = Resep::with('resepItem', 'resepItem.racikanItem', 'resepItem.racikanItem.jenisObat', 'transaksi','transaksi.pasien')
+                                ->where('id_transaksi', $request->input('id_transaksi'))
                                 ->get();
+        return response ($resep, 200)
+                -> header('Content-Type', 'application/json');
+    }
+*/
+
+    public function searchByPasienAndTanggal(Request $request)
+    {
+        $resep = Resep::join('transaksi', 'transaksi.id', '=', 'resep.id_transaksi')
+                        ->where('transaksi.id_pasien', $request->input('id_pasien'))
+                        ->whereDate('created_at', '=', $request->input('tanggal_resep'))
+                        ->select('resep.*')
+                        ->get();
         return response ($resep, 200)
                 -> header('Content-Type', 'application/json');
     }
