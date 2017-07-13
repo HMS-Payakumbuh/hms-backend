@@ -88,4 +88,13 @@ class StokObatController extends Controller
         return response ($stok_obat, 200)
                 -> header('Content-Type', 'application/json');
     }
+
+    public function searchByLocation(Request $request)
+    {
+        $stok_obat = StokObat::with('obatMasuk','jenisObat')
+                                ->where('lokasi', $request->input('lokasi'))
+                                ->get();
+        return response ($stok_obat, 200)
+                -> header('Content-Type', 'application/json');
+    }
 }

@@ -22,9 +22,14 @@ Route::resource('pasien', 'PasienController', ['except' => [
   'edit', 'create'
 ]]);
 
-Route::resource('antrian_front_office', 'AntrianFrontOfficeController', ['except' => [
-  'edit', 'create', 'update', 'delete'
+Route::resource('rekam_medis', 'RekamMedisController', ['except' => [
+  'edit', 'create'
 ]]);
+
+Route::resource('antrian_front_office', 'AntrianFrontOfficeController', ['except' => [
+  'edit', 'show', 'create', 'update', 'delete'
+]]);
+Route::get('antrian_front_office/{kategori_antrian}', 'AntrianFrontOfficeController@show');
 Route::put('antrian_front_office/{nama_layanan}/{no_antrian}', 'AntrianFrontOfficeController@update');
 Route::delete('antrian_front_office/{nama_layanan}/{no_antrian}', 'AntrianFrontOfficeController@destroy');
 
@@ -36,6 +41,7 @@ Route::put('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@update');
 Route::delete('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@destroy');
 
 Route::post('bpjs', 'BpjsController@process');
+Route::get('transaksi/search_by_pasien', 'TransaksiController@searchByPasien');
 Route::resource('transaksi', 'TransaksiController');
 Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTransaksi');
 
@@ -81,6 +87,10 @@ Route::resource('poliklinik', 'PoliklinikController', ['except' => [
 ]]);
 
 Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::resource('hasil_lab', 'HasilLabController', ['except' => [
   'edit', 'create'
 ]]);
 
@@ -136,10 +146,10 @@ Route::post('rawatinap/{no_kamar}', 'PemakaianKamarRawatInapController@store');
 
 Route::put('tempattidur/{no_kamar}/{no_tempat_tidur}', 'TempatTidurController@update');
 
+Route::get('resep/search_by_transaksi', 'ResepController@searchByTransaksi');
 Route::resource('resep', 'ResepController');
 Route::resource('resep_item', 'ResepItemController');
 Route::resource('racikan_item', 'RacikanItemController');
-
 
 Route::get('jenis_obat/search', 'JenisObatController@search');
 Route::resource('jenis_obat', 'JenisObatController');
@@ -147,8 +157,10 @@ Route::resource('lokasi_obat', 'LokasiObatController');
 Route::get('obat_masuk/search', 'ObatMasukController@search');
 Route::resource('obat_masuk', 'ObatMasukController');
 Route::get('stok_obat/search', 'StokObatController@search');
+Route::get('stok_obat/search_by_location', 'StokObatController@searchByLocation');
 Route::resource('stok_obat', 'StokObatController');
 Route::resource('obat_pindah', 'ObatPindahController');
 Route::resource('obat_rusak', 'ObatRusakController');
 Route::resource('obat_tebus', 'ObatTebusController');
 Route::resource('obat_tindakan', 'ObatTindakanController');
+Route::resource('obat_eceran', 'ObatEceranController');

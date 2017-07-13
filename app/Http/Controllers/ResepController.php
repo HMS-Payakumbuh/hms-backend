@@ -14,7 +14,7 @@ class ResepController extends Controller
      */
     public function index()
     {
-        return Resep::with('resepItem', 'racikanItem')->get();
+        return Resep::with('resepItem', 'resepItem.racikanItem','transaksi','transaksi.pasien')->get();
     }
 
     /**
@@ -44,7 +44,7 @@ class ResepController extends Controller
      */
     public function show($id)
     {
-        return Resep::with('resepItem', 'racikanItem')->findOrFail($id);
+        return Resep::with('resepItem', 'resepItem.racikanItem','transaksi','transaksi.pasien')->findOrFail($id);
     }
 
     /**
@@ -56,7 +56,7 @@ class ResepController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $resep = new Resep::findOrFail($id);
+        $resep = Resep::findOrFail($id);
 
         $resep->id_transaksi = $value['id_transaksi'];
         $resep->no_tindakan = $value['no_tindakan'];                 
@@ -78,5 +78,13 @@ class ResepController extends Controller
         $resep = Resep::find($id);
         $resep->delete();
         return response ($id.' deleted', 200);
+    }
+
+    public function searchByTransaksi(Request $request)
+    {
+        $resep = Resep::where('id_transaksi', $request->input('id_transaksi'))
+                                ->get();
+        return response ($resep, 200)
+                -> header('Content-Type', 'application/json');
     }
 }

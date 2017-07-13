@@ -9,26 +9,18 @@ class ObatTebus extends Model
     protected $table = 'obat_tebus';
 
     /**
-    *	Get the ObatMasuk of the ObatTebus.
+    *	Get the ObatTebusItem of the ObatTebus.
     */
-    public function obatMasuk()
+    public function obatTebusItem()
     {
-        return $this->belongsTo('App\ObatMasuk', 'id_obat_masuk');
+        return $this->hasMany('App\ObatTebusItem', 'id_obat_tebus');
     }
 
-    /**
-    *	Get the JenisObat of the ObatTebus.
+     /**
+    *	Get the Resep of the ObatTebus.
     */
-    public function jenisObat()
+    public function resep()
     {
-        return $this->belongsTo('App\JenisObat', 'id_jenis_obat');
-    }
-
-    /**
-    *	Get the LokasiAsal of the ObatTebus.
-    */
-    public function lokasiAsal()
-    {
-        return $this->belongsTo('App\LokasiObat', 'asal');
+        return $this->belongsTo('App\Resep', 'id_resep');
     }
 }

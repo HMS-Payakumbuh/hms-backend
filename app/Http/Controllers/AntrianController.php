@@ -4,7 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Antrian;
+use App\Transaksi;
+use App\Pasien;
+use App\Poliklinik;
 use Carbon\Carbon;
+//use LRedis;
+//use Request;
 
 class AntrianController extends Controller
 {
@@ -26,14 +31,39 @@ class AntrianController extends Controller
      */
     public function store(Request $request)
     {
-        $antrian = new Antrian;
+    	$antrian = new Antrian;
+    	
+    	$transaksi = Transaksi::findOrFail($request->input('id_transaksi'));
+	    if ($transaksi) {
+	    	$pasien = Pasien::findOrFail($transaksi->id_pasien);
+	    	if ($pasien) {
+	    		$age = $pasien->age();
+		    	if ($age >= 65)
+		    		$antrian->jenis = 1;
+		    	else
+		    		$antrian->jenis = 0;
+	    	}
+	    }  
+        
         $antrian->id_transaksi = $request->input('id_transaksi');
         $antrian->nama_layanan_poli = $request->input('nama_layanan_poli');
         $antrian->nama_layanan_lab = $request->input('nama_layanan_lab');
-        $antrian->jenis = $request->input('jenis');
         $antrian->status = 0;
         $antrian->save();
 
+        if ($request->input('nama_layanan_poli')) {
+            $poli = Poliklinik::findOrFail($request->input('nama_layanan_poli'));
+            if ($poli && $poli->sisa_pelayanan > 0) {
+                $poli->sisa_pelayanan = $poli->sisa_pelayanan - 1;
+                $poli->save();
+            } else {
+                Antrian::destroy($antrian->id_transaksi, $antrian->no_antrian);
+                Transaksi::destroy($antrian->id_transaksi);
+                return response()->json([
+                    'error' => "Pembuatan Antrian Gagal"
+                ], 500);
+            }
+        }
         return response($antrian, 201);
     }
 
@@ -45,9 +75,8 @@ class AntrianController extends Controller
      */
     public function show($nama_layanan)
     {
-        return Antrian::where('nama_layanan_poli', '=', $nama_layanan)
-	      ->orWhere('nama_layanan_lab', '=', $nama_layanan)
-          ->where('status', '=', 0)
+        return Antrian::where([['status', '=', 0], ['nama_layanan_poli', '=', $nama_layanan]])
+          ->orWhere([['status', '=', 0], ['nama_layanan_lab', '=', $nama_layanan]])
           ->get();
     }
 
@@ -61,11 +90,13 @@ class AntrianController extends Controller
     public function update($id_transaksi, $no_antrian)
     {
 		$antrian = Antrian::where('id_transaksi', '=', $id_transaksi)
-        ->where('no_antrian', '=', $no_antrian)
-        ->first();
-        
+	        ->where('no_antrian', '=', $no_antrian)
+	        ->first();
+
         $antrian->waktu_perubahan_antrian = Carbon::now();
         $antrian->save();
+        /*$redis = LRedis::connection();
+        $redis->publish('message', Request::input('message'));*/
 		return response($antrian, 200);
     }
 
@@ -78,10 +109,11 @@ class AntrianController extends Controller
      */
     public function destroy($id_transaksi, $no_antrian)
     {
-		$deletedRows = Antrian::where('id_transaksi', '=', $id_transaksi)
+		$antrian = Antrian::where('id_transaksi', '=', $id_transaksi)
 	    ->where('no_antrian', '=', $no_antrian)
-	    ->first()
-	    ->delete();
-        return response('', 204);
+	    ->first();
+	    $antrian->status = 1;
+        $antrian->save();
+        return response($antrian, 204);
     }
 }

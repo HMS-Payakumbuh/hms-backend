@@ -47,6 +47,17 @@ class AsuransiController extends Controller
     public function store(Request $request)
     {
         $payload = $request->input('asuransi');
+        
+        $exist_asuransi = Asuransi::where('id_pasien', '=', $payload['id_pasien'])
+                                    ->where('nama_asuransi', '=', $payload['nama_asuransi'])
+                                    ->first();
+                                    
+        if ($exist_asuransi) {
+             return response()->json([
+                'asuransi' => $exist_asuransi
+            ], 201);
+        }
+
         $asuransi = new Asuransi;
         $asuransi->id_pasien = $payload['id_pasien'];
         $asuransi->no_kartu = $payload['no_kartu'];

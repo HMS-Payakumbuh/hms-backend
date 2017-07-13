@@ -44,11 +44,6 @@ class CreateStokObatTable extends Migration
      */
     public function down()
     {
-        Schema::table('stok_obat', function (Blueprint $table) {
-            $table->dropForeign('id_jenis_obat');
-            $table->dropForeign('id_obat_masuk');
-            $table->dropForeign('lokasi');
-        });
         Schema::dropIfExists('stok_obat');
     }
 }

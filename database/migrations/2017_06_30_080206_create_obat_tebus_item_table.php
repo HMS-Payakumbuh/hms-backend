@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateObatTindakanTable extends Migration
+class CreateObatTebusItemTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,18 @@ class CreateObatTindakanTable extends Migration
      */
     public function up()
     {
-        Schema::create('obat_tindakan', function (Blueprint $table) {
+        Schema::create('obat_tebus_item', function (Blueprint $table) {
             $table->increments('id');
+
+            $table->integer('id_obat_tebus')->unsigned();
+            $table->foreign('id_obat_tebus')
+                  ->references('id')->on('obat_tebus')
+                  ->onDelete('restrict');            
             
             $table->integer('id_jenis_obat')->unsigned();
             $table->foreign('id_jenis_obat')
                   ->references('id')->on('jenis_obat')
-                  ->onDelete('restrict');                        
+                  ->onDelete('restrict');
             
             $table->integer('id_obat_masuk')->unsigned();
             $table->foreign('id_obat_masuk')
@@ -28,28 +33,27 @@ class CreateObatTindakanTable extends Migration
                   
             $table->dateTime('waktu_keluar');   // Atau pakai timestamp?    
             $table->integer('jumlah');  
-            $table->string('keterangan')->nullable();   
+            $table->string('keterangan')->nullable();
             
             $table->integer('asal')->unsigned();                     
             $table->foreign('asal')
                   ->references('id')->on('lokasi_obat')
                   ->onDelete('restrict');
 
-            $table->integer('id_transaksi')->unsigned();  
-            $table->foreign('id_transaksi')
-                  ->references('id')->on('transaksi')
+            $table->integer('id_resep_item')->unsigned();  
+            $table->foreign('id_resep_item')
+                  ->references('id')->on('resep_item')
                   ->onDelete('restrict');
 
-            $table->integer('id_tindakan')->unsigned();   
-            $table->foreign('id_tindakan')
-                  ->references('id')->on('tindakan')
+            $table->integer('id_racikan_item')->unsigned();  
+            $table->foreign('id_racikan_item')
+                  ->references('id')->on('racikan_item')
                   ->onDelete('restrict');
 
-            $table->decimal('harga_jual_realisasi', 12, 2)->nullable(); 
+            $table->decimal('harga_jual_realisasi', 12, 2);
                   
             $table->timestamps();               
         });
-
     }
 
     /**
@@ -59,6 +63,6 @@ class CreateObatTindakanTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('obat_tindakan');
+        Schema::dropIfExists('obat_tebus_item');
     }
 }

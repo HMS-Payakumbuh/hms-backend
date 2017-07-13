@@ -16,7 +16,7 @@ class CreateRacikanItemTable extends Migration
         Schema::create('racikan_item', function (Blueprint $table) {
             $table->increments('id');
                     
-            $table->integer('id_item')->unsigned();            
+            $table->integer('resep_item_id')->unsigned();            
             $table->integer('id_jenis_obat')->unsigned();
 
             $table->integer('jumlah');
@@ -24,7 +24,7 @@ class CreateRacikanItemTable extends Migration
             $table->timestamps();
 
             $table
-              ->foreign('id_item')
+              ->foreign('resep_item_id')
               ->references('id')
               ->on('resep_item')
               ->onDelete('restrict');
@@ -44,10 +44,6 @@ class CreateRacikanItemTable extends Migration
      */
     public function down()
     {
-        Schema::table('racikan_item', function (Blueprint $table) {
-            $table->dropForeign('no_item');
-            $table->dropForeign('id_jenis_obat');
-        });
         Schema::dropIfExists('racikan_item');
     }
 }
