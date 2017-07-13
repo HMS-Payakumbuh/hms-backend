@@ -29,8 +29,8 @@ class ResepItemController extends Controller
             $resep_item = new RacikanItem;
 
             $resep_item->no_resep = $value['no_resep'];
-            $resep_item->aturan_pemakaian = $value['aturan_pemakaian'];            
-            $resep_item->petunjuk_peracikan = $value['petunjuk_peracikan'];       
+            $resep_item->aturan_pemakaian = $value['aturan_pemakaian'];
+            $resep_item->petunjuk_peracikan = $value['petunjuk_peracikan'];
 
             $resep_item->save();
         }
@@ -60,8 +60,8 @@ class ResepItemController extends Controller
         $resep_item = ResepItem::findOrFail($id);
 
         $resep_item->no_resep = $value['no_resep'];
-        $resep_item->aturan_pemakaian = $value['aturan_pemakaian'];            
-        $resep_item->petunjuk_peracikan = $value['petunjuk_peracikan'];   
+        $resep_item->aturan_pemakaian = $value['aturan_pemakaian'];
+        $resep_item->petunjuk_peracikan = $value['petunjuk_peracikan'];
 
         $resep_item->save();
 
