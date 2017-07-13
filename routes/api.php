@@ -107,6 +107,7 @@ Route::resource('dokter', 'DokterController', ['except' => [
 ]]);
 
 Route::get('jadwal_dokter/{nama_poli}/{np_dokter}/{tanggal}', 'JadwalDokterController@show');
+Route::get('jadwal_dokter/{nama_poli}', 'JadwalDokterController@showAvailable');
 Route::put('jadwal_dokter/{nama_poli}/{np_dokter}/{tanggal}', 'JadwalDokterController@update');
 Route::delete('jadwal_dokter/{nama_poli}/{np_dokter}/{tanggal}', 'JadwalDokterController@destroy');
 

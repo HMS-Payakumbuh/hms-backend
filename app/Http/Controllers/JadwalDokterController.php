@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\JadwalDokter;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class JadwalDokterController extends Controller
@@ -30,7 +31,7 @@ class JadwalDokterController extends Controller
       $jadwalDokter = new JadwalDokter;
       $jadwalDokter->nama_poli = $request->input('nama_poli');
       $jadwalDokter->np_dokter = $request->input('np_dokter');
-      $jadwalDokter->tanggal = $request->input('tanggal');
+      $jadwalDokter->tanggal = Carbon::parse($request->input('tanggal'));
       $jadwalDokter->waktu_mulai_praktik = $request->input('waktu_mulai_praktik');
       $jadwalDokter->waktu_selesai_praktik = $request->input('waktu_selesai_praktik');
       $jadwalDokter->save();
@@ -51,6 +52,23 @@ class JadwalDokterController extends Controller
       return JadwalDokter::where('nama_poli', '=', $nama_poli)
         ->where('np_dokter', '=', $np_dokter)
         ->where('tanggal', '=', $tanggal)
+        ->join('tenaga_medis', 'jadwal_dokter.np_dokter', '=', 'tenaga_medis.no_pegawai')
+        ->select('jadwal_dokter.*', 'tenaga_medis.nama AS nama_dokter')
+        ->first();
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  string  $nama_poli
+     * @return \Illuminate\Http\Response
+     */
+    public function showAvailable($nama_poli)
+    {
+      return JadwalDokter::where('nama_poli', '=', $nama_poli)
+        ->where('tanggal', '=', Carbon::today()->toDateString())
+        ->where('waktu_mulai_praktik', '<=', Carbon::now()->format('H:i:s'))
+        ->where('waktu_selesai_praktik', '>=', Carbon::now()->format('H:i:s'))
         ->join('tenaga_medis', 'jadwal_dokter.np_dokter', '=', 'tenaga_medis.no_pegawai')
         ->select('jadwal_dokter.*', 'tenaga_medis.nama AS nama_dokter')
         ->first();
