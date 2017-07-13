@@ -33,7 +33,7 @@ class CreateResepTable extends Migration
               ->on('tindakan')
               ->onDelete('restrict');
 
-            $table->unique(['no_resep', 'id_transaksi', 'no_tindakan']);
+            $table->unique(['no_resep', 'id_transaksi', 'id_tindakan']);
         });
     }
 
