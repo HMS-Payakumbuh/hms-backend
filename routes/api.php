@@ -117,6 +117,11 @@ Route::resource('pemakaiankamarjenazah', 'PemakaianKamarJenazahController', ['ex
   'edit', 'create'
 ]]);
 
+Route::resource('pemakaiankamarrawatinap', 'PemakaianKamarRawatinapController', ['except' => [
+  'edit', 'create'
+]]);
+
+
 Route::resource('kamaroperasi', 'KamarOperasiController', ['except' => [
   'edit', 'create'
 ]]);

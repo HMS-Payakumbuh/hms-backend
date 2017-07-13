@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\PemakaianKamarRawatinap;
 use App\Transaksi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PemakaianKamarRawatinapController extends Controller
 {
@@ -15,7 +16,14 @@ class PemakaianKamarRawatinapController extends Controller
      */
     public function index()
     {
-        return PemakaianKamarRawatinap::all();
+        $pemakaianKamarRawatinap = PemakaianKamarRawatinap
+                            ::join('transaksi', 'pemakaian_kamar_rawatinap.id_transaksi', '=', 'transaksi.id')
+                            ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
+                            ->join('tenaga_medis', 'pemakaian_kamar_rawatinap.no_pegawai', '=', 'tenaga_medis.no_pegawai')
+                            ->select(DB::raw('pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, pasien.nama_pasien, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))
+                            ->get();          
+
+        return $pemakaianKamarRawatinap;
     }
 
     /**
@@ -74,7 +82,8 @@ class PemakaianKamarRawatinapController extends Controller
         $pemakaianKamarRawatinap->no_transaksi = $request->input('no_transaksi');
         $pemakaianKamarRawatinap->no_pembayaran = $request->input('no_pembayaran');
         $pemakaianKamarRawatinap->waktu_masuk = $request->input('waktu_masuk');
-        $pemakaianKamarRawatinap->waktu_keluar = $request->input('waktu_keluar');
+         date_default_timezone_set('Asia/Jakarta');
+        $pemakaianKamarRawatinap->waktu_keluar = date("Y-m-d H:i:s");
         $pemakaianKamarRawatinap->harga = $request->input('harga');
         $pemakaianKamarRawatinap->no_pegawai= $request->input('no_pegawai');
         $pemakaianKamarRawatinap->status = $request->input('status');
