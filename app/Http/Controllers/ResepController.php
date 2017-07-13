@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Resep;
+use App\ResepItem;
+use App\RacikanItem;
 use Illuminate\Http\Request;
 
 class ResepController extends Controller
@@ -25,28 +27,28 @@ class ResepController extends Controller
      */
     public function store(Request $request)
     {
-        foreach ($request->all() as $key => $value) {
-          $resep = new Resep;
-          $resep->id_transaksi = $value['id_transaksi'];
-          $resep->id_tindakan = $value['id_tindakan'];
-          $resep->no_resep = $value['no_resep'];
-          $resep->save();
+      foreach ($request->all() as $key => $value) {
+        $resep = new Resep;
+        $resep->id_transaksi = $value['id_transaksi'];
+        $resep->save();
 
-          foreach ($value['resep_item'] as $key => $value) {
-            $resep_item->$resep_id = $resep->id;
-            $resep_item->aturan_pemakaian = $value['aturan_pemakaian'];
-            $resep_item->petunjuk_peracikan = $value['petunjuk_peracikan'];
-            $resep_item->save();
+        foreach ($value['resep_item'] as $key => $value) {
+          $resep_item = new ResepItem;
+          $resep_item->resep_id = $resep->id;
+          $resep_item->aturan_pemakaian = $value['aturan_pemakaian'];
+          $resep_item->petunjuk_peracikan = $value['petunjuk_peracikan'];
+          $resep_item->save();
 
-            foreach($value['racikan_item'] as $key => $value) {
-              $racikan_item->$resep_item_id = $resep_item->id;
-              $racikan_item->$id_jenis_obat = $value['id_jenis_obat'];
-              $racikan_item->jumlah = $value['jumlah'];
-              $racikan_item->save();
-            }
+          foreach($value['racikan_item'] as $key => $value) {
+            $racikan_item = new RacikanItem;
+            $racikan_item->resep_item_id = $resep_item->id;
+            $racikan_item->id_jenis_obat = $value['id_jenis_obat'];
+            $racikan_item->jumlah = $value['jumlah'];
+            $racikan_item->save();
           }
         }
-        return response ($request->all(), 201);
+      }
+      return response ($request->all(), 201);
     }
 
     /**
