@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\ObatTebus;
 use App\StokObat;
+use App\ObatTebusItem;
 
 class ObatTebusController extends Controller
 {
@@ -31,20 +32,35 @@ class ObatTebusController extends Controller
         $obat_tebus = new ObatTebus;
         $obat_tebus->id_jenis_obat = $request->input('id_jenis_obat');
         $obat_tebus->id_obat_masuk = $request->input('id_obat_masuk');
-        $obat_tebus->id_transaksi = $request->input('id_transaksi');
-        $obat_tebus->id_tindakan = $request->input('id_tindakan');        
+        $obat_tebus->id_transaksi = $request->input('id_transaksi');    
         $obat_tebus->id_resep = $request->input('id_resep');
         $obat_tebus->save();
 
-        // TO-DO: Create obat tebus item
+        foreach ($request->input('obat_tebus_item') as $key => $value) {
+            $obat_tebus_item = new ObatTebusItem;
 
-        $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_tebus->id_obat_masuk)
-                                    ->where('lokasi', $obat_tebus->asal)
-                                    ->first(); //TO-DO: Error handling - firstOrFail?
-        $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_tebus->jumlah);
-        $stok_obat_asal->save();
+            $obat_tebus_item->id_obat_tebus = $obat_tebus->id;
+            $obat_tebus_item->id_jenis_obat = $value['id_jenis_obat'];
+            $obat_tebus_item->id_obat_masuk = $value['id_obat_masuk'];
+            date_default_timezone_set('Asia/Jakarta');
+            $obat_eceran->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
+            $obat_tebus_item->jumlah = $value['jumlah'];
+            $obat_tebus_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
+            $obat_tebus_item->keterangan = $value['keterangan'];
+            $obat_tebus_item->asal = $value['asal'];
+            $obat_tebus_item->id_resep_item = $value['id_resep_item'];
+            $obat_tebus_item->id_racikan_item = $value['id_racikan_item'];            
 
-        return response ($obat_tebus, 201);
+            $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_tebus_item->id_obat_masuk)
+                                        ->where('lokasi', $obat_tebus_item->asal)
+                                        ->first(); //TO-DO: Error handling - firstOrFail?
+            $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_tebus_item->jumlah);
+
+            $obat_tebus_item->save();
+            $stok_obat_asal->save();
+        }           
+
+        return response ($request->all(), 201);
     }
 
     /**
@@ -70,10 +86,34 @@ class ObatTebusController extends Controller
         $obat_tebus = ObatTebus::findOrFail($id);
         $obat_tebus->id_jenis_obat = $request->input('id_jenis_obat');
         $obat_tebus->id_obat_masuk = $request->input('id_obat_masuk');
-        $obat_tebus->id_transaksi = $request->input('id_transaksi');
-        $obat_tebus->id_tindakan = $request->input('id_tindakan');        
+        $obat_tebus->id_transaksi = $request->input('id_transaksi');   
         $obat_tebus->id_resep = $request->input('id_resep');
         $obat_tebus->save();
+
+        foreach ($request->input('obat_tebus_item') as $key => $value) {
+            $obat_tebus_item = new ObatTebusItem;
+
+            $obat_tebus_item->id_obat_tebus = $obat_tebus->id;
+            $obat_tebus_item->id_jenis_obat = $value['id_jenis_obat'];
+            $obat_tebus_item->id_obat_masuk = $value['id_obat_masuk'];
+            date_default_timezone_set('Asia/Jakarta');
+            $obat_eceran->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
+            $obat_tebus_item->jumlah = $value['jumlah'];
+            $obat_tebus_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
+            $obat_tebus_item->keterangan = $value['keterangan'];
+            $obat_tebus_item->asal = $value['asal'];
+            $obat_tebus_item->id_resep_item = $value['id_resep_item'];
+            $obat_tebus_item->id_racikan_item = $value['id_racikan_item'];            
+
+            $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_tebus_item->id_obat_masuk)
+                                        ->where('lokasi', $obat_tebus_item->asal)
+                                        ->first(); //TO-DO: Error handling - firstOrFail?
+            $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_tebus_item->jumlah);
+
+            $obat_tebus_item->save();
+            $stok_obat_asal->save();
+        }           
+
         return response ($obat_tebus, 200)
             -> header('Content-Type', 'application/json');
     }
