@@ -89,7 +89,7 @@ class TransaksiController extends Controller
 
         $newClaimResponse = '';
         $setClaimResponse = '';
-        if (isset($payload['no_sep'])) {
+        if (isset($payload['no_sep']) && $transaksi->kode_jenis_pasien == 2) {
             $transaksi->no_sep = $payload['no_sep'];
             $transaksi->save();
 
