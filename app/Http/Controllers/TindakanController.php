@@ -27,6 +27,7 @@ class TindakanController extends Controller
     public function store(Request $request)
     {
       $i = 0;
+      $response = '{}';
       foreach ($request->all() as $key => $value) {
 
         $tindakan = new Tindakan;
@@ -44,7 +45,7 @@ class TindakanController extends Controller
 
         $response[$i] = $tindakan;
         $i++;
-        
+
         if ($tindakan->save()) {
           $transaksi = Transaksi::findOrFail($value['id_transaksi']);
           $transaksi->harga_total += $value['harga'];

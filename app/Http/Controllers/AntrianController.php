@@ -33,7 +33,7 @@ class AntrianController extends Controller
     public function store(Request $request)
     {
     	$antrian = new Antrian;
-    	
+
     	$transaksi = Transaksi::findOrFail($request->input('id_transaksi'));
 	    if ($transaksi) {
 	    	$pasien = Pasien::findOrFail($transaksi->id_pasien);
@@ -44,8 +44,8 @@ class AntrianController extends Controller
 		    	else
 		    		$antrian->jenis = 0;
 	    	}
-	    }  
-        
+	    }
+
         $antrian->id_transaksi = $request->input('id_transaksi');
         $antrian->nama_layanan_poli = $request->input('nama_layanan_poli');
         $antrian->nama_layanan_lab = $request->input('nama_layanan_lab');
