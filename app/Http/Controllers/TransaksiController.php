@@ -107,7 +107,7 @@ class TransaksiController extends Controller
                 'gender' => $pasien->jender + 1
             );
 
-            $newClaimResponse = $bpjs->newClaim($requestNew);
+            // $newClaimResponse = $bpjs->newClaim($requestNew);
 
             $carbon = Carbon::instance($transaksi->waktu_masuk_pasien);
             $requestSet = array(
@@ -121,7 +121,7 @@ class TransaksiController extends Controller
                 'payor_id' => 3,
                 'payor_cd' => 'JKN'
             );
-            $setClaimResponse = $bpjs->setClaimData($requestSet);
+            // $setClaimResponse = $bpjs->setClaimData($requestSet);
             $setClaimResponse = "Set Claim";
         }
 
@@ -133,8 +133,8 @@ class TransaksiController extends Controller
         
         return response()->json([
             'transaksi' => $transaksi,
-            'new_claim' => $newClaimResponse,
-            'set_claim' => $setClaimResponse
+            // 'new_claim' => $newClaimResponse,
+            // 'set_claim' => $setClaimResponse
         ], 201);
     }
 
@@ -178,7 +178,7 @@ class TransaksiController extends Controller
         if ($transaksi->status == 'closed' && isset($transaksi->no_sep)) {
             $coder_nik = SettingBpjs::first()->coder_nik;
             $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-            $bpjs->finalizeClaim();
+            // $bpjs->finalizeClaim();
         }
 
         return response()->json([

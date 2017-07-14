@@ -53,7 +53,7 @@ class DiagnosisController extends Controller
       $requestSet = array(
         'diagnosa' => $currentDiagnosis
       );
-      $bpjs->setClaimData($requestSet);
+      // $bpjs->setClaimData($requestSet);
 
       return response($request->all(), 201);
     }

@@ -67,7 +67,7 @@ class TindakanController extends Controller
       $requestSet = array(
         'procedure' => $currentTindakan
       );
-      $bpjs->setClaimData($requestSet);
+      // $bpjs->setClaimData($requestSet);
 
       return response($response, 201);
     }
