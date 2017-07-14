@@ -153,7 +153,7 @@ Route::resource('jenis_obat', 'JenisObatController');
 Route::resource('lokasi_obat', 'LokasiObatController');
 Route::get('obat_masuk/search', 'ObatMasukController@search');
 Route::resource('obat_masuk', 'ObatMasukController');
-Route::get('stok_obat/search', 'StokObatController@search');
+Route::get('stok_obat/search_by_jenis_obat_and_batch', 'StokObatController@searchByJenisObatAndBatch');
 Route::get('stok_obat/search_by_location', 'StokObatController@searchByLocation');
 Route::resource('stok_obat', 'StokObatController');
 Route::resource('obat_pindah', 'ObatPindahController');
