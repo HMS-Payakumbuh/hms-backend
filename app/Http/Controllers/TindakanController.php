@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Tindakan;
+use App\DaftarTindakan;
 use App\Transaksi;
+use App\SettingBpjs;
+use App\BpjsManager;
 use Illuminate\Http\Request;
 
 class TindakanController extends Controller
@@ -26,8 +29,8 @@ class TindakanController extends Controller
      */
     public function store(Request $request)
     {
-      foreach ($request->all() as $key => $value) {
-        
+      $currentTindakan = '';
+      foreach ($request->all() as $key => $value) {  
         $tindakan = new Tindakan;
         $tindakan->id_transaksi = $value['id_transaksi'];
         $tindakan->no_tindakan = $value['no_tindakan'];
@@ -44,11 +47,25 @@ class TindakanController extends Controller
         $tindakan->nama_ambulans = $value['nama_ambulans'];
         
         if ($tindakan->save()) {
+          $currentTindakan = $currentTindakan. "#". $tindakan->kode_tindakan;
           $transaksi = Transaksi::findOrFail($value['id_transaksi']);
           $transaksi->harga_total += $value['harga'];
           $transaksi->save();
         }
       }
+
+      $transaksi = Transaksi::findOrFail($tindakan->id_transaksi);
+      $settingBpjs = SettingBpjs::first();
+      $coder_nik = $settingBpjs->coder_nik;
+      $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+      $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
+      $currentTindakan = $currentData['response']['data']['procedure']. $currentTindakan;
+
+      $requestSet = array(
+        'procedure' => $currentTindakan
+      );
+      $bpjs->setClaimData($requestSet);
+
       return response($request->all(), 201);
     }
 
