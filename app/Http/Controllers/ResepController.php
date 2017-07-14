@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Resep;
+use App\ResepItem;
+use App\RacikanItem;
 use Illuminate\Http\Request;
 
 class ResepController extends Controller
@@ -14,7 +16,7 @@ class ResepController extends Controller
      */
     public function index()
     {
-        return Resep::with('resepItem', 'racikanItem')->get();
+        return Resep::with('resepItem', 'resepItem.racikanItem', 'resepItem.racikanItem.jenisObat', 'transaksi','transaksi.pasien')->get();
     }
 
     /**
@@ -25,15 +27,28 @@ class ResepController extends Controller
      */
     public function store(Request $request)
     {
-        foreach ($request->all() as $key => $value) {
-            $resep = new Resep;
+      foreach ($request->all() as $key => $value) {
+        $resep = new Resep;
+        $resep->id_transaksi = $value['id_transaksi'];
+        $resep->save();
 
-            $resep->id_transaksi = $value['id_transaksi'];
-            $resep->no_tindakan = $value['no_tindakan'];                 
+        foreach ($value['resep_item'] as $key => $value) {
+          $resep_item = new ResepItem;
+          $resep_item->resep_id = $resep->id;
+          $resep_item->aturan_pemakaian = $value['aturan_pemakaian'];
+          $resep_item->petunjuk_peracikan = $value['petunjuk_peracikan'];
+          $resep_item->save();
 
-            $resep->save();
+          foreach($value['racikan_item'] as $key => $value) {
+            $racikan_item = new RacikanItem;
+            $racikan_item->resep_item_id = $resep_item->id;
+            $racikan_item->id_jenis_obat = $value['id_jenis_obat'];
+            $racikan_item->jumlah = $value['jumlah'];
+            $racikan_item->save();
+          }
         }
-        return response ($request->all(), 201);
+      }
+      return response ($request->all(), 201);
     }
 
     /**
@@ -44,7 +59,7 @@ class ResepController extends Controller
      */
     public function show($id)
     {
-        return Resep::with('resepItem', 'racikanItem')->findOrFail($id);
+        return Resep::with('resepItem', 'resepItem.racikanItem', 'resepItem.racikanItem.jenisObat', 'transaksi','transaksi.pasien')->findOrFail($id);
     }
 
     /**
@@ -56,11 +71,9 @@ class ResepController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $resep = new Resep::findOrFail($id);
-
+        $resep = Resep::findOrFail($id);
         $resep->id_transaksi = $value['id_transaksi'];
-        $resep->no_tindakan = $value['no_tindakan'];                 
-
+        $resep->id_tindakan = $value['id_tindakan'];
         $resep->save();
 
         return response ($resep, 200)
@@ -78,5 +91,26 @@ class ResepController extends Controller
         $resep = Resep::find($id);
         $resep->delete();
         return response ($id.' deleted', 200);
+    }
+
+ /*   public function searchByTransaksi(Request $request)
+    {
+        $resep = Resep::with('resepItem', 'resepItem.racikanItem', 'resepItem.racikanItem.jenisObat', 'transaksi','transaksi.pasien')
+                                ->where('id_transaksi', $request->input('id_transaksi'))
+                                ->get();
+        return response ($resep, 200)
+                -> header('Content-Type', 'application/json');
+    }
+*/
+
+    public function searchByPasienAndTanggal(Request $request)
+    {
+        $resep = Resep::join('transaksi', 'transaksi.id', '=', 'resep.id_transaksi')
+                        ->where('transaksi.id_pasien', $request->input('id_pasien'))
+                        ->whereDate('created_at', '=', $request->input('tanggal_resep'))
+                        ->select('resep.*')
+                        ->get();
+        return response ($resep, 200)
+                -> header('Content-Type', 'application/json');
     }
 }

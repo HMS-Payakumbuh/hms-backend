@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Resep extends Model
 {
     protected $table = 'resep';
-    protected $primaryKey = 'no_resep';
 
     /**
     *	Get the ResepItem of the Resep
@@ -18,10 +17,10 @@ class Resep extends Model
     }
 
     /**
-    *	Get the RacikanItem of the Resep
+    * Get the Transaksi of the Resep.
     */
-    public function racikanItem()
+    public function transaksi()
     {
-    	return $this->hasManyThrough('App\ResepItem', 'App\RacikanItem');
+        return $this->belongsTo('App\Transaksi', 'id_transaksi');
     }
 }

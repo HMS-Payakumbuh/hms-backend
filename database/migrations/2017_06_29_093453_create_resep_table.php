@@ -15,20 +15,13 @@ class CreateResepTable extends Migration
     {
         Schema::create('resep', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('id_transaksi')->unsigned();
-            $table->integer('no_tindakan')->unsigned();
-            $table->integer('no_resep');
-
+            $table->integer('id_transaksi')->unsigned()->nullable();
             $table->timestamps();
-
             $table
-              ->foreign(array('id_transaksi', 'no_tindakan'))
-              ->references(array('id_transaksi', 'no_tindakan'))
-              ->on('tindakan')
+              ->foreign('id_transaksi')
+              ->references('id')
+              ->on('transaksi')
               ->onDelete('restrict');
-
-            $table->unique(['no_resep', 'id_transaksi', 'no_tindakan']);
-
         });
     }
 
@@ -40,7 +33,7 @@ class CreateResepTable extends Migration
     public function down()
     {
         Schema::table('resep', function (Blueprint $table) {
-            $table->dropForeign(['id_transaksi','no_tindakan']);
+            $table->dropForeign(['id_transaksi']);
         });
         Schema::dropIfExists('resep');
     }
