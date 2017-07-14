@@ -171,6 +171,7 @@ class BpjsManager
 		$response = $client->request('POST', env('BPJS_EKLAIM_URL'), [
 			'json' => $payload
 		]);
+        sleep(1);
 
     	return $response;
     }

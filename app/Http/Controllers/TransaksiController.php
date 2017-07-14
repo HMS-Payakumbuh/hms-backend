@@ -87,7 +87,9 @@ class TransaksiController extends Controller
         $transaksi->status = 'open'; //status transaksi (open/closed)
         $transaksi->save();
 
-        if (isset($transaksi->no_sep)) {
+        $newClaimResponse = '';
+        $setClaimResponse = '';
+        if (isset($payload['no_sep'])) {
             $transaksi->no_sep = $payload['no_sep'];
             $transaksi->save();
 
@@ -105,7 +107,8 @@ class TransaksiController extends Controller
                 'gender' => $pasien->jender + 1
             );
 
-            // $bpjs->newClaim($requestNew);
+            // $newClaimResponse = $bpjs->newClaim($requestNew);
+
             $carbon = Carbon::instance($transaksi->waktu_masuk_pasien);
             $requestSet = array(
                 'nomor_kartu' => $asuransi->no_kartu,
@@ -118,8 +121,8 @@ class TransaksiController extends Controller
                 'payor_id' => 3,
                 'payor_cd' => 'JKN'
             );
-
-            // $bpjs->setClaimData($requestSet);
+            // $setClaimResponse = $bpjs->setClaimData($requestSet);
+            $setClaimResponse = "Set Claim";
         }
 
         $transaksi = Transaksi::findOrFail($transaksi->id);
@@ -129,7 +132,9 @@ class TransaksiController extends Controller
         $transaksi->save();
         
         return response()->json([
-            'transaksi' => $transaksi
+            'transaksi' => $transaksi,
+            // 'new_claim' => $newClaimResponse,
+            // 'set_claim' => $setClaimResponse
         ], 201);
     }
 
@@ -170,7 +175,7 @@ class TransaksiController extends Controller
         $transaksi = Transaksi::findOrFail($id);
         $transaksi->update($payload);
 
-        if ($transaksi->status == 'closed') {
+        if ($transaksi->status == 'closed' && isset($transaksi->no_sep)) {
             $coder_nik = SettingBpjs::first()->coder_nik;
             $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
             // $bpjs->finalizeClaim();

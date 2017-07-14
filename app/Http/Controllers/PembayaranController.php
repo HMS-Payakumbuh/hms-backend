@@ -8,8 +8,6 @@ use App\Pembayaran;
 use App\Klaim;
 use App\Transaksi;
 use App\Asuransi;
-use App\SettingBpjs;
-use App\BpjsManager;
 use App\Tindakan;
 
 class PembayaranController extends Controller
@@ -61,7 +59,8 @@ class PembayaranController extends Controller
         $pembayaran->save();
 
         if (isset($payload['tindakan']) && count($payload['tindakan']) > 0) {
-            foreach ($payload['tindakan'] as $value) {
+            $arrTindakan = $payload['tindakan'];
+            foreach ($arrTindakan as $value) {
                 $tindakan = Tindakan::findOrFail($value);
                 $tindakan->id_pembayaran = $pembayaran->id;
                 $tindakan->save();
@@ -69,15 +68,8 @@ class PembayaranController extends Controller
         }
 
         try {
-            if ($pembayaran->metode_bayar != 'tunai') {
+            if ($pembayaran->metode_bayar != 'tunai' && $pembayaran->metode_bayar != 'bpjs') {
                 $transaksi = Transaksi::findOrFail($pembayaran->id_transaksi);
-                if ($pembayaran->metode_bayar == 'bpjs') {
-                    $settingBpjs = SettingBpjs::first();
-                    $coder_nik = $settingBpjs->coder_nik;
-                    $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-                    // $bpjs->setClaimData();
-                }
-
                 $asuransi = DB::table('asuransi')->select('id')->where([
                     ['nama_asuransi', '=', $pembayaran->metode_bayar],
                     ['id_pasien', '=', $transaksi->id_pasien]
@@ -86,7 +78,7 @@ class PembayaranController extends Controller
                 $klaim = new Klaim;
                 $klaim->id_pembayaran = $pembayaran->id;
                 $klaim->id_asuransi = $asuransi->id;
-                $klaim->status = 'processing';
+                $klaim->status = 'processed';
                 $klaim->save();
             }
         }
