@@ -30,8 +30,6 @@ class ObatTebusController extends Controller
         // TO-DO: Make into transaction?
         // TO-DO: Restriction checking (jumlah > 0 etc.)
         $obat_tebus = new ObatTebus;
-        $obat_tebus->id_jenis_obat = $request->input('id_jenis_obat');
-        $obat_tebus->id_obat_masuk = $request->input('id_obat_masuk');
         $obat_tebus->id_transaksi = $request->input('id_transaksi');    
         $obat_tebus->id_resep = $request->input('id_resep');
         $obat_tebus->save();
@@ -43,7 +41,7 @@ class ObatTebusController extends Controller
             $obat_tebus_item->id_jenis_obat = $value['id_jenis_obat'];
             $obat_tebus_item->id_obat_masuk = $value['id_obat_masuk'];
             date_default_timezone_set('Asia/Jakarta');
-            $obat_eceran->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
+            $obat_tebus_item->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
             $obat_tebus_item->jumlah = $value['jumlah'];
             $obat_tebus_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
             $obat_tebus_item->keterangan = $value['keterangan'];
@@ -84,8 +82,6 @@ class ObatTebusController extends Controller
     public function update(Request $request, $id)
     {
         $obat_tebus = ObatTebus::findOrFail($id);
-        $obat_tebus->id_jenis_obat = $request->input('id_jenis_obat');
-        $obat_tebus->id_obat_masuk = $request->input('id_obat_masuk');
         $obat_tebus->id_transaksi = $request->input('id_transaksi');   
         $obat_tebus->id_resep = $request->input('id_resep');
         $obat_tebus->save();
@@ -97,7 +93,7 @@ class ObatTebusController extends Controller
             $obat_tebus_item->id_jenis_obat = $value['id_jenis_obat'];
             $obat_tebus_item->id_obat_masuk = $value['id_obat_masuk'];
             date_default_timezone_set('Asia/Jakarta');
-            $obat_eceran->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
+            $obat_tebus_item->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
             $obat_tebus_item->jumlah = $value['jumlah'];
             $obat_tebus_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
             $obat_tebus_item->keterangan = $value['keterangan'];
