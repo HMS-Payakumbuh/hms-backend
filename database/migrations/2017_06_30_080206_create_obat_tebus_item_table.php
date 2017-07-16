@@ -30,8 +30,7 @@ class CreateObatTebusItemTable extends Migration
             $table->foreign('id_obat_masuk')
                   ->references('id')->on('obat_masuk')
                   ->onDelete('restrict');
-                  
-            $table->dateTime('waktu_keluar');   // Atau pakai timestamp?    
+                    
             $table->integer('jumlah');  
             $table->string('keterangan')->nullable();
             
