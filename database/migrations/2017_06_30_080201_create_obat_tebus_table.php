@@ -25,6 +25,8 @@ class CreateObatTebusTable extends Migration
             $table->foreign('id_resep')
                   ->references('id')->on('resep')
                   ->onDelete('restrict');
+
+            $table->dateTime('waktu_keluar');   // Atau pakai timestamp?  
                   
             $table->timestamps();               
         });

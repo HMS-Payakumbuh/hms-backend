@@ -23,4 +23,12 @@ class ObatTebus extends Model
     {
         return $this->belongsTo('App\Resep', 'id_resep');
     }
+
+     /**
+    *   Get the Transaksi of the ObatTebus.
+    */
+    public function transaksi()
+    {
+        return $this->belongsTo('App\Transaksi', 'id_transaksi');
+    }
 }

@@ -16,7 +16,7 @@ class ObatTebusController extends Controller
      */
     public function index()
     {
-        return ObatTebus::with('obatTebusItem','resep')->get();
+        return ObatTebus::with('obatTebusItem','resep','transaksi.pasien','obatTebusItem.obatMasuk','obatTebusItem.jenisObat')->get();
     }
 
     /**
@@ -32,6 +32,8 @@ class ObatTebusController extends Controller
         $obat_tebus = new ObatTebus;
         $obat_tebus->id_transaksi = $request->input('id_transaksi');    
         $obat_tebus->id_resep = $request->input('id_resep');
+        date_default_timezone_set('Asia/Jakarta');
+        $obat_tebus->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
         $obat_tebus->save();
 
         foreach ($request->input('obat_tebus_item') as $key => $value) {
@@ -40,8 +42,6 @@ class ObatTebusController extends Controller
             $obat_tebus_item->id_obat_tebus = $obat_tebus->id;
             $obat_tebus_item->id_jenis_obat = $value['id_jenis_obat'];
             $obat_tebus_item->id_obat_masuk = $value['id_obat_masuk'];
-            date_default_timezone_set('Asia/Jakarta');
-            $obat_tebus_item->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
             $obat_tebus_item->jumlah = $value['jumlah'];
             $obat_tebus_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
             $obat_tebus_item->keterangan = $value['keterangan'];
@@ -69,7 +69,7 @@ class ObatTebusController extends Controller
      */
     public function show($id)
     {
-        return ObatTebus::with('obatTebusItem','resep')->findOrFail($id);
+        return ObatTebus::with('obatTebusItem','resep','transaksi.pasien', 'obatTebusItem.obatMasuk','obatTebusItem.jenisObat')->findOrFail($id);
     }
 
     /**
@@ -84,6 +84,8 @@ class ObatTebusController extends Controller
         $obat_tebus = ObatTebus::findOrFail($id);
         $obat_tebus->id_transaksi = $request->input('id_transaksi');   
         $obat_tebus->id_resep = $request->input('id_resep');
+        date_default_timezone_set('Asia/Jakarta');
+        $obat_tebus->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
         $obat_tebus->save();
 
         foreach ($request->input('obat_tebus_item') as $key => $value) {
@@ -92,8 +94,6 @@ class ObatTebusController extends Controller
             $obat_tebus_item->id_obat_tebus = $obat_tebus->id;
             $obat_tebus_item->id_jenis_obat = $value['id_jenis_obat'];
             $obat_tebus_item->id_obat_masuk = $value['id_obat_masuk'];
-            date_default_timezone_set('Asia/Jakarta');
-            $obat_tebus_item->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
             $obat_tebus_item->jumlah = $value['jumlah'];
             $obat_tebus_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
             $obat_tebus_item->keterangan = $value['keterangan'];
