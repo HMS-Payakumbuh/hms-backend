@@ -45,9 +45,14 @@ class RekamMedisController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id_pasien)
     {
-        RekamMedis::findOrFail($id);
+        $rekam_medis = RekamMedis
+                            ::with('pasien')
+                            ->orderBy('tanggal_waktu', 'desc')
+                            ->where('id_pasien', '=', $id_pasien)
+                            ->get();
+        return $rekam_medis;                    
     }
 
     /**
