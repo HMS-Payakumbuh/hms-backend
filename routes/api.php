@@ -81,6 +81,7 @@ Route::resource('tindakan', 'TindakanController', ['except' => [
 ]]);
 
 Route::get('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@show');
+Route::get('tindakan/rekam_medis/{id_pasien}/{tanggal_waktu}', 'TindakanController@getTindakanOfRekamMedis');
 Route::put('tindakan/{no_transaksi}/{no_tindakan}', 'TindakanController@update');
 Route::delete('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@destroy');
 
