@@ -57,7 +57,7 @@ class TindakanController extends Controller
         }
       }
 
-      $transaksi = Transaksi::findOrFail($tindakan->id_transaksi);
+      /*$transaksi = Transaksi::findOrFail($tindakan->id_transaksi);
       $settingBpjs = SettingBpjs::first();
       $coder_nik = $settingBpjs->coder_nik;
       $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
@@ -66,10 +66,25 @@ class TindakanController extends Controller
 
       $requestSet = array(
         'procedure' => $currentTindakan
-      );
+      );*/
       // $bpjs->setClaimData($requestSet);
 
       return response($response, 201);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id_pasien
+     * @param  string $tanggal_waktu
+     * @return \Illuminate\Http\Response
+     */
+    public function getTindakanOfRekamMedis($id_pasien, $tanggal_waktu)
+    {
+      return Tindakan::with('daftarTindakan', 'tenagaMedis', 'hasilLab')
+                      ->where('id_pasien', '=', $id_pasien)
+                      ->where('tanggal_waktu', '=', $tanggal_waktu)
+                      ->get();
     }
 
     /**
