@@ -38,7 +38,7 @@ class DiagnosisController extends Controller
         $currentDiagnosis = $currentDiagnosis. "#". $diagnosis->kode_diagnosis;
       }
 
-      /*$transaksi = Transaksi::where([
+      $transaksi = Transaksi::where([
         ['id_pasien', '=', $diagnosis->id_pasien]
       ])
       ->orderBy('transaksi.waktu_masuk_pasien', 'desc')
@@ -52,7 +52,7 @@ class DiagnosisController extends Controller
 
       $requestSet = array(
         'diagnosa' => $currentDiagnosis
-      );*/
+      );
       // $bpjs->setClaimData($requestSet);
 
       return response($request->all(), 201);

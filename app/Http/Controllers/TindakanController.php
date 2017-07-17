@@ -57,7 +57,7 @@ class TindakanController extends Controller
         }
       }
 
-      /*$transaksi = Transaksi::findOrFail($tindakan->id_transaksi);
+      $transaksi = Transaksi::findOrFail($tindakan->id_transaksi);
       $settingBpjs = SettingBpjs::first();
       $coder_nik = $settingBpjs->coder_nik;
       $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
@@ -66,7 +66,7 @@ class TindakanController extends Controller
 
       $requestSet = array(
         'procedure' => $currentTindakan
-      );*/
+      );
       // $bpjs->setClaimData($requestSet);
 
       return response($response, 201);
