@@ -14,7 +14,7 @@ class DokterController extends Controller
      */
     public function index()
     {
-      return Dokter::all();
+      return Dokter::with('tenagaMedis')->get();
     }
 
     /**
@@ -40,7 +40,7 @@ class DokterController extends Controller
      */
     public function show($no_pegawai)
     {
-      return Dokter::findOrFail($no_pegawai);
+      return Dokter::with('tenagaMedis')->findOrFail($no_pegawai);
     }
 
     /**

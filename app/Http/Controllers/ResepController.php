@@ -30,6 +30,10 @@ class ResepController extends Controller
       foreach ($request->all() as $key => $value) {
         $resep = new Resep;
         $resep->id_transaksi = $value['id_transaksi'];
+        $resep->eksternal = $value['eksternal'];
+        $resep->nama = $value['nama'];
+        $resep->alamat = $value['alamat'];
+
         $resep->save();
 
         foreach ($value['resep_item'] as $key => $value) {
@@ -48,7 +52,7 @@ class ResepController extends Controller
           }
         }
       }
-      return response ($request->all(), 201);
+      return response ($resep, 201);
     }
 
     /**
@@ -73,7 +77,9 @@ class ResepController extends Controller
     {
         $resep = Resep::findOrFail($id);
         $resep->id_transaksi = $value['id_transaksi'];
-        $resep->id_tindakan = $value['id_tindakan'];
+        $resep->eksternal = $value['eksternal'];
+        $resep->nama = $value['nama'];
+        $resep->alamat = $value['alamat'];
         $resep->save();
 
         return response ($resep, 200)
