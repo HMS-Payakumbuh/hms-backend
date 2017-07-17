@@ -23,8 +23,9 @@ Route::resource('pasien', 'PasienController', ['except' => [
 ]]);
 
 Route::resource('rekam_medis', 'RekamMedisController', ['except' => [
-  'edit', 'create'
+  'edit', 'show', 'create'
 ]]);
+Route::get('rekam_medis/{id_pasien}', 'RekamMedisController@show');
 
 Route::resource('antrian_front_office', 'AntrianFrontOfficeController', ['except' => [
   'edit', 'show', 'create', 'update', 'delete'
@@ -69,6 +70,7 @@ Route::resource('daftar_diagnosis', 'DaftarDiagnosisController', ['except' => [
 Route::resource('diagnosis', 'DiagnosisController', ['except' => [
   'edit', 'create'
 ]]);
+Route::get('diagnosis/{id_pasien}/{tanggal_waktu}', 'DiagnosisController@getDiagnosisOfRekamMedis');
 
 Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
   'edit', 'create'

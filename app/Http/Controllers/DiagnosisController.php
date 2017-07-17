@@ -70,6 +70,20 @@ class DiagnosisController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function getDiagnosisOfRekamMedis($id_pasien, $tanggal_waktu)
+    {
+      return Diagnosis::with('daftarDiagnosis')
+                      ->where('id_pasien', '=', $id_pasien)
+                      ->where('tanggal_waktu', '=', $tanggal_waktu)
+                      ->get();
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
