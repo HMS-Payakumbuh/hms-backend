@@ -16,6 +16,9 @@ class CreateResepTable extends Migration
         Schema::create('resep', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('id_transaksi')->unsigned()->nullable();
+            $table->string('nama')->nullable();
+            $table->string('alamat')->nullable();
+            $table->boolean('eksternal');
             $table->timestamps();
             $table
               ->foreign('id_transaksi')
