@@ -25,6 +25,7 @@ class LokasiObatController extends Controller
     {
     	$lokasi_obat = new LokasiObat;    	
     	$lokasi_obat->nama = $request->input('nama');
+        $lokasi_obat->jenis = $request->input('jenis');
     	$lokasi_obat->save();
     	return response ($lokasi_obat, 201);
     }
@@ -50,6 +51,7 @@ class LokasiObatController extends Controller
     {
     	$lokasi_obat = LokasiObat::findOrFail($id);
     	$lokasi_obat->nama = $request->input('nama');
+        $lokasi_obat->jenis = $request->input('jenis');
     	$lokasi_obat->save();
     	return response ($lokasi_obat, 200)
     		-> header('Content-Type', 'application/json');
