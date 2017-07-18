@@ -69,13 +69,9 @@ class PemakaianKamarOperasiController extends Controller
      * @param  datetime  $waktu_masuk
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $no_kamar, $no_tindakan, $no_transaksi, $waktu_masuk)
+    public function update(Request $request, $id)
     {
-        $pemakaianKamarOperasi = PemakaianKamarOperasi ::where('no_kamar', '=', $no_kamar)
-        ->where('no_tindakan', '=', $no_tindakan)
-        ->where('id_transaksi', '=', $id_transaksi)
-        ->where('waktu_masuk', '=', $waktu_masuk)
-        ->first();
+        $pemakaianKamarOperasi = PemakaianKamarOperasi::findOrFail($id);
 
         $pemakaianKamarOperasi->no_kamar = $request->input('no_kamar');
         $pemakaianKamarOperasi->no_tindakan = $request->input('no_tindakan');
@@ -98,15 +94,10 @@ class PemakaianKamarOperasiController extends Controller
      * @param  datetime  $waktu_masuk
      * @return \Illuminate\Http\Response
      */
-    public function destroy($no_kamar, $no_tindakan, $id_transaksi, $waktu_masuk)
+    public function destroy($id)
     {
-         $deletedRows = PemakaianKamarOperasi ::where('no_kamar', '=', $no_kamar)
-        ->where('no_tindakan', '=', $no_tindakan)
-        ->where('id_transaksi', '=', $id_transaksi)
-        ->where('waktu_masuk', '=', $waktu_masuk)
-        ->first()
-        ->delete();
-
+        $pemakaianKamarOperasi = PemakaianKamarOperasi::findOrFail($id);
+        $pemakaianKamarOperasi->delete();
         return response('', 204);
 
     }

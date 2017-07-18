@@ -18,7 +18,7 @@ class PemakaianKamarJenazahController extends Controller
         $pemakaianKamarJenazah = PemakaianKamarJenazah
                             ::join('transaksi', 'pemakaian_kamar_jenazah.id_transaksi', '=', 'transaksi.id')
                             ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
-                            ->select(DB::raw('pemakaian_kamar_jenazah.no_kamar, pasien.nama_pasien, pemakaian_kamar_jenazah.waktu_masuk, pemakaian_kamar_jenazah.waktu_keluar'))
+                            ->select(DB::raw('pemakaian_kamar_jenazah.id, pemakaian_kamar_jenazah.no_kamar, pasien.nama_pasien, pemakaian_kamar_jenazah.waktu_masuk, pemakaian_kamar_jenazah.waktu_keluar'))
                             ->get();          
 
         return $pemakaianKamarJenazah;
@@ -64,19 +64,17 @@ class PemakaianKamarJenazahController extends Controller
      * @param  datetime  $waktu_masuk
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $no_kamar, $id_transaksi, $waktu_masuk)
+    public function update(Request $request, $id)
     {
-        $pemakaianKamarJenazah = PemakaianKamarJenazah ::where('no_kamar', '=', $no_kamar)
-        ->where('id_transaksi', '=', $id_transaksi)
-        ->where('waktu_masuk', '=', $waktu_masuk)
-        ->first();
+        $pemakaianKamarJenazah = PemakaianKamarJenazah::findOrFail($id);
 
-        $pemakaianKamarJenazah->no_kamar = $request->input('no_kamar');
-        $pemakaianKamarJenazah->id_transaksi = $request->input('id_transaksi');
-        $pemakaianKamarJenazah->no_pembayaran = $request->input('no_pembayaran');
-        $pemakaianKamarJenazah->waktu_masuk = $request->input('waktu_masuk');
-        $pemakaianKamarJenazah->waktu_keluar = $request->input('waktu_keluar');
-        $pemakaianKamarJenazah->harga = $request->input('harga');
+        // $pemakaianKamarJenazah->no_kamar = $request->input('no_kamar');
+        // $pemakaianKamarJenazah->id_transaksi = $request->input('id_transaksi');
+        // $pemakaianKamarJenazah->no_pembayaran = $request->input('no_pembayaran');
+        // $pemakaianKamarJenazah->waktu_masuk = $request->input('waktu_masuk');
+        date_default_timezone_set('Asia/Jakarta');
+        $pemakaianKamarJenazah->waktu_keluar = date("Y-m-d H:i:s");
+        // $pemakaianKamarJenazah->harga = $request->input('harga');
         $pemakaianKamarJenazah->save();
 
         return response($pemakaianKamarJenazah, 200);
@@ -90,14 +88,10 @@ class PemakaianKamarJenazahController extends Controller
      * @param  datetime  $waktu_masuk
      * @return \Illuminate\Http\Response
      */
-    public function destroy($no_kamar, $id_transaksi, $waktu_masuk)
+    public function destroy($id)
     {
-         $deletedRows = PemakaianKamarJenazah ::where('no_kamar', '=', $no_kamar)
-        ->where('id_transaksi', '=', $no_transaksi)
-        ->where('waktu_masuk', '=', $waktu_masuk)
-        ->first()
-        ->delete();
-
+        $pemakaianKamarJenazah = PemakaianKamarJenazah::findOrFail($id);
+        $pemakaianKamarJenazah->delete();
         return response('', 204);
 
     }
