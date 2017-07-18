@@ -15,12 +15,9 @@ class CreateResepItemTable extends Migration
     {
         Schema::create('resep_item', function (Blueprint $table) {
             $table->increments('id');
-
-            $table->integer('resep_id')->unsigned();            
-
+            $table->integer('resep_id')->unsigned();
             $table->string('aturan_pemakaian')->nullable();
             $table->string('petunjuk_peracikan')->nullable();
-
             $table->timestamps();
 
             $table

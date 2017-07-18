@@ -40,20 +40,6 @@ class PasienController extends Controller
         $pasien->kontak = $request->input('kontak');
         $pasien->save();
 
-        /*try {
-            $asuransi = new Asuransi;
-            $asuransi = $request->input('asuransi');
-            $asuransi->id_pasien = $pasien->id;
-            $asuransi->save();
-        }
-        catch(\Exception $e) {
-            Pasien::destroy($pasien->id);
-            return response()->json([
-                'error' => $e->getMessage(),
-                'asuransi' => $asuransi
-            ], 500);
-        }*/
-
         return response($pasien, 201);
     }
 

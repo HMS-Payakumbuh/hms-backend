@@ -79,12 +79,14 @@ class StokObatController extends Controller
         return response ($id.' deleted', 200);
     }
 
-    public function search(Request $request)
+    public function searchByJenisObatAndBatch(Request $request)
     {
-        $stok_obat = StokObat::with('jenisObat')
-                                ->where('id_obat_masuk', $request->input('id_obat_masuk'))
+        $stok_obat = StokObat::join('obat_masuk','obat_masuk.id', '=', 'stok_obat.id_obat_masuk')
+                                ->where('stok_obat.id_jenis_obat', $request->input('id_jenis_obat'))
+                                ->where('obat_masuk.nomor_batch', 'LIKE', $request->input('nomor_batch'))
                                 ->where('lokasi', $request->input('lokasi'))
-                                ->first();
+                                ->select('stok_obat.*')
+                                ->firstOrFail();
         return response ($stok_obat, 200)
                 -> header('Content-Type', 'application/json');
     }

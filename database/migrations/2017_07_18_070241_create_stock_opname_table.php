@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateLokasiObatTable extends Migration
+class CreateStockOpnameTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,14 @@ class CreateLokasiObatTable extends Migration
      */
     public function up()
     {
-        Schema::create('lokasi_obat', function (Blueprint $table) {
+        Schema::create('stock_opname', function (Blueprint $table) {
             $table->increments('id');
-			$table->string('nama');            
-            $table->integer('jenis'); //0 : Gudang Utama, 1: Apotek, 2: Poliklinik, 3: Lain-lain
+
+            $table->integer('lokasi')->unsigned();                     
+            $table->foreign('lokasi')
+                  ->references('id')->on('lokasi_obat')
+                  ->onDelete('restrict');
+                  
             $table->timestamps();
         });
     }
@@ -28,6 +32,6 @@ class CreateLokasiObatTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('lokasi_obat');
+        Schema::dropIfExists('stock_opname');
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Antrian;
 use App\Transaksi;
 use App\Pasien;
+use App\Asuransi;
 use App\Poliklinik;
 use Carbon\Carbon;
 //use LRedis;
@@ -32,7 +33,7 @@ class AntrianController extends Controller
     public function store(Request $request)
     {
     	$antrian = new Antrian;
-    	
+
     	$transaksi = Transaksi::findOrFail($request->input('id_transaksi'));
 	    if ($transaksi) {
 	    	$pasien = Pasien::findOrFail($transaksi->id_pasien);
@@ -43,12 +44,13 @@ class AntrianController extends Controller
 		    	else
 		    		$antrian->jenis = 0;
 	    	}
-	    }  
-        
+	    }
+
         $antrian->id_transaksi = $request->input('id_transaksi');
         $antrian->nama_layanan_poli = $request->input('nama_layanan_poli');
         $antrian->nama_layanan_lab = $request->input('nama_layanan_lab');
         $antrian->status = 0;
+        $antrian->kesempatan = $request->input('kesempatan');
         $antrian->save();
 
         if ($request->input('nama_layanan_poli')) {
@@ -59,6 +61,9 @@ class AntrianController extends Controller
             } else {
                 Antrian::destroy($antrian->id_transaksi, $antrian->no_antrian);
                 Transaksi::destroy($antrian->id_transaksi);
+                Pasien::destroy($request->input('id_pasien'));
+                if ($request->input('id_asuransi'))
+                    Asuransi::destroy($request->input('id_asuransi'));
                 return response()->json([
                     'error' => "Pembuatan Antrian Gagal"
                 ], 500);
@@ -94,9 +99,10 @@ class AntrianController extends Controller
 	        ->first();
 
         $antrian->waktu_perubahan_antrian = Carbon::now();
+        $antrian->kesempatan = $antrian->kesempatan - 1;
         $antrian->save();
-        /*$redis = LRedis::connection();
-        $redis->publish('message', Request::input('message'));*/
+        if ($antrian->kesempatan <= 0)
+            $antrian->delete();
 		return response($antrian, 200);
     }
 

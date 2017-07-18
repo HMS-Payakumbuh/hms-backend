@@ -20,6 +20,7 @@ class CreateAntrianTable extends Migration
             $table->string('nama_layanan_lab')->nullable();
             $table->integer('jenis'); //0: umum, 1: khusus
             $table->integer('status'); //0: open, 1: close
+            $table->integer('kesempatan');
             $table->dateTime('waktu_masuk_antrian');
             $table->dateTime('waktu_perubahan_antrian');
 

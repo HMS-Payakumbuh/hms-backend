@@ -32,6 +32,7 @@ class AntrianFrontOfficeController extends Controller
         $antrian_front_office->nama_layanan_lab = $request->input('nama_layanan_lab');
         $antrian_front_office->jenis = $request->input('jenis');
         $antrian_front_office->kategori_antrian = $request->input('kategori_antrian');
+        $antrian_front_office->kesempatan = $request->input('kesempatan');
         $antrian_front_office->save();
 
         if ($request->input('nama_layanan_poli')) {
@@ -73,7 +74,11 @@ class AntrianFrontOfficeController extends Controller
             ->orWhere([['no_antrian', '=', $no_antrian], ['nama_layanan_lab', '=', $nama_layanan]])
             ->first();
         $antrian_front_office->waktu_perubahan_antrian = Carbon::now();
+        $antrian_front_office->kesempatan = $antrian_front_office->kesempatan - 1;
         $antrian_front_office->save();
+        if ($antrian_front_office->kesempatan <= 0) {
+            $antrian_front_office->delete();
+        }
 		return response($antrian_front_office, 200);
     }
 

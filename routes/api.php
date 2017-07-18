@@ -23,8 +23,9 @@ Route::resource('pasien', 'PasienController', ['except' => [
 ]]);
 
 Route::resource('rekam_medis', 'RekamMedisController', ['except' => [
-  'edit', 'create'
+  'edit', 'show', 'create'
 ]]);
+Route::get('rekam_medis/{id_pasien}', 'RekamMedisController@show');
 
 Route::resource('antrian_front_office', 'AntrianFrontOfficeController', ['except' => [
   'edit', 'show', 'create', 'update', 'delete'
@@ -69,6 +70,7 @@ Route::resource('daftar_diagnosis', 'DaftarDiagnosisController', ['except' => [
 Route::resource('diagnosis', 'DiagnosisController', ['except' => [
   'edit', 'create'
 ]]);
+Route::get('diagnosis/{id_pasien}/{tanggal_waktu}', 'DiagnosisController@getDiagnosisOfRekamMedis');
 
 Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
   'edit', 'create'
@@ -79,6 +81,7 @@ Route::resource('tindakan', 'TindakanController', ['except' => [
 ]]);
 
 Route::get('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@show');
+Route::get('tindakan/rekam_medis/{id_pasien}/{tanggal_waktu}', 'TindakanController@getTindakanOfRekamMedis');
 Route::put('tindakan/{no_transaksi}/{no_tindakan}', 'TindakanController@update');
 Route::delete('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@destroy');
 
@@ -107,6 +110,7 @@ Route::resource('dokter', 'DokterController', ['except' => [
 ]]);
 
 Route::get('jadwal_dokter/{nama_poli}/{np_dokter}/{tanggal}', 'JadwalDokterController@show');
+Route::get('jadwal_dokter/{nama_poli}', 'JadwalDokterController@showAvailable');
 Route::put('jadwal_dokter/{nama_poli}/{np_dokter}/{tanggal}', 'JadwalDokterController@update');
 Route::delete('jadwal_dokter/{nama_poli}/{np_dokter}/{tanggal}', 'JadwalDokterController@destroy');
 
@@ -153,6 +157,7 @@ Route::post('rawatinap/{no_kamar}', 'PemakaianKamarRawatInapController@store');
 Route::put('tempattidur/{no_kamar}/{no_tempat_tidur}', 'TempatTidurController@update');
 
 Route::get('resep/search_by_transaksi', 'ResepController@searchByTransaksi');
+Route::get('resep/search_by_pasien_and_tanggal', 'ResepController@searchByPasienAndTanggal');
 Route::resource('resep', 'ResepController');
 Route::resource('resep_item', 'ResepItemController');
 Route::resource('racikan_item', 'RacikanItemController');
@@ -162,7 +167,7 @@ Route::resource('jenis_obat', 'JenisObatController');
 Route::resource('lokasi_obat', 'LokasiObatController');
 Route::get('obat_masuk/search', 'ObatMasukController@search');
 Route::resource('obat_masuk', 'ObatMasukController');
-Route::get('stok_obat/search', 'StokObatController@search');
+Route::get('stok_obat/search_by_jenis_obat_and_batch', 'StokObatController@searchByJenisObatAndBatch');
 Route::get('stok_obat/search_by_location', 'StokObatController@searchByLocation');
 Route::resource('stok_obat', 'StokObatController');
 Route::resource('obat_pindah', 'ObatPindahController');
@@ -170,3 +175,4 @@ Route::resource('obat_rusak', 'ObatRusakController');
 Route::resource('obat_tebus', 'ObatTebusController');
 Route::resource('obat_tindakan', 'ObatTindakanController');
 Route::resource('obat_eceran', 'ObatEceranController');
+Route::resource('stock_opname', 'StockOpnameController');
