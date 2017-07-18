@@ -41,6 +41,39 @@ class KamarRawatinapController extends Controller
         $kamarRawatinap->harga_per_hari = $request->input('harga_per_hari');
         $kamarRawatinap->save();
 
+        
+        if($kamarRawatinap->kelas == 1) {
+            for ($i = 1; $i < 3; $i++) {
+                $tempatTidur = new TempatTidur;
+                $tempatTidur->no_kamar = $kamarRawatinap->no_kamar;
+                $tempatTidur->no_tempat_tidur = $i;
+                $tempatTidur->status = 1;
+                $tempatTidur->save();
+            }
+        } else if($kamarRawatinap->kelas == 2) {
+            for ($i = 1; $i < 5; $i++) {
+                $tempatTidur = new TempatTidur;
+                $tempatTidur->no_kamar = $kamarRawatinap->no_kamar;
+                $tempatTidur->no_tempat_tidur = $i;
+                $tempatTidur->status = 1;
+                $tempatTidur->save();
+            }
+        } else if($kamarRawatinap->kelas == 3) {
+            for ($i = 1; $i < 7; $i++) {
+                $tempatTidur = new TempatTidur;
+                $tempatTidur->no_kamar = $kamarRawatinap->no_kamar;
+                $tempatTidur->no_tempat_tidur = $i;
+                $tempatTidur->status = 1;
+                $tempatTidur->save();
+            }
+        } else if($kamarRawatinap->kelas == "VIP") {
+                $tempatTidur = new TempatTidur;
+                $tempatTidur->no_kamar = $kamarRawatinap->no_kamar;
+                $tempatTidur->no_tempat_tidur = 1;
+                $tempatTidur->status = 1;
+                $tempatTidur->save();
+        }
+
         return response($kamarRawatinap, 201);
     }
 

@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\PemakaianKamarRawatinap;
-use App\Transaksi;
+use App\TempatTidur;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PemakaianKamarRawatinapController extends Controller
 {
@@ -15,7 +16,14 @@ class PemakaianKamarRawatinapController extends Controller
      */
     public function index()
     {
-        return PemakaianKamarRawatinap::all();
+        $pemakaianKamarRawatinap = PemakaianKamarRawatinap
+                            ::join('transaksi', 'pemakaian_kamar_rawatinap.id_transaksi', '=', 'transaksi.id')
+                            ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
+                            ->join('tenaga_medis', 'pemakaian_kamar_rawatinap.no_pegawai', '=', 'tenaga_medis.no_pegawai')
+                            ->select(DB::raw('pemakaian_kamar_rawatinap.id,pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, pasien.nama_pasien, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))
+                            ->get();          
+
+        return $pemakaianKamarRawatinap;
     }
 
     /**
@@ -61,24 +69,29 @@ class PemakaianKamarRawatinapController extends Controller
      * @param  datetime  $waktu_masuk
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $no_kamar, $no_tempat_tidur, $no_transaksi, $waktu_masuk)
+    public function update(Request $request, $id, $no_kamar, $no_tempat_tidur)
     {
-        $pemakaianKamarRawatinap = PemakaianKamarRawatinap ::where('no_kamar', '=', $no_kamar)
+        $pemakaianKamarRawatinap = PemakaianKamarRawatinap::findOrFail($id);
+
+        // $pemakaianKamarRawatinap->no_kamar = $request->input('no_kamar');
+        // $pemakaianKamarRawatinap->no_tempat_tidur = $request->input('no_tempat_tidur');
+        // $pemakaianKamarRawatinap->no_transaksi = $request->input('no_transaksi');
+        // $pemakaianKamarRawatinap->no_pembayaran = $request->input('no_pembayaran');
+        // $pemakaianKamarRawatinap->waktu_masuk = $request->input('waktu_masuk');
+        date_default_timezone_set('Asia/Jakarta');
+        $pemakaianKamarRawatinap->waktu_keluar = date("Y-m-d H:i:s");
+        // $pemakaianKamarRawatinap->harga = $request->input('harga');
+        // $pemakaianKamarRawatinap->no_pegawai= $request->input('no_pegawai');
+        // $pemakaianKamarRawatinap->status = $request->input('status');
+        $pemakaianKamarRawatinap->save();
+
+        $tempatTidur = TempatTidur::where('no_kamar', '=', $no_kamar)
         ->where('no_tempat_tidur', '=', $no_tempat_tidur)
-        ->where('no_transaksi', '=', $no_transaksi)
-        ->where('waktu_masuk', '=', $waktu_masuk)
         ->first();
 
-        $pemakaianKamarRawatinap->no_kamar = $request->input('no_kamar');
-        $pemakaianKamarRawatinap->no_tempat_tidur = $request->input('no_tempat_tidur');
-        $pemakaianKamarRawatinap->no_transaksi = $request->input('no_transaksi');
-        $pemakaianKamarRawatinap->no_pembayaran = $request->input('no_pembayaran');
-        $pemakaianKamarRawatinap->waktu_masuk = $request->input('waktu_masuk');
-        $pemakaianKamarRawatinap->waktu_keluar = $request->input('waktu_keluar');
-        $pemakaianKamarRawatinap->harga = $request->input('harga');
-        $pemakaianKamarRawatinap->no_pegawai= $request->input('no_pegawai');
-        $pemakaianKamarRawatinap->status = $request->input('status');
-        $pemakaianKamarRawatinap->save();
+        $tempatTidur->status = 1;
+        $tempatTidur->save();
+
 
         return response($pemakaianKamarRawatinap, 200);
     }
@@ -92,14 +105,17 @@ class PemakaianKamarRawatinapController extends Controller
      * @param  datetime  $waktu_masuk
      * @return \Illuminate\Http\Response
      */
-    public function destroy($no_kamar, $no_tempat_tidur, $no_transaksi, $waktu_masuk)
+    public function destroy($id, $no_kamar, $no_tempat_tidur)
     {
-         $deletedRows = PemakaianKamarRawatinap ::where('no_kamar', '=', $no_kamar)
+        $pemakaianKamarRawatinap = PemakaianKamarRawatinap::findOrFail($id);
+        $pemakaianKamarRawatinap->delete();
+
+        $tempatTidur = TempatTidur::where('no_kamar', '=', $no_kamar)
         ->where('no_tempat_tidur', '=', $no_tempat_tidur)
-        ->where('no_transaksi', '=', $no_transaksi)
-        ->where('waktu_masuk', '=', $waktu_masuk)
-        ->first()
-        ->delete();
+        ->first();
+
+        $tempatTidur->status = 1;
+        $tempatTidur->save();
 
         return response('', 204);
 

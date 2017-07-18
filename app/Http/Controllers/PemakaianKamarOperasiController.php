@@ -18,9 +18,10 @@ class PemakaianKamarOperasiController extends Controller
         $pemakaianKamarOperasi = PemakaianKamarOperasi
                             ::join('transaksi', 'pemakaian_kamar_operasi.id_transaksi', '=', 'transaksi.id')
                             ->join('tindakan', 'pemakaian_kamar_operasi.no_tindakan', '=', 'tindakan.no_tindakan')
+                            ->join('daftar_tindakan', 'tindakan.kode_tindakan', '=', 'daftar_tindakan.kode')
                             ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
                             ->join('tenaga_medis', 'tindakan.np_tenaga_medis', '=', 'tenaga_medis.no_pegawai')
-                            ->select(DB::raw('pemakaian_kamar_operasi.no_kamar, pasien.nama_pasien, tenaga_medis.nama, pemakaian_kamar_operasi.waktu_masuk, pemakaian_kamar_operasi.waktu_keluar'))
+                            ->select(DB::raw('pemakaian_kamar_operasi.no_kamar, pasien.nama_pasien, daftar_tindakan.nama as nama_tindakan, tenaga_medis.nama, pemakaian_kamar_operasi.waktu_masuk, pemakaian_kamar_operasi.waktu_keluar'))
                             ->get();          
 
 
@@ -68,13 +69,9 @@ class PemakaianKamarOperasiController extends Controller
      * @param  datetime  $waktu_masuk
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $no_kamar, $no_tindakan, $no_transaksi, $waktu_masuk)
+    public function update(Request $request, $id)
     {
-        $pemakaianKamarOperasi = PemakaianKamarOperasi ::where('no_kamar', '=', $no_kamar)
-        ->where('no_tindakan', '=', $no_tindakan)
-        ->where('id_transaksi', '=', $id_transaksi)
-        ->where('waktu_masuk', '=', $waktu_masuk)
-        ->first();
+        $pemakaianKamarOperasi = PemakaianKamarOperasi::findOrFail($id);
 
         $pemakaianKamarOperasi->no_kamar = $request->input('no_kamar');
         $pemakaianKamarOperasi->no_tindakan = $request->input('no_tindakan');
@@ -97,15 +94,10 @@ class PemakaianKamarOperasiController extends Controller
      * @param  datetime  $waktu_masuk
      * @return \Illuminate\Http\Response
      */
-    public function destroy($no_kamar, $no_tindakan, $id_transaksi, $waktu_masuk)
+    public function destroy($id)
     {
-         $deletedRows = PemakaianKamarOperasi ::where('no_kamar', '=', $no_kamar)
-        ->where('no_tindakan', '=', $no_tindakan)
-        ->where('id_transaksi', '=', $id_transaksi)
-        ->where('waktu_masuk', '=', $waktu_masuk)
-        ->first()
-        ->delete();
-
+        $pemakaianKamarOperasi = PemakaianKamarOperasi::findOrFail($id);
+        $pemakaianKamarOperasi->delete();
         return response('', 204);
 
     }
