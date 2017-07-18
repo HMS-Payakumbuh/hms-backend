@@ -80,7 +80,7 @@ class ObatEceranController extends Controller
     {
         // TO-DO: Make into transaction?
         // TO-DO: Restriction checking (jumlah > 0 etc.)
-        ObatEceran::with('obatEceranItem')->findOrFail($id);
+        $obat_eceran = ObatEceran::with('obatEceranItem')->findOrFail($id);
 
         $obat_eceran->nama_pembeli = $request->input('nama_pembeli');
         $obat_eceran->alamat = $request->input('alamat');
