@@ -29,9 +29,9 @@ class TindakanController extends Controller
      */
     public function store(Request $request)
     {
-      $currentTindakan = ''; 
+      $currentTindakan = '';
       $i = 0;
-      $response = '{}';
+      $response = [];
       foreach ($request->all() as $key => $value) {
         $tindakan = new Tindakan;
         $tindakan->id_transaksi = $value['id_transaksi'];
@@ -58,15 +58,15 @@ class TindakanController extends Controller
       }
 
       $transaksi = Transaksi::findOrFail($tindakan->id_transaksi);
-      $settingBpjs = SettingBpjs::first();
-      $coder_nik = $settingBpjs->coder_nik;
-      $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-      $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
-      $currentTindakan = $currentData['response']['data']['procedure']. $currentTindakan;
-
-      $requestSet = array(
-        'procedure' => $currentTindakan
-      );
+      // $settingBpjs = SettingBpjs::first();
+      // $coder_nik = $settingBpjs->coder_nik;
+      // $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+      // $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
+      // $currentTindakan = $currentData['response']['data']['procedure']. $currentTindakan;
+      //
+      // $requestSet = array(
+      //   'procedure' => $currentTindakan
+      // );
       // $bpjs->setClaimData($requestSet);
 
       return response($response, 201);

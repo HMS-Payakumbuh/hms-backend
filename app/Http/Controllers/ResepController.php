@@ -27,18 +27,20 @@ class ResepController extends Controller
      */
     public function store(Request $request)
     {
+      $resep = [];
+      $i = 0;
       foreach ($request->all() as $key => $value) {
-        $resep = new Resep;
-        $resep->id_transaksi = $value['id_transaksi'];
-        $resep->eksternal = $value['eksternal'];
-        $resep->nama = $value['nama'];
-        $resep->alamat = $value['alamat'];
+        $resep[$i] = new Resep;
+        $resep[$i]->id_transaksi = $value['id_transaksi'];
+        $resep[$i]->eksternal = $value['eksternal'];
+        $resep[$i]->nama = $value['nama'];
+        $resep[$i]->alamat = $value['alamat'];
 
-        $resep->save();
+        $resep[$i]->save();
 
         foreach ($value['resep_item'] as $key => $value) {
           $resep_item = new ResepItem;
-          $resep_item->resep_id = $resep->id;
+          $resep_item->resep_id = $resep[$i]->id;
           $resep_item->aturan_pemakaian = $value['aturan_pemakaian'];
           $resep_item->petunjuk_peracikan = $value['petunjuk_peracikan'];
           $resep_item->save();
@@ -51,6 +53,7 @@ class ResepController extends Controller
             $racikan_item->save();
           }
         }
+        $i++;
       }
       return response ($resep, 201);
     }
