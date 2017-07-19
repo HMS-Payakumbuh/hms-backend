@@ -16,9 +16,14 @@ class CreateObatTebusTable extends Migration
         Schema::create('obat_tebus', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->integer('id_transaksi')->unsigned()->nullable();  
+            $table->integer('id_transaksi')->unsigned()->nullable();
             $table->foreign('id_transaksi')
                   ->references('id')->on('transaksi')
+                  ->onDelete('restrict');
+
+            $table->integer('id_pembayaran')->unsigned()->nullable();  
+            $table->foreign('id_pembayaran')
+                  ->references('id')->on('pembayaran')
                   ->onDelete('restrict');
 
             $table->integer('id_resep')->unsigned(); 

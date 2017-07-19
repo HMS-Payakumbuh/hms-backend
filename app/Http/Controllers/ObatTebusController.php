@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Transaksi;
 use App\ObatTebus;
 use App\StokObat;
 use App\ObatTebusItem;
@@ -54,7 +55,11 @@ class ObatTebusController extends Controller
                                         ->first(); //TO-DO: Error handling - firstOrFail?
             $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_tebus_item->jumlah);
 
-            $obat_tebus_item->save();
+            if ($obat_tebus_item->save()) {
+                $transaksi = Transaksi::findOrFail($obat_tebus->id_transaksi);
+                $transaksi->harga_total += $obat_tebus_item->harga_jual_realisasi * $obat_tebus_item->jumlah;
+                $transaksi->save();
+            }
             $stok_obat_asal->save();
         }           
 
