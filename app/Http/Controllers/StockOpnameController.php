@@ -16,7 +16,7 @@ class StockOpnameController extends Controller
      */
     public function index()
     {
-        return StockOpname::with('stockOpnameItem.jenisObat','stockOpnameItem.obatMasuk')->get();
+        return StockOpname::with('stockOpnameItem.jenisObat','stockOpnameItem.obatMasuk','lokasiData')->get();
     }
 
     /**
@@ -56,7 +56,7 @@ class StockOpnameController extends Controller
      */
     public function show($id)
     {
-         return StockOpname::with('stockOpnameItem.jenisObat','stockOpnameItem.obatMasuk')->findOrFail($id);
+         return StockOpname::with('stockOpnameItem.jenisObat','stockOpnameItem.obatMasuk','lokasiData')->findOrFail($id);
     }
 
     /**
@@ -104,5 +104,14 @@ class StockOpnameController extends Controller
         $stock_opname = StockOpname::find($id);
         $stock_opname->delete();
         return response ($id.' deleted', 200);
+    }
+
+    public function searchByLocation(Request $request)
+    {
+        $stock_opname = StockOpname::with('stockOpnameItem.jenisObat','stockOpnameItem.obatMasuk','lokasiData')
+                        ->where('lokasi', $request->input('lokasi'))
+                        ->get();
+        return response ($stock_opname, 200)
+                -> header('Content-Type', 'application/json');
     }
 }

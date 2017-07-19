@@ -175,4 +175,5 @@ Route::resource('obat_rusak', 'ObatRusakController');
 Route::resource('obat_tebus', 'ObatTebusController');
 Route::resource('obat_tindakan', 'ObatTindakanController');
 Route::resource('obat_eceran', 'ObatEceranController');
+Route::get('stock_opname/search_by_location', 'StockOpnameController@searchByLocation');
 Route::resource('stock_opname', 'StockOpnameController');
