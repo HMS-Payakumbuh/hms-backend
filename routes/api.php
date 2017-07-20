@@ -122,6 +122,9 @@ Route::resource('rawatinap', 'KamarRawatInapController', ['except' => [
   'edit', 'create'
 ]]);
 
+Route::resource('rawatinap', 'KamarRawatInapController', ['except' => [
+  'edit', 'create'
+]]);
 
 Route::resource('pemakaiankamaroperasi', 'PemakaianKamarOperasiController', ['except' => [
   'edit', 'create'
@@ -137,6 +140,8 @@ Route::resource('pemakaiankamarrawatinap', 'PemakaianKamarRawatinapController', 
 
 Route::put('pemakaiankamarrawatinap/{id}/{no_kamar}/{no_tempat_tidur}', 'PemakaianKamarRawatinapController@update');
 Route::delete('pemakaiankamarrawatinap/{id}/{no_kamar}/{no_tempat_tidur}', 'PemakaianKamarRawatinapController@destroy');
+Route::put('pemakaiankamarrawatinap/pindah/{id}', 'PemakaianKamarRawatinapController@pindahKamar');
+Route::get('pemakaiankamarrawatinap/{id}', 'PemakaianKamarRawatinapController@show');
 
 
 Route::resource('kamaroperasi', 'KamarOperasiController', ['except' => [

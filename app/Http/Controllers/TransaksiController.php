@@ -28,7 +28,7 @@ class TransaksiController extends Controller
                             ::join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
                             ->orderBy('transaksi.waktu_masuk_pasien', 'desc')
                             ->where('nama_pasien', '=', $nama_pasien)
-                            ->first();
+                            ->get();
         return $transaksi;
     }
 
