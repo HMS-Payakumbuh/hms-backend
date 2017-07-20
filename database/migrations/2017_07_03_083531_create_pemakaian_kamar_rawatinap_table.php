@@ -19,8 +19,9 @@ class CreatePemakaianKamarRawatinapTable extends Migration
             $table->integer('no_tempat_tidur');
             $table->integer('id_transaksi');
             $table->integer('no_pembayaran')->nullable();
-            $table->dateTime('waktu_masuk');
+            $table->dateTime('waktu_masuk')->nullable();
             $table->dateTime('waktu_keluar')->nullable();
+            $table->date('tanggal_booking')->nullable();
             $table->integer('harga');
             $table->string('no_pegawai');
 
