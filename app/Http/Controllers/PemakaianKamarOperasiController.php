@@ -17,7 +17,7 @@ class PemakaianKamarOperasiController extends Controller
     {
         $pemakaianKamarOperasi = PemakaianKamarOperasi
                             ::join('transaksi', 'pemakaian_kamar_operasi.id_transaksi', '=', 'transaksi.id')
-                            ->join('tindakan', 'pemakaian_kamar_operasi.no_tindakan', '=', 'tindakan.no_tindakan')
+                            ->join('tindakan', 'pemakaian_kamar_operasi.no_tindakan', '=', 'tindakan.id')
                             ->join('daftar_tindakan', 'tindakan.kode_tindakan', '=', 'daftar_tindakan.kode')
                             ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
                             ->join('tenaga_medis', 'tindakan.np_tenaga_medis', '=', 'tenaga_medis.no_pegawai')
