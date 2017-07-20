@@ -51,23 +51,25 @@ class TindakanController extends Controller
 
         if ($tindakan->save()) {
           $currentTindakan = $currentTindakan. "#". $tindakan->kode_tindakan;
-          $transaksi = Transaksi::findOrFail($value['id_transaksi']);
-          $transaksi->harga_total += $value['harga'];
+          $transaksi = Transaksi::findOrFail($tindakan->id_transaksi);
+          $transaksi->harga_total += $tindakan->harga;
           $transaksi->save();
         }
       }
 
-      $transaksi = Transaksi::findOrFail($tindakan->id_transaksi);
-      // $settingBpjs = SettingBpjs::first();
-      // $coder_nik = $settingBpjs->coder_nik;
-      // $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-      // $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
-      // $currentTindakan = $currentData['response']['data']['procedure']. $currentTindakan;
-      //
-      // $requestSet = array(
-      //   'procedure' => $currentTindakan
-      // );
-      // $bpjs->setClaimData($requestSet);
+      // $transaksi = Transaksi::findOrFail($tindakan->id_transaksi);
+      // if ($transaksi->asuransi_pasien == 'bpjs') {
+      //   $settingBpjs = SettingBpjs::first();
+      //   $coder_nik = $settingBpjs->coder_nik;
+      //   $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+      //   $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
+      //   $currentTindakan = $currentData['response']['data']['procedure']. $currentTindakan;
+        
+      //   $requestSet = array(
+      //     'procedure' => $currentTindakan
+      //   );
+      //   $bpjs->setClaimData($requestSet);
+      // }
 
       return response($response, 201);
     }

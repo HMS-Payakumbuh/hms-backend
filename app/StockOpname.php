@@ -15,4 +15,12 @@ class StockOpname extends Model
     {
     	return $this->hasMany('App\StockOpnameItem', 'id_stock_opname');
     }
+
+    /**
+    *	Get the LokasiData of the StockOpname.
+    */
+    public function lokasiData()
+    {
+        return $this->belongsTo('App\LokasiObat', 'lokasi');
+    }
 }

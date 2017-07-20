@@ -15,7 +15,7 @@ class TransaksiController extends Controller
     private function getTransaksi($id = null)
     {
         if (isset($id)) {
-            return Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'pembayaran'])->findOrFail($id);
+            return Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'pembayaran', 'obatTebus.obatTebusItem.jenisObat', 'pemakaianKamarRawatInap'])->findOrFail($id);
         } else {
             return Transaksi::with('pasien')->get();
         }
@@ -104,7 +104,7 @@ class TransaksiController extends Controller
                 'nomor_rm' => $asuransi->id_pasien,
                 'nama_pasien' => $pasien->nama_pasien,
                 'tgl_lahir' => $pasien->tanggal_lahir,
-                'gender' => $pasien->jender + 1
+                'gender' => $pasien->jender
             );
 
             // $newClaimResponse = $bpjs->newClaim($requestNew);
@@ -178,7 +178,7 @@ class TransaksiController extends Controller
         if ($transaksi->status == 'closed' && isset($transaksi->no_sep)) {
             $coder_nik = SettingBpjs::first()->coder_nik;
             $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-            // $bpjs->finalizeClaim();
+            $bpjs->finalizeClaim();
         }
 
         return response()->json([

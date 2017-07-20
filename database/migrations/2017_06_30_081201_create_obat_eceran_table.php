@@ -16,6 +16,16 @@ class CreateObatEceranTable extends Migration
         Schema::create('obat_eceran', function (Blueprint $table) {
             $table->increments('id');
 
+            $table->integer('id_transaksi')->unsigned()->nullable();
+            $table->foreign('id_transaksi')
+                  ->references('id')->on('transaksi')
+                  ->onDelete('restrict');
+
+            $table->integer('id_pembayaran')->unsigned()->nullable();  
+            $table->foreign('id_pembayaran')
+                  ->references('id')->on('pembayaran')
+                  ->onDelete('restrict');
+
             $table->string('nama_pembeli');
             $table->string('alamat');
             $table->dateTime('waktu_transaksi'); // Atau pakai timestamp?
