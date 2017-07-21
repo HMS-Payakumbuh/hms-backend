@@ -48,7 +48,8 @@ class ObatTebusController extends Controller
             $obat_tebus_item->keterangan = $value['keterangan'];
             $obat_tebus_item->asal = $value['asal'];
             $obat_tebus_item->id_resep_item = $value['id_resep_item'];
-            $obat_tebus_item->id_racikan_item = $value['id_racikan_item'];            
+            $obat_tebus_item->id_racikan_item = $value['id_racikan_item'];      
+            $obat_tebus_item->id_pembayaran = $value['id_pembayaran'];           
 
             $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_tebus_item->id_obat_masuk)
                                         ->where('lokasi', $obat_tebus_item->asal)
@@ -104,7 +105,8 @@ class ObatTebusController extends Controller
             $obat_tebus_item->keterangan = $value['keterangan'];
             $obat_tebus_item->asal = $value['asal'];
             $obat_tebus_item->id_resep_item = $value['id_resep_item'];
-            $obat_tebus_item->id_racikan_item = $value['id_racikan_item'];            
+            $obat_tebus_item->id_racikan_item = $value['id_racikan_item'];      
+            $obat_tebus_item->id_pembayaran = $value['id_pembayaran'];               
 
             $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_tebus_item->id_obat_masuk)
                                         ->where('lokasi', $obat_tebus_item->asal)

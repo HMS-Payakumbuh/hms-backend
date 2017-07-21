@@ -35,6 +35,9 @@ class ResepController extends Controller
         $resep[$i]->eksternal = $value['eksternal'];
         $resep[$i]->nama = $value['nama'];
         $resep[$i]->alamat = $value['alamat'];
+        $resep[$i]->nama_dokter = $value['nama_dokter'];
+        $resep[$i]->no_telp = $value['no_telp'];
+        $resep[$i]->umur = $value['umur'];
 
         $resep[$i]->save();
 
@@ -83,6 +86,11 @@ class ResepController extends Controller
         $resep->eksternal = $value['eksternal'];
         $resep->nama = $value['nama'];
         $resep->alamat = $value['alamat'];
+        $resep->nama = $value['nama'];
+        $resep->alamat = $value['alamat'];
+        $resep->nama_dokter = $value['nama_dokter'];
+        $resep->no_telp = $value['no_telp'];
+        $resep->umur = $value['umur'];
         $resep->save();
 
         return response ($resep, 200)
