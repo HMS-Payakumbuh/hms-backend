@@ -18,6 +18,9 @@ class CreateResepTable extends Migration
             $table->integer('id_transaksi')->unsigned()->nullable();
             $table->string('nama')->nullable();
             $table->string('alamat')->nullable();
+            $table->string('nama_dokter')->nullable();
+            $table->string('no_telp')->nullable();
+            $table->integer('umur')->nullable();
             $table->boolean('eksternal');
             $table->timestamps();
             $table

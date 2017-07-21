@@ -30,8 +30,23 @@ class ObatTebusController extends Controller
     {
         // TO-DO: Make into transaction?
         // TO-DO: Restriction checking (jumlah > 0 etc.)
+        $transaksi = new Transaksi;        
+        $transaksi->kode_jenis_pasien = 1;
+        $transaksi->asuransi_pasien = 'tunai';        
+        $transaksi->harga_total = 0;
+        $transaksi->jenis_rawat = 2;
+        $transaksi->kelas_rawat = 3;
+        $transaksi->status_naik_kelas = 0;
+        $transaksi->status = 'open';
+        $transaksi->save();
+        $transaksi = Transaksi::findOrFail($transaksi->id);
+        $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
+        $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
+        $transaksi->no_transaksi = 'INV' . $code_str;
+        $transaksi->save();
+        
         $obat_tebus = new ObatTebus;
-        $obat_tebus->id_transaksi = $request->input('id_transaksi');    
+        $obat_tebus->id_transaksi = $transaksi->id;    
         $obat_tebus->id_resep = $request->input('id_resep');
         date_default_timezone_set('Asia/Jakarta');
         $obat_tebus->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
@@ -48,7 +63,7 @@ class ObatTebusController extends Controller
             $obat_tebus_item->keterangan = $value['keterangan'];
             $obat_tebus_item->asal = $value['asal'];
             $obat_tebus_item->id_resep_item = $value['id_resep_item'];
-            $obat_tebus_item->id_racikan_item = $value['id_racikan_item'];            
+            $obat_tebus_item->id_racikan_item = $value['id_racikan_item'];         
 
             $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_tebus_item->id_obat_masuk)
                                         ->where('lokasi', $obat_tebus_item->asal)

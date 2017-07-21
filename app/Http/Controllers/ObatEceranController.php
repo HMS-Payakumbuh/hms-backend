@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\ObatEceran;
+use App\StokObat;
 use App\ObatEceranItem;
 
 class ObatEceranController extends Controller
@@ -47,9 +48,9 @@ class ObatEceranController extends Controller
             $obat_eceran_item->keterangan = $value['keterangan'];
 
             $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_eceran_item->id_obat_masuk)
-                                        ->where('lokasi', $obat_eceran_item->asal)
-                                        ->first(); //TO-DO: Error handling - firstOrFail?
-            $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_eceran_item->jumlah);
+                                        ->where('lokasi', 2)
+                                        ->firstOrFail(); //TO-DO: Error handling - firstOrFail?
+            $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_eceran_item->jumlah);    
 
             $obat_eceran_item->save();
             $stok_obat_asal->save();
@@ -98,10 +99,10 @@ class ObatEceranController extends Controller
             $obat_eceran_item->id_obat_masuk = $value['id_obat_masuk'];
             $obat_eceran_item->jumlah = $value['jumlah'];
             $obat_eceran_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
-            $obat_eceran_item->keterangan = $value['keterangan'];
+            $obat_eceran_item->keterangan = $value['keterangan'];    
 
             $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_eceran_item->id_obat_masuk)
-                                        ->where('lokasi', $obat_eceran_item->asal)
+                                        ->where('lokasi', 2)
                                         ->first(); //TO-DO: Error handling - firstOrFail?
             $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_eceran_item->jumlah);
 
