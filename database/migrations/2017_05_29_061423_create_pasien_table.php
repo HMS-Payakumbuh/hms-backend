@@ -22,6 +22,7 @@ class CreatePasienTable extends Migration
             $table->string('agama')->nullable();
             $table->string('kontak')->nullable();
             $table->string('gol_darah')->nullable();
+            $table->uuid('kode_pasien');
             $table->timestamps();
         });
     }
