@@ -38,6 +38,7 @@ class PasienController extends Controller
         $pasien->agama = $request->input('agama');
         $pasien->alamat = $request->input('alamat');
         $pasien->kontak = $request->input('kontak');
+        $pasien->gol_darah = $request->input('gol_darah');
         $pasien->save();
 
         return response($pasien, 201);
@@ -70,6 +71,7 @@ class PasienController extends Controller
         $pasien->agama = $request->input('agama');
         $pasien->alamat = $request->input('alamat');
         $pasien->kontak = $request->input('kontak');
+        $pasien->gol_darah = $request->input('gol_darah');
         $pasien->save();
 
         return response($pasien, 200);
