@@ -49,6 +49,11 @@ class CreateObatTebusItemTable extends Migration
                   ->references('id')->on('racikan_item')
                   ->onDelete('restrict');
 
+            $table->integer('id_pembayaran')->unsigned()->nullable();
+            $table->foreign('id_pembayaran')
+                  ->references('id')->on('pembayaran')
+                  ->onDelete('restrict');
+
             $table->decimal('harga_jual_realisasi', 12, 2);
                   
             $table->timestamps();               
