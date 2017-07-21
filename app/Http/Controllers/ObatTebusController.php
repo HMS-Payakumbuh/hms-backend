@@ -7,6 +7,7 @@ use App\Transaksi;
 use App\ObatTebus;
 use App\StokObat;
 use App\ObatTebusItem;
+use App\Resep;
 
 class ObatTebusController extends Controller
 {
@@ -30,24 +31,31 @@ class ObatTebusController extends Controller
     {
         // TO-DO: Make into transaction?
         // TO-DO: Restriction checking (jumlah > 0 etc.)
-        $transaksi = new Transaksi;        
-        $transaksi->kode_jenis_pasien = 1;
-        $transaksi->asuransi_pasien = 'tunai';        
-        $transaksi->harga_total = 0;
-        $transaksi->jenis_rawat = 2;
-        $transaksi->kelas_rawat = 3;
-        $transaksi->status_naik_kelas = 0;
-        $transaksi->status = 'open';
-        $transaksi->save();
-        $transaksi = Transaksi::findOrFail($transaksi->id);
-        $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
-        $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
-        $transaksi->no_transaksi = 'INV' . $code_str;
-        $transaksi->save();
-        
+
         $obat_tebus = new ObatTebus;
-        $obat_tebus->id_transaksi = $transaksi->id;    
         $obat_tebus->id_resep = $request->input('id_resep');
+
+        $resep = Resep::findOrFail($obat_tebus->id_resep);
+
+        if ($resep->eksternal) {
+            $transaksi = new Transaksi;        
+            $transaksi->kode_jenis_pasien = 1;
+            $transaksi->asuransi_pasien = 'tunai';        
+            $transaksi->harga_total = 0;
+            $transaksi->jenis_rawat = 2;
+            $transaksi->kelas_rawat = 3;
+            $transaksi->status_naik_kelas = 0;
+            $transaksi->status = 'open';
+            $transaksi->save();
+            $transaksi = Transaksi::findOrFail($transaksi->id);
+            $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
+            $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
+            $transaksi->no_transaksi = 'INV' . $code_str;
+            $transaksi->save();
+        } else {
+            $obat_tebus->id_transaksi = $request->input('id_transaksi');    
+        }
+
         date_default_timezone_set('Asia/Jakarta');
         $obat_tebus->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
         $obat_tebus->save();
