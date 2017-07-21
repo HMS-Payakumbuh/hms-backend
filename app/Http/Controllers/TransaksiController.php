@@ -15,7 +15,7 @@ class TransaksiController extends Controller
     private function getTransaksi($id = null)
     {
         if (isset($id)) {
-            return Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'pembayaran', 'obatTebus.obatTebusItem.jenisObat', 'pemakaianKamarRawatInap'])->findOrFail($id);
+            return Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'pembayaran', 'obatTebus.obatTebusItem.jenisObat', 'pemakaianKamarRawatInap.kamar_rawatinap'])->findOrFail($id);
         } else {
             return Transaksi::with('pasien')->get();
         }
