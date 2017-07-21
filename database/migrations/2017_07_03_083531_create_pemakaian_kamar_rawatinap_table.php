@@ -18,7 +18,7 @@ class CreatePemakaianKamarRawatinapTable extends Migration
             $table->string('no_kamar');
             $table->integer('no_tempat_tidur');
             $table->integer('id_transaksi');
-            $table->integer('no_pembayaran')->nullable();
+            $table->integer('id_pembayaran')->nullable();
             $table->dateTime('waktu_masuk')->nullable();
             $table->dateTime('waktu_keluar')->nullable();
             $table->date('tanggal_booking')->nullable();
@@ -38,7 +38,7 @@ class CreatePemakaianKamarRawatinapTable extends Migration
                     ->on('transaksi')
                     ->onDelete('cascade');
 
-            $table->foreign('no_pembayaran')
+            $table->foreign('id_pembayaran')
                     ->references('id')
                     ->on('pembayaran')
                     ->onDelete('cascade');
