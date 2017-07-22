@@ -95,8 +95,10 @@ Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
 ]]);
 
 Route::resource('hasil_lab', 'HasilLabController', ['except' => [
-  'edit', 'create'
+  'edit', 'create', 'get_empty'
 ]]);
+
+Route::get('hasil_lab/empty/{no_pegawai}', 'HasilLabController@get_empty');
 
 Route::resource('ambulans', 'AmbulansController', ['except' => [
   'edit', 'create'
