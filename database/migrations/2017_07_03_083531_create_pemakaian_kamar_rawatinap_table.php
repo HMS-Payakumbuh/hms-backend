@@ -61,7 +61,7 @@ class CreatePemakaianKamarRawatinapTable extends Migration
             $table->dropForeign(['no_kamar', 'no_tempat_tidur']);
             $table->dropForeign(['no_pegawai']);
             $table->dropForeign(['id_transaksi']);
-            $table->dropForeign(['no_pembayaran']);
+            $table->dropForeign(['id_pembayaran']);
         });
         Schema::dropIfExists('pemakaian_kamar_rawatinap');
     }
