@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\PemakaianKamarRawatinap;
+use App\KamarRawatinap;
 use App\TempatTidur;
 use App\Transaksi;
 use App\SettingBpjs;
@@ -110,6 +111,22 @@ class PemakaianKamarRawatinapController extends Controller
         $pemakaianKamarRawatinap->tanggal_booking = null;
         $pemakaianKamarRawatinap->save();
 
+        $transaksi = Transaksi::findOrFail($pemakaianKamarRawatinap->id_transaksi);
+        $kamar = KamarRawatinap::findOrFail($pemakaianKamarRawatinap->no_kamar);
+        $transaksi->jenis_rawat = 1;
+        $transaksi->kelas_rawat = $kamar->kelas;
+        $transaksi->save();
+        if ($transaksi->no_sep != null && $kamar->jenis_kamar != "ICU") {
+            // $settingBpjs = SettingBpjs::first();
+            // $coder_nik = $settingBpjs->coder_nik;
+            // $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+            // $requestSet = array(
+            //     'jenis_rawat' => $transaksi->jenis_rawat;
+            //     'kelas_rawat' => $transaksi->kelas_rawat;
+            // );
+            // $bpjs->setClaimData($requestSet);
+        }
+
         return response($pemakaianKamarRawatinap, 201);
     }
 
@@ -166,7 +183,7 @@ class PemakaianKamarRawatinapController extends Controller
      */
     public function update(Request $request, $id, $no_kamar, $no_tempat_tidur)
     {
-        $pemakaianKamarRawatinap = PemakaianKamarRawatinap::findOrFail($id);
+        $pemakaianKamarRawatinap = PemakaianKamarRawatinap::with('kamar_rawatinap')->findOrFail($id);
 
         // $pemakaianKamarRawatinap->no_kamar = $request->input('no_kamar');
         // $pemakaianKamarRawatinap->no_tempat_tidur = $request->input('no_tempat_tidur');
@@ -185,6 +202,8 @@ class PemakaianKamarRawatinapController extends Controller
             $transaksi->harga_total += $pemakaianKamarRawatinap->harga;
             $transaksi->save();
 
+            $kamar = $pemakaianKamarRawatinap->kamar_rawatinap;
+
             // $carbon = Carbon::instance($pemakaianKamarRawatinap->waktu_keluar);
             if ($transaksi->no_sep != null) {
                 // $settingBpjs = SettingBpjs::first();
@@ -194,15 +213,22 @@ class PemakaianKamarRawatinapController extends Controller
                 //     'tgl_pulang' => $carbon->toDateTimeString();
                 // );
                 // $bpjs->setClaimData($requestSet);
+                // $waktuMasuk = Carbon::parse($pemakaianKamarRawatinap->waktu_masuk);
+                // $waktuKeluar = Carbon::parse($pemakaianKamarRawatinap->waktu_keluar);
 
-                // if ($transaksi->status_naik_kelas == 1) {
-                //     $waktuMasuk = Carbon::parse($pemakaianKamarRawatinap->waktu_masuk);
-                //     $waktuKeluar = Carbon::parse($pemakaianKamarRawatinap->waktu_keluar);
-                    
+                // if ($transaksi->status_naik_kelas == 1 && $kamar->jenis_kamar != "ICU") {                    
                 //     $requestSet = array(
                 //         'upgrade_class_los' => $waktuMasuk->diffInDays($waktuKeluar)
                 //     );
                 //     $bpjs->setClaimData($requestSet);
+                // }
+                // else {
+                //     if ($kamar->jenis_kamar == "ICU") {
+                //         $requestSet = array(
+                //             'icu_los' => $waktuMasuk->diffInDays($waktuKeluar)
+                //         );
+                //         $bpjs->setClaimData($requestSet);
+                //     }
                 // }
             }
         }
@@ -288,20 +314,25 @@ class PemakaianKamarRawatinapController extends Controller
                     $transaksi->status_naik_kelas == 1;
                     $transaksi->save();
 
-                    // if ($transaksi->no_sep != null) {
-                    //     $settingBpjs = SettingBpjs::first();
-                    //     $coder_nik = $settingBpjs->coder_nik;
-                    //     $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+                    if ($transaksi->no_sep != null) {
+                        // $settingBpjs = SettingBpjs::first();
+                        // $coder_nik = $settingBpjs->coder_nik;
+                        // $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
 
-                    //     $kamar = KamarRawatinap::where('no_kamar', '=', $pemakaianKamarRawatinap->no_kamar)
-                    //         ->first();
-
-                    //     $requestSet = array(
-                    //       'upgrade_class_ind' => $transaksi->status_naik_kelas,
-                    //       'upgrade_class_class' => $kamar->kelas
-                    //     );
-                    //     $bpjs->setClaimData($requestSet);
-                    // }
+                        // $kamar = KamarRawatinap::findOrFail($pemakaianKamarRawatinap->no_kamar);
+                        // $kelas = "kelas_";
+                        // if ($kamar->kelas == "vip") {
+                        //     $kelas = "vip";
+                        // }
+                        // else {
+                        //     $kelas = $kelas . $kamar->kelas;
+                        // }
+                        // $requestSet = array(
+                        //   'upgrade_class_ind' => $transaksi->status_naik_kelas,
+                        //   'upgrade_class_class' => $kelas
+                        // );
+                        // $bpjs->setClaimData($requestSet);
+                    }
 
                 }
         }

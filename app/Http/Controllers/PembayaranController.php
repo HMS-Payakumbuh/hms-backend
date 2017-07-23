@@ -18,7 +18,7 @@ class PembayaranController extends Controller
     private function getPembayaran($id = null)
     {
         if (isset($id)) {
-            return Pembayaran::with(['transaksi.pasien', 'transaksi.obatTebus.resep', 'transaksi.obatEceran', 'tindakan.daftarTindakan', 'klaim', 'obatTebusItem.jenisObat', 'obatEceranItem.jenisObat'])->findOrFail($id);
+            return Pembayaran::with(['transaksi.pasien', 'transaksi.obatTebus.resep', 'transaksi.obatEceran', 'tindakan.daftarTindakan', 'klaim', 'obatTebusItem.jenisObat', 'obatEceranItem.jenisObat', 'pemakaianKamarRawatInap.kamar_rawatinap'])->findOrFail($id);
         } else {
             return Pembayaran::with(['transaksi.pasien', 'transaksi.obatTebus.resep', 'transaksi.obatEceran'])->get();
         }
