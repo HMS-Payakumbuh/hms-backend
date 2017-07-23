@@ -14,7 +14,8 @@
         "laravelcollective/html": "^5.4",
         "predis/predis": "~1.1@dev",
         "symfony/psr-http-message-bridge": "^1.0",
-        "webpatser/laravel-uuid": "2.*"
+        "webpatser/laravel-uuid": "2.*",
+		"maatwebsite/excel": "~2.1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
