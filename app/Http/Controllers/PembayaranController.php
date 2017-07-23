@@ -9,6 +9,8 @@ use App\Klaim;
 use App\Transaksi;
 use App\Asuransi;
 use App\Tindakan;
+use App\ObatTebusItem;
+use App\PemakaianKamarRawatInap;
 
 class PembayaranController extends Controller
 {
@@ -64,6 +66,24 @@ class PembayaranController extends Controller
                 $tindakan = Tindakan::findOrFail($value);
                 $tindakan->id_pembayaran = $pembayaran->id;
                 $tindakan->save();
+            }
+        }
+
+        if (isset($payload['obatTebus']) && count($payload['obatTebus']) > 0) {
+            $arrObatTebus = $payload['obatTebus'];
+            foreach ($arrObatTebus as $value) {
+                $obatTebus = ObatTebusItem::findOrFail($value);
+                $obatTebus->id_pembayaran = $pembayaran->id;
+                $obatTebus->save();
+            }
+        }
+
+        if (isset($payload['kamarRawatInap']) && count($payload['kamarRawatInap']) > 0) {
+            $arrKamarRawatInap = $payload['kamarRawatInap'];
+            foreach ($arrKamarRawatInap as $value) {
+                $kamarRawatInap = PemakaianKamarRawatInap::findOrFail($value);
+                $kamarRawatInap->id_pembayaran = $pembayaran->id;
+                $kamarRawatInap->save();
             }
         }
 
