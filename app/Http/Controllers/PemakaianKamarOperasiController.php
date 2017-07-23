@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\PemakaianKamarOperasi;
+use App\Tindakan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -20,9 +21,8 @@ class PemakaianKamarOperasiController extends Controller
                             ->join('tindakan', 'pemakaian_kamar_operasi.no_tindakan', '=', 'tindakan.id')
                             ->join('daftar_tindakan', 'tindakan.kode_tindakan', '=', 'daftar_tindakan.kode')
                             ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
-                            ->join('tenaga_medis', 'tindakan.np_tenaga_medis', '=', 'tenaga_medis.no_pegawai')
-                            ->select(DB::raw('pemakaian_kamar_operasi.no_kamar, pasien.nama_pasien, daftar_tindakan.nama as nama_tindakan, tenaga_medis.nama, pemakaian_kamar_operasi.waktu_masuk, pemakaian_kamar_operasi.waktu_keluar'))
-                            ->get();          
+                            ->select(DB::raw('pemakaian_kamar_operasi.id, pemakaian_kamar_operasi.no_kamar, pemakaian_kamar_operasi.id_transaksi, pasien.nama_pasien, daftar_tindakan.nama as nama_tindakan, pemakaian_kamar_operasi.waktu_masuk, pemakaian_kamar_operasi.waktu_keluar'))
+                            ->get();
 
 
         return $pemakaianKamarOperasi;
@@ -36,9 +36,14 @@ class PemakaianKamarOperasiController extends Controller
      */
     public function store(Request $request)
     {
+        $tindakan = Tindakan
+                    ::select(DB::raw('tindakan.id'))
+                    ->orderBy('tindakan.id','desc')
+                    ->first();
+
         $pemakaianKamarOperasi = new PemakaianKamarOperasi;
         $pemakaianKamarOperasi->no_kamar = $request->input('no_kamar');
-        $pemakaianKamarOperasi->no_tindakan = $request->input('no_tindakan');
+        $pemakaianKamarOperasi->no_tindakan = $tindakan->id;
         $pemakaianKamarOperasi->id_transaksi = $request->input('id_transaksi');
         $pemakaianKamarOperasi->no_pembayaran = $request->input('no_pembayaran');
         $pemakaianKamarOperasi->waktu_masuk = $request->input('waktu_masuk');

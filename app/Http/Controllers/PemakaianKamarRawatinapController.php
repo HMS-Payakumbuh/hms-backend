@@ -29,6 +29,22 @@ class PemakaianKamarRawatinapController extends Controller
         return $pemakaianKamarRawatinap;
     }
 
+    public function getAllPemakaianKamarByNoKamar($no_kamar)
+    {
+        $pemakaianKamarRawatinap = PemakaianKamarRawatinap
+                            ::join('transaksi', 'pemakaian_kamar_rawatinap.id_transaksi', '=', 'transaksi.id')
+                            ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
+                            ->join('tenaga_medis', 'pemakaian_kamar_rawatinap.no_pegawai', '=', 'tenaga_medis.no_pegawai')
+                            ->select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.id_transaksi, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, pasien.nama_pasien, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))    
+                            ->where('pemakaian_kamar_rawatinap.waktu_keluar', '=', null)
+                            ->where('pemakaian_kamar_rawatinap.waktu_masuk', '!=', null)
+                            ->where('pemakaian_kamar_rawatinap.no_kamar', '=', $no_kamar) 
+                            ->orderBy('pemakaian_kamar_rawatinap.no_tempat_tidur', 'asc')         
+                            ->get();          
+
+        return $pemakaianKamarRawatinap;
+    }
+
     public function getAllPemakaianKamarBooked()
     {
         $pemakaianKamarRawatinap = PemakaianKamarRawatinap
