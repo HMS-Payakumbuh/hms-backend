@@ -35,6 +35,6 @@ class Pembayaran extends Model
 
 	public function pemakaianKamarRawatInap()
 	{
-		return $this->hasMany('App\PemakaianKamarRawatInap', 'id_transaksi');
+		return $this->hasMany('App\PemakaianKamarRawatInap', 'id_pembayaran');
 	}
 }
