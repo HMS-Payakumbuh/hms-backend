@@ -185,7 +185,7 @@ class PemakaianKamarRawatinapController extends Controller
             $transaksi->harga_total += $pemakaianKamarRawatinap->harga;
             $transaksi->save();
 
-            $carbon = Carbon::instance($pemakaianKamarRawatinap->waktu_keluar);
+            // $carbon = Carbon::instance($pemakaianKamarRawatinap->waktu_keluar);
             if ($transaksi->no_sep != null) {
                 // $settingBpjs = SettingBpjs::first();
                 // $coder_nik = $settingBpjs->coder_nik;
@@ -257,7 +257,7 @@ class PemakaianKamarRawatinapController extends Controller
                     //       'icu_los' => $waktuMasuk->diffInDays($now)
                     //     );
                     //     $bpjs->setClaimData($requestSet);
-                    }
+                    // }
                 }
             }
         }
