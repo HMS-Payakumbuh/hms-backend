@@ -28,7 +28,7 @@ class RekamMedisController extends Controller
     {
         $rekam_medis = new RekamMedis;
         $rekam_medis->id_pasien = $request->input('id_pasien');
-        $rekam_medis->tanggal_waktu = Carbon::now();
+        $rekam_medis->tanggal_waktu = $request->input('tanggal_waktu');
         $rekam_medis->np_dokter = $request->input('np_dokter');
         $rekam_medis->hasil_pemeriksaan = $request->input('hasil_pemeriksaan');
         $rekam_medis->anamnesis = $request->input('anamnesis');
@@ -52,7 +52,7 @@ class RekamMedisController extends Controller
                             ->orderBy('tanggal_waktu', 'desc')
                             ->where('id_pasien', '=', $id_pasien)
                             ->get();
-        return $rekam_medis;                    
+        return $rekam_medis;
     }
 
     /**
