@@ -21,7 +21,6 @@ class TransaksiController extends Controller
         }
     }
 
-
     public function getRecentTransaksi($nama_pasien)
     {
         $transaksi = Transaksi
@@ -201,6 +200,16 @@ class TransaksiController extends Controller
     {
         $transaksi = Transaksi::where('id_pasien', $request->input('id_pasien'))
                                 ->get();
+        return response ($transaksi, 200)
+                -> header('Content-Type', 'application/json');
+    }
+
+    public function getLatestOpenTransaksi($id_pasien)
+    {
+        $transaksi = Transaksi::where('id_pasien', $id_pasien)
+                            ->where('status', '=', 'open')
+                            ->orderBy('transaksi.waktu_masuk_pasien', 'desc')
+                            ->firstOrFail();
         return response ($transaksi, 200)
                 -> header('Content-Type', 'application/json');
     }

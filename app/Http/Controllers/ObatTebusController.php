@@ -37,7 +37,9 @@ class ObatTebusController extends Controller
 
         $resep = Resep::findOrFail($obat_tebus->id_resep);
 
-        if ($resep->eksternal) {
+        if ($request->input('id_transaksi')) {
+            $obat_tebus->id_transaksi = $request->input('id_transaksi');               
+        } else {
             $transaksi = new Transaksi;        
             $transaksi->kode_jenis_pasien = 1;
             $transaksi->asuransi_pasien = 'tunai';        
@@ -47,13 +49,14 @@ class ObatTebusController extends Controller
             $transaksi->status_naik_kelas = 0;
             $transaksi->status = 'open';
             $transaksi->save();
+
             $transaksi = Transaksi::findOrFail($transaksi->id);
             $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
             $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
             $transaksi->no_transaksi = 'INV' . $code_str;
             $transaksi->save();
-        } else {
-            $obat_tebus->id_transaksi = $request->input('id_transaksi');    
+
+            $obat_tebus->id_transaksi = $transaksi->id;  
         }
 
         date_default_timezone_set('Asia/Jakarta');
