@@ -43,6 +43,7 @@ Route::put('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@update');
 Route::delete('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@destroy');
 
 Route::post('bpjs', 'BpjsController@process');
+Route::get('transaksi/latest/{id_pasien}', 'TransaksiController@getLatestOpenTransaksi');
 Route::get('transaksi/search_by_pasien', 'TransaksiController@searchByPasien');
 Route::resource('transaksi', 'TransaksiController');
 Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTransaksi');
