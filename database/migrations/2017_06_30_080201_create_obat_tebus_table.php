@@ -21,11 +21,6 @@ class CreateObatTebusTable extends Migration
                   ->references('id')->on('transaksi')
                   ->onDelete('restrict');
 
-            $table->integer('id_pembayaran')->unsigned()->nullable();  
-            $table->foreign('id_pembayaran')
-                  ->references('id')->on('pembayaran')
-                  ->onDelete('restrict');
-
             $table->integer('id_resep')->unsigned(); 
             $table->foreign('id_resep')
                   ->references('id')->on('resep')

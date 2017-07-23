@@ -9,15 +9,18 @@ use App\Klaim;
 use App\Transaksi;
 use App\Asuransi;
 use App\Tindakan;
+use App\ObatTebusItem;
+use App\ObatEceranItem;
+use App\PemakaianKamarRawatInap;
 
 class PembayaranController extends Controller
 {
     private function getPembayaran($id = null)
     {
         if (isset($id)) {
-            return Pembayaran::with(['transaksi.pasien', 'tindakan.daftarTindakan', 'klaim'])->findOrFail($id);
+            return Pembayaran::with(['transaksi.pasien', 'transaksi.obatTebus.resep', 'transaksi.obatEceran', 'tindakan.daftarTindakan', 'klaim', 'obatTebusItem.jenisObat', 'obatEceranItem.jenisObat'])->findOrFail($id);
         } else {
-            return Pembayaran::with('transaksi.pasien')->get();
+            return Pembayaran::with(['transaksi.pasien', 'transaksi.obatTebus.resep', 'transaksi.obatEceran'])->get();
         }
     }
 
@@ -67,8 +70,35 @@ class PembayaranController extends Controller
             }
         }
 
+        if (isset($payload['obatTebus']) && count($payload['obatTebus']) > 0) {
+            $arrObatTebus = $payload['obatTebus'];
+            foreach ($arrObatTebus as $value) {
+                $obatTebus = ObatTebusItem::findOrFail($value);
+                $obatTebus->id_pembayaran = $pembayaran->id;
+                $obatTebus->save();
+            }
+        }
+
+        if (isset($payload['obatEceran']) && count($payload['obatEceran']) > 0) {
+            $arrObatEceran = $payload['obatEceran'];
+            foreach ($arrObatEceran as $value) {
+                $obatEceran = ObatEceranItem::findOrFail($value);
+                $obatEceran->id_pembayaran = $pembayaran->id;
+                $obatEceran->save();
+            }
+        }
+
+        if (isset($payload['kamarRawatInap']) && count($payload['kamarRawatInap']) > 0) {
+            $arrKamarRawatInap = $payload['kamarRawatInap'];
+            foreach ($arrKamarRawatInap as $value) {
+                $kamarRawatInap = PemakaianKamarRawatInap::findOrFail($value);
+                $kamarRawatInap->id_pembayaran = $pembayaran->id;
+                $kamarRawatInap->save();
+            }
+        }
+
         try {
-            if ($pembayaran->metode_bayar != 'tunai' && $pembayaran->metode_bayar != 'bpjs') {
+            if ($pembayaran->metode_bayar != 'tunai') {
                 $transaksi = Transaksi::findOrFail($pembayaran->id_transaksi);
                 $asuransi = DB::table('asuransi')->select('id')->where([
                     ['nama_asuransi', '=', $pembayaran->metode_bayar],

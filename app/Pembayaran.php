@@ -23,8 +23,18 @@ class Pembayaran extends Model
 		return $this->hasMany('App\Tindakan', 'id_pembayaran');
 	}
 
-	public function obat()
+	public function obatTebusItem()
 	{
-		return $this->hasMany('App\ObatTebus', 'id_pembayaran');
+		return $this->hasMany('App\ObatTebusItem', 'id_pembayaran');
+	}
+
+	public function obatEceranItem()
+	{
+		return $this->hasMany('App\ObatEceranItem', 'id_pembayaran');
+	}
+
+	public function pemakaianKamarRawatInap()
+	{
+		return $this->hasMany('App\PemakaianKamarRawatInap', 'id_transaksi');
 	}
 }

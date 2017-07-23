@@ -27,3 +27,16 @@ To install:
 $ composer require guzzlehttp/guzzle
 $ composer require symfony/psr-http-message-bridge
 ```
+## Use Laravel--UUID
+To install:
+```sh
+$ composer require "webpatser/laravel-uuid:2.*"
+```
+For Laravel 5: edit `config/app.php` and add the `alias`
+
+```php
+'aliases' => [
+    // ommited
+    'Uuid' => Webpatser\Uuid\Uuid::class,
+]
+```

@@ -23,9 +23,10 @@ Route::resource('pasien', 'PasienController', ['except' => [
 ]]);
 
 Route::resource('rekam_medis', 'RekamMedisController', ['except' => [
-  'edit', 'show', 'create'
+  'edit', 'update', 'show', 'create'
 ]]);
 Route::get('rekam_medis/{id_pasien}', 'RekamMedisController@show');
+Route::put('rekam_medis/{id_pasien}/{tanggal_waktu}', 'RekamMedisController@update');
 
 Route::resource('antrian_front_office', 'AntrianFrontOfficeController', ['except' => [
   'edit', 'show', 'create', 'update', 'delete'
@@ -42,6 +43,7 @@ Route::put('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@update');
 Route::delete('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@destroy');
 
 Route::post('bpjs', 'BpjsController@process');
+Route::get('transaksi/latest/{id_pasien}', 'TransaksiController@getLatestOpenTransaksi');
 Route::get('transaksi/search_by_pasien', 'TransaksiController@searchByPasien');
 Route::resource('transaksi', 'TransaksiController');
 Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTransaksi');
@@ -101,8 +103,10 @@ Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
 ]]);
 
 Route::resource('hasil_lab', 'HasilLabController', ['except' => [
-  'edit', 'create'
+  'edit', 'create', 'get_empty'
 ]]);
+
+Route::get('hasil_lab/empty/{no_pegawai}', 'HasilLabController@get_empty');
 
 Route::resource('ambulans', 'AmbulansController', ['except' => [
   'edit', 'create'

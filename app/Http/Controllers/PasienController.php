@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Pasien;
 use App\Asuransi;
-use Carbon\Carbon; 
+use Carbon\Carbon;
+use Webpatser\Uuid\Uuid;
 
 class PasienController extends Controller
 {
@@ -38,6 +39,11 @@ class PasienController extends Controller
         $pasien->agama = $request->input('agama');
         $pasien->alamat = $request->input('alamat');
         $pasien->kontak = $request->input('kontak');
+        $pasien->gol_darah = $request->input('gol_darah');
+        $pasien->save();
+
+        //generate uuid
+        $pasien->kode_pasien = Uuid::generate(3, $pasien->id, Uuid::NS_DNS);
         $pasien->save();
 
         return response($pasien, 201);
@@ -58,7 +64,7 @@ class PasienController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -70,6 +76,7 @@ class PasienController extends Controller
         $pasien->agama = $request->input('agama');
         $pasien->alamat = $request->input('alamat');
         $pasien->kontak = $request->input('kontak');
+        $pasien->gol_darah = $request->input('gol_darah');
         $pasien->save();
 
         return response($pasien, 200);

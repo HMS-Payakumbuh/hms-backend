@@ -12,4 +12,9 @@ class RekamMedis extends Model
 	{
 		return $this->belongsTo('App\Pasien', 'id_pasien', 'id');
 	}
+
+	public function tenaga_medis()
+	{
+		return $this->hasOne('App\TenagaMedis', 'no_pegawai' , 'np_dokter');
+	}
 }

@@ -21,6 +21,7 @@ class CreateJenisObatTable extends Migration
 			$table->string('golongan');				
 			$table->string('satuan');				
 			$table->decimal('harga_jual_satuan', 12, 2);
+            $table->boolean('dicover_bpjs');
             $table->timestamps();
         });
     }

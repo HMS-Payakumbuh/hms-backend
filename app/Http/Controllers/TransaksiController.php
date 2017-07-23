@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Transaksi;
 use App\Asuransi;
@@ -15,12 +16,11 @@ class TransaksiController extends Controller
     private function getTransaksi($id = null)
     {
         if (isset($id)) {
-            return Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'pembayaran', 'obatTebus.obatTebusItem.jenisObat', 'pemakaianKamarRawatInap'])->findOrFail($id);
+            return Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'pembayaran', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'obatEceran.obatEceranItem.jenisObat', 'pemakaianKamarRawatInap.kamar_rawatinap'])->findOrFail($id);
         } else {
-            return Transaksi::with('pasien')->get();
+            return Transaksi::with(['pasien', 'obatTebus.resep', 'obatEceran'])->get();
         }
     }
-
 
     public function getRecentTransaksi($nama_pasien)
     {
@@ -28,6 +28,7 @@ class TransaksiController extends Controller
                             ::join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
                             ->orderBy('transaksi.waktu_masuk_pasien', 'desc')
                             ->where('nama_pasien', '=', $nama_pasien)
+                            ->select(DB::raw('transaksi.*'))
                             ->get();
         return $transaksi;
     }
@@ -201,6 +202,16 @@ class TransaksiController extends Controller
     {
         $transaksi = Transaksi::where('id_pasien', $request->input('id_pasien'))
                                 ->get();
+        return response ($transaksi, 200)
+                -> header('Content-Type', 'application/json');
+    }
+
+    public function getLatestOpenTransaksi($id_pasien)
+    {
+        $transaksi = Transaksi::where('id_pasien', $id_pasien)
+                            ->where('status', '=', 'open')
+                            ->orderBy('transaksi.waktu_masuk_pasien', 'desc')
+                            ->firstOrFail();
         return response ($transaksi, 200)
                 -> header('Content-Type', 'application/json');
     }

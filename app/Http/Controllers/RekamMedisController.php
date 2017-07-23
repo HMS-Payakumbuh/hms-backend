@@ -28,7 +28,7 @@ class RekamMedisController extends Controller
     {
         $rekam_medis = new RekamMedis;
         $rekam_medis->id_pasien = $request->input('id_pasien');
-        $rekam_medis->tanggal_waktu = Carbon::now();
+        $rekam_medis->tanggal_waktu = $request->input('tanggal_waktu');
         $rekam_medis->np_dokter = $request->input('np_dokter');
         $rekam_medis->hasil_pemeriksaan = $request->input('hasil_pemeriksaan');
         $rekam_medis->anamnesis = $request->input('anamnesis');
@@ -48,23 +48,26 @@ class RekamMedisController extends Controller
     public function show($id_pasien)
     {
         $rekam_medis = RekamMedis
-                            ::with('pasien')
+                            ::with('pasien', 'tenaga_medis')
                             ->orderBy('tanggal_waktu', 'desc')
                             ->where('id_pasien', '=', $id_pasien)
                             ->get();
-        return $rekam_medis;                    
+        return $rekam_medis;
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  int  $id_pasien
+     * @param  string  $tanggal_waktu
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id_pasien, $tanggal_waktu)
     {
-        $rekam_medis = RekamMedis::findOrFail($id);
+        $rekam_medis = RekamMedis::where('id_pasien', '=', $id_pasien)
+                                ->where('tanggal_waktu', '=', $tanggal_waktu)
+                                ->first();
         $rekam_medis->id_pasien = $request->input('id_pasien');
         $rekam_medis->np_dokter = $request->input('np_dokter');
         $rekam_medis->hasil_pemeriksaan = $request->input('hasil_pemeriksaan');

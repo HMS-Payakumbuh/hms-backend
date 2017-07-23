@@ -30,6 +30,11 @@ class CreateObatEceranItemTable extends Migration
             $table->foreign('id_obat_masuk')
                   ->references('id')->on('obat_masuk')
                   ->onDelete('restrict');
+
+            $table->integer('id_pembayaran')->unsigned()->nullable();
+            $table->foreign('id_pembayaran')
+                  ->references('id')->on('pembayaran')
+                  ->onDelete('restrict');
                     
             $table->integer('jumlah');  
             $table->string('keterangan')->nullable();  
