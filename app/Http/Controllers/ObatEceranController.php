@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\ObatEceran;
 use App\StokObat;
 use App\ObatEceranItem;
+use App\Transaksi;
 
 class ObatEceranController extends Controller
 {
@@ -34,6 +35,28 @@ class ObatEceranController extends Controller
 
         date_default_timezone_set('Asia/Jakarta');
         $obat_eceran->waktu_transaksi = date("Y-m-d H:i:s"); // Use default in DB instead?
+
+        if ($request->input('id_transaksi')) {
+            $obat_eceran->id_transaksi = $request->input('id_transaksi');               
+        } else {
+            $transaksi = new Transaksi;        
+            $transaksi->kode_jenis_pasien = 1;
+            $transaksi->asuransi_pasien = 'tunai';        
+            $transaksi->harga_total = 0;
+            $transaksi->jenis_rawat = 2;
+            $transaksi->kelas_rawat = 3;
+            $transaksi->status_naik_kelas = 0;
+            $transaksi->status = 'open';
+            $transaksi->save();
+
+            $transaksi = Transaksi::findOrFail($transaksi->id);
+            $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
+            $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
+            $transaksi->no_transaksi = 'INV' . $code_str;
+            $transaksi->save();
+
+            $obat_eceran->id_transaksi = $transaksi->id;  
+        }
 
         $obat_eceran->save();
 
