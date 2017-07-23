@@ -58,7 +58,7 @@ class TindakanController extends Controller
       }
 
       // $transaksi = Transaksi::findOrFail($tindakan->id_transaksi);
-      // if ($transaksi->asuransi_pasien == 'bpjs') {
+      // if ($transaksi->no_sep != null) {
       //   $settingBpjs = SettingBpjs::first();
       //   $coder_nik = $settingBpjs->coder_nik;
       //   $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);

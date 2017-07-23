@@ -75,7 +75,12 @@ class ObatEceranController extends Controller
                                         ->firstOrFail(); //TO-DO: Error handling - firstOrFail?
             $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_eceran_item->jumlah);    
 
-            $obat_eceran_item->save();
+            if ($obat_eceran_item->save()) {
+                $transaksi = Transaksi::findOrFail($obat_eceran->id_transaksi);
+                $transaksi->harga_total += $obat_eceran_item->harga_jual_realisasi * $obat_eceran_item->jumlah;
+                $transaksi->save();
+            }
+
             $stok_obat_asal->save();
         }   
 
