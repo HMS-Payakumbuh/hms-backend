@@ -75,7 +75,8 @@ class PoliklinikController extends Controller
      */
     public function destroy($nama)
     {
-      Poliklinik::destroy($nama);
-      return response('', 204);
+      $poliklinik = Poliklinik::findOrFail($nama);
+      $poliklinik->delete();
+      return response($poliklinik, 200);
     }
 }
