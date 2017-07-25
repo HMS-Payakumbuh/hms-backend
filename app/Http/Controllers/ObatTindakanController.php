@@ -31,6 +31,7 @@ class ObatTindakanController extends Controller
 
             $obat_tindakan->id_jenis_obat = $value['id_jenis_obat'];
             $obat_tindakan->id_obat_masuk = $value['id_obat_masuk'];
+            $obat_tindakan->id_stok_obat = $value['id_stok_obat'];
 
             date_default_timezone_set('Asia/Jakarta');
             $obat_tindakan->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
