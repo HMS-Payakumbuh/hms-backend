@@ -14,7 +14,7 @@ class HasilLabController extends Controller
      */
     public function index()
     {
-      return HasilLab::with('tindakan', 'tindakan.daftarTindakan', 'tindakan.pasien')->get();
+      return HasilLab::with('transaksi', 'tindakan', 'tindakan.daftarTindakan', 'tindakan.pasien')->get();
     }
 
     /**
@@ -41,15 +41,16 @@ class HasilLabController extends Controller
      */
     public function show($id)
     {
-      return HasilLab::findOrFail($id)->with('tindakan', 'tindakan.daftarTindakan', 'tindakan.pasien')->get();
+      return HasilLab::findOrFail($id)->with('transaksi', 'tindakan', 'tindakan.daftarTindakan', 'tindakan.pasien')->get();
     }
 
     public function get_empty($no_pegawai)
     {
-      return HasilLab::with('tindakan', 'tindakan.daftarTindakan', 'tindakan.pasien')
+      return HasilLab::with('transaksi', 'tindakan', 'tindakan.daftarTindakan', 'tindakan.pasien')
         ->whereHas('tindakan', function ($query) use ($no_pegawai) {
           $query->where('tindakan.np_tenaga_medis', '=', $no_pegawai);
         })
+        ->where('dokumen', '=', null)
         ->get();
     }
 
