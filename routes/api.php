@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\LayananController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +16,9 @@ use App\Http\Controllers\LayananController;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('login', 'AuthController@login');
+Route::post('register', 'AuthController@register');
 
 Route::resource('pasien', 'PasienController', ['except' => [
   'edit', 'create'
