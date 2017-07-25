@@ -25,6 +25,11 @@ class CreateObatRusakTable extends Migration
             $table->foreign('id_obat_masuk')
                   ->references('id')->on('obat_masuk')
                   ->onDelete('restrict');
+
+            $table->integer('id_stok_obat')->unsigned();
+            $table->foreign('id_stok_obat')
+                  ->references('id')->on('stok_obat')
+                  ->onDelete('restrict');     
                   
             $table->dateTime('waktu_keluar');   // Atau pakai timestamp?    
             $table->integer('jumlah');  
