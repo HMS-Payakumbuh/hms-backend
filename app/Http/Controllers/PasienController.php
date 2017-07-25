@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Pasien;
 use App\Asuransi;
 use Carbon\Carbon;
-use Webpatser\Uuid\Uuid;
 
 class PasienController extends Controller
 {
@@ -30,7 +29,7 @@ class PasienController extends Controller
     {
         $pasien = new Pasien;
         if ($request->input('id')) {
-            $pasien->id = $request->input('id');
+            $pasien = Pasien::findOrFail($request->input('id'));
             return response($pasien, 201);
         }
         $pasien->nama_pasien = $request->input('nama_pasien');
@@ -42,8 +41,16 @@ class PasienController extends Controller
         $pasien->gol_darah = $request->input('gol_darah');
         $pasien->save();
 
-        //generate uuid
-        $pasien->kode_pasien = Uuid::generate(3, $pasien->id, Uuid::NS_DNS);
+        //generate kode
+        $year = Carbon::now()->year;
+        $month = Carbon::now()->month;
+        $day = Carbon::now()->day;
+        if (strlen($month) == 1)
+            $month = '0'.$month;
+        if (strlen($day) == 1)
+            $day = '0'.$day;
+        $kode_pasien = ($year.$month.$day.'0000') + $pasien->id;
+        $pasien->kode_pasien = (string) ($kode_pasien);
         $pasien->save();
 
         return response($pasien, 201);
