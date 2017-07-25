@@ -52,6 +52,10 @@ Route::get('transaksi/search_by_pasien', 'TransaksiController@searchByPasien');
 Route::resource('transaksi', 'TransaksiController');
 Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTransaksi');
 
+Route::resource('rujukan', 'RujukanController', ['except' => [
+  'edit', 'create'
+]]);
+
 Route::resource('klaim', 'KlaimController');
 Route::resource('pembayaran', 'PembayaranController');
 Route::resource('asuransi', 'AsuransiController');
