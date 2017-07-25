@@ -12,7 +12,8 @@
         "laravel/framework": "5.4.*",
         "laravel/tinker": "~1.0",
         "laravelcollective/html": "^5.4",
-        "predis/predis": "~1.1@dev",
+        "predis/predis": "^1.1",
+        "simplesoftwareio/simple-sms": "3.0.*",
         "symfony/psr-http-message-bridge": "^1.0",
         "webpatser/laravel-uuid": "2.*"
     },
