@@ -9,8 +9,7 @@ use App\Pasien;
 use App\Asuransi;
 use App\Poliklinik;
 use Carbon\Carbon;
-//use LRedis;
-//use Request;
+use Illuminate\Support\Facades\Redis;
 
 class AntrianController extends Controller
 {
@@ -69,6 +68,7 @@ class AntrianController extends Controller
                 ], 500);
             }
         }
+        Redis::publish('antrian', json_encode(['kategori_antrian' => '']));
         return response($antrian, 201);
     }
 
@@ -103,6 +103,7 @@ class AntrianController extends Controller
         $antrian->save();
         if ($antrian->kesempatan <= 0)
             $antrian->delete();
+        Redis::publish('antrian', json_encode(['kategori_antrian' => '']));
 		return response($antrian, 200);
     }
 
@@ -120,6 +121,7 @@ class AntrianController extends Controller
 	    ->first();
 	    $antrian->status = 1;
         $antrian->save();
+        Redis::publish('antrian', json_encode(['kategori_antrian' => '']));
         return response($antrian, 204);
     }
 }

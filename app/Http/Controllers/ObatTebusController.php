@@ -69,6 +69,7 @@ class ObatTebusController extends Controller
             $obat_tebus_item->id_obat_tebus = $obat_tebus->id;
             $obat_tebus_item->id_jenis_obat = $value['id_jenis_obat'];
             $obat_tebus_item->id_obat_masuk = $value['id_obat_masuk'];
+            $obat_tebus_item->id_stok_obat = $value['id_stok_obat'];
             $obat_tebus_item->jumlah = $value['jumlah'];
             $obat_tebus_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
             $obat_tebus_item->keterangan = $value['keterangan'];
@@ -89,6 +90,9 @@ class ObatTebusController extends Controller
             $stok_obat_asal->save();
         }           
 
+        $resep->tebus = true;
+        $resep->save();
+        
         return response ($request->all(), 201);
     }
 
@@ -125,6 +129,7 @@ class ObatTebusController extends Controller
             $obat_tebus_item->id_obat_tebus = $obat_tebus->id;
             $obat_tebus_item->id_jenis_obat = $value['id_jenis_obat'];
             $obat_tebus_item->id_obat_masuk = $value['id_obat_masuk'];
+            $obat_tebus_item->id_stok_obat = $value['id_stok_obat'];
             $obat_tebus_item->jumlah = $value['jumlah'];
             $obat_tebus_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
             $obat_tebus_item->keterangan = $value['keterangan'];

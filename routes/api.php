@@ -30,6 +30,10 @@ Route::resource('rekam_medis', 'RekamMedisController', ['except' => [
 Route::get('rekam_medis/{id_pasien}', 'RekamMedisController@show');
 Route::put('rekam_medis/{id_pasien}/{tanggal_waktu}', 'RekamMedisController@update');
 
+Route::resource('antrian_sms', 'AntrianSMSController', ['except' => [
+  'edit', 'create'
+]]);
+
 Route::resource('antrian_front_office', 'AntrianFrontOfficeController', ['except' => [
   'edit', 'show', 'create', 'update', 'delete'
 ]]);
@@ -178,8 +182,9 @@ Route::put('rawatinap/booking/{id}', 'PemakaianKamarRawatInapController@masuk');
 
 Route::put('tempattidur/{no_kamar}/{no_tempat_tidur}', 'TempatTidurController@update');
 
-Route::get('resep/search_by_transaksi', 'ResepController@searchByTransaksi');
-Route::get('resep/search_by_pasien_and_tanggal', 'ResepController@searchByPasienAndTanggal');
+// Route::get('resep/search_by_transaksi', 'ResepController@searchByTransaksi');
+Route::get('resep/search_by_pasien', 'ResepController@searchByPasien');
+// Route::get('resep/search_by_pasien_and_tanggal', 'ResepController@searchByPasienAndTanggal');
 Route::resource('resep', 'ResepController');
 Route::resource('resep_item', 'ResepItemController');
 Route::resource('racikan_item', 'RacikanItemController');

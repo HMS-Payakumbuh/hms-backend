@@ -66,6 +66,7 @@ class ObatEceranController extends Controller
             $obat_eceran_item->id_obat_eceran = $obat_eceran->id;
             $obat_eceran_item->id_jenis_obat = $value['id_jenis_obat'];
             $obat_eceran_item->id_obat_masuk = $value['id_obat_masuk'];
+            $obat_eceran_item->id_stok_obat = $value['id_stok_obat'];
             $obat_eceran_item->jumlah = $value['jumlah'];
             $obat_eceran_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
             $obat_eceran_item->keterangan = $value['keterangan'];
@@ -125,6 +126,7 @@ class ObatEceranController extends Controller
             $obat_eceran_item->id_obat_eceran = $value['id_obat_eceran'];
             $obat_eceran_item->id_jenis_obat = $value['id_jenis_obat'];
             $obat_eceran_item->id_obat_masuk = $value['id_obat_masuk'];
+            $obat_eceran_item->id_stok_obat = $value['id_stok_obat'];
             $obat_eceran_item->jumlah = $value['jumlah'];
             $obat_eceran_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
             $obat_eceran_item->keterangan = $value['keterangan'];    

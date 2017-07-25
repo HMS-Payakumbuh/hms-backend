@@ -37,7 +37,8 @@ class ResepController extends Controller
         $resep[$i]->alamat = $value['alamat'];
         $resep[$i]->nama_dokter = $value['nama_dokter'];
         $resep[$i]->no_telp = $value['no_telp'];
-        $resep[$i]->umur = $value['umur'];
+        $resep[$i]->umur = $value['umur'];        
+        $resep[$i]->tebus = $value['tebus'];
 
         $resep[$i]->save();
 
@@ -91,6 +92,7 @@ class ResepController extends Controller
         $resep->nama_dokter = $value['nama_dokter'];
         $resep->no_telp = $value['no_telp'];
         $resep->umur = $value['umur'];
+        $resep->tebus = $value['tebus'];
         $resep->save();
 
         return response ($resep, 200)
@@ -120,11 +122,23 @@ class ResepController extends Controller
     }
 */
 
-    public function searchByPasienAndTanggal(Request $request)
+/*    public function searchByPasienAndTanggal(Request $request)
     {
         $resep = Resep::join('transaksi', 'transaksi.id', '=', 'resep.id_transaksi')
                         ->where('transaksi.id_pasien', $request->input('id_pasien'))
                         ->whereDate('created_at', '=', $request->input('tanggal_resep'))
+                        ->select('resep.*')
+                        ->get();
+        return response ($resep, 200)
+                -> header('Content-Type', 'application/json');
+    }
+*/
+
+    public function searchByPasien(Request $request)
+    {
+        $resep = Resep::join('transaksi', 'transaksi.id', '=', 'resep.id_transaksi')
+                        ->where('transaksi.id_pasien', $request->input('id_pasien'))
+                        ->where('resep.tebus', '=', false)
                         ->select('resep.*')
                         ->get();
         return response ($resep, 200)

@@ -28,6 +28,7 @@ class CreateResepTable extends Migration
               ->references('id')
               ->on('transaksi')
               ->onDelete('restrict');
+            $table->boolean('tebus');
         });
     }
 

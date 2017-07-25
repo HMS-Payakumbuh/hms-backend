@@ -13,7 +13,8 @@
         "laravel/tinker": "~1.0",
         "laravelcollective/html": "^5.4",
         "maatwebsite/excel": "~2.1.0",
-        "predis/predis": "~1.1@dev",
+        "predis/predis": "^1.1",
+        "simplesoftwareio/simple-sms": "3.0.*",
         "symfony/psr-http-message-bridge": "^1.0",
         "tymon/jwt-auth": "^0.5.12",
         "webpatser/laravel-uuid": "2.*"

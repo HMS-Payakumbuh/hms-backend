@@ -31,6 +31,7 @@ class ObatRusakController extends Controller
         $obat_rusak = new ObatRusak;
         $obat_rusak->id_jenis_obat = $request->input('id_jenis_obat');
         $obat_rusak->id_obat_masuk = $request->input('id_obat_masuk');
+        $obat_rusak->id_stok_obat = $request->input('id_stok_obat');
 
         date_default_timezone_set('Asia/Jakarta');
         $obat_rusak->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
