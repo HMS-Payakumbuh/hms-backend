@@ -25,6 +25,14 @@ class ObatRusak extends Model
     }
 
     /**
+    *   Get the StokObat of the ObatRusak.
+    */
+    public function stokObat()
+    {
+        return $this->belongsTo('App\StokObat', 'id_stok_obat');
+    }
+
+    /**
     *	Get the LokasiAsal of the ObatRusak.
     */
     public function lokasiAsal()
