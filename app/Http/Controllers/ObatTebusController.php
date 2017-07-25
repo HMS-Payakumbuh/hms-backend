@@ -89,6 +89,9 @@ class ObatTebusController extends Controller
             $stok_obat_asal->save();
         }           
 
+        $resep->tebus = true;
+        $resep->save();
+        
         return response ($request->all(), 201);
     }
 

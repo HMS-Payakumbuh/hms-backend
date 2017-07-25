@@ -26,8 +26,8 @@ class CreateObatEceranTable extends Migration
                   ->references('id')->on('pembayaran')
                   ->onDelete('restrict');
 
-            $table->string('nama_pembeli');
-            $table->string('alamat');
+            $table->string('nama_pembeli')->nullable();
+            $table->string('alamat')->nullable();
             $table->dateTime('waktu_transaksi'); // Atau pakai timestamp?
                   
             $table->timestamps();               
