@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\AntrianFrontOffice;
 use App\Poliklinik;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Redis;
 
 class AntrianFrontOfficeController extends Controller
 {
@@ -44,6 +45,7 @@ class AntrianFrontOfficeController extends Controller
                 ], 500);
             }
         }
+        Redis::publish('antrian', json_encode(['kategori_antrian' => $request->input('kategori_antrian')]));
 
         return response($antrian_front_office, 201);
     }
@@ -79,6 +81,7 @@ class AntrianFrontOfficeController extends Controller
         if ($antrian_front_office->kesempatan <= 0) {
             $antrian_front_office->delete();
         }
+        Redis::publish('antrian', json_encode(['kategori_antrian' => $antrian_front_office->kategori_antrian]));
 		return response($antrian_front_office, 200);
     }
 
@@ -96,6 +99,7 @@ class AntrianFrontOfficeController extends Controller
             ->orWhere([['no_antrian', '=', $no_antrian], ['nama_layanan_lab', '=', $nama_layanan]])
               ->first()
               ->delete();
+        Redis::publish('antrian', json_encode(['kategori_antrian' => $deletedRows->kategori_antrian]));
         return response('', 204);
     }
 }
