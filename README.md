@@ -40,6 +40,17 @@ To install:
 ```sh
 $ npm install express ioredis socket.io --save
 ```
+To run :
+From : public/nodejs/
+```sh
+$ node socket.js
+```
+From : public/redis_server/
+run node_server.exe 
+or
+```sh
+$ redis_server --maxheap 1024 MB
+```
 
 ## Use Laravel--UUID
 To install:
