@@ -14,6 +14,13 @@ To install:
 ```sh
 $ composer require barryvdh/laravel-cors
 ```
+
+## Use JWT
+To install:
+```sh
+$ composer require tymon/jwt-auth
+```
+
 ## Use doctrine/dbal
 To install:
 ```sh
@@ -46,7 +53,7 @@ From : public/nodejs/
 $ node socket.js
 ```
 From : public/redis_server/
-run node_server.exe 
+run node_server.exe
 or
 ```sh
 $ redis_server --maxheap 1024 MB
