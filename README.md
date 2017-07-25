@@ -27,6 +27,20 @@ To install:
 $ composer require guzzlehttp/guzzle
 $ composer require symfony/psr-http-message-bridge
 ```
+
+## Use Predis
+Predis is used to connect redis with laravel
+To install:
+```sh
+$ composer require predis/predis
+```
+
+# Installing dependencies for socket.io on node js
+To install:
+```sh
+$ npm install express ioredis socket.io --save
+```
+
 ## Use Laravel--UUID
 To install:
 ```sh
