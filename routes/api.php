@@ -47,6 +47,7 @@ Route::put('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@update');
 Route::delete('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@destroy');
 
 Route::post('bpjs', 'BpjsController@process');
+Route::get('transaksi/latest/{id_pasien}', 'TransaksiController@getLatestOpenTransaksi');
 Route::get('transaksi/search_by_pasien', 'TransaksiController@searchByPasien');
 Route::resource('transaksi', 'TransaksiController');
 Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTransaksi');
@@ -85,6 +86,13 @@ Route::resource('tindakan', 'TindakanController', ['except' => [
   'edit', 'create', 'show', 'update', 'destroy'
 ]]);
 
+Route::resource('tindakan_operasi', 'TindakanOperasiController', ['except' => [
+  'edit', 'create', 'show', 'update', 'destroy'
+]]);
+
+Route::get('tindakan_operasi/{pemakaianKamarOperasiId}', 'TindakanOperasiController@show');
+Route::post('tindakan_operasi/{id_tindakan}', 'TindakanOperasiController@store');
+
 Route::get('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@show');
 Route::get('tindakan/rekam_medis/{id_pasien}/{tanggal_waktu}', 'TindakanController@getTindakanOfRekamMedis');
 Route::put('tindakan/{no_transaksi}/{no_tindakan}', 'TindakanController@update');
@@ -99,8 +107,10 @@ Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
 ]]);
 
 Route::resource('hasil_lab', 'HasilLabController', ['except' => [
-  'edit', 'create'
+  'edit', 'create', 'get_empty'
 ]]);
+
+Route::get('hasil_lab/empty/{no_pegawai}', 'HasilLabController@get_empty');
 
 Route::resource('ambulans', 'AmbulansController', ['except' => [
   'edit', 'create'
@@ -153,8 +163,7 @@ Route::get('pemakaiankamarrawatinap/{id}', 'PemakaianKamarRawatinapController@sh
 Route::get('pemakaiankamarrawatinap/search/booked/{no_kamar}', 'PemakaianKamarRawatinapController@getAllPemakaianKamarBookedByNoKamar');
 Route::get('pemakaiankamarrawatinap/search/booked/{tanggal}/{no_kamar}', 'PemakaianKamarRawatinapController@getAllPemakaianKamarBookedWithTanggal');
 Route::get('pemakaiankamarrawatinap/search/booked', 'PemakaianKamarRawatinapController@getAllPemakaianKamarBooked');
-
-
+Route::get('pemakaiankamarrawatinap/now/{no_kamar}', 'PemakaianKamarRawatinapController@getAllPemakaianKamarByNoKamar');
 
 Route::resource('kamaroperasi', 'KamarOperasiController', ['except' => [
   'edit', 'create'
@@ -171,8 +180,9 @@ Route::put('rawatinap/booking/{id}', 'PemakaianKamarRawatInapController@masuk');
 
 Route::put('tempattidur/{no_kamar}/{no_tempat_tidur}', 'TempatTidurController@update');
 
-Route::get('resep/search_by_transaksi', 'ResepController@searchByTransaksi');
-Route::get('resep/search_by_pasien_and_tanggal', 'ResepController@searchByPasienAndTanggal');
+// Route::get('resep/search_by_transaksi', 'ResepController@searchByTransaksi');
+Route::get('resep/search_by_pasien', 'ResepController@searchByPasien');
+// Route::get('resep/search_by_pasien_and_tanggal', 'ResepController@searchByPasienAndTanggal');
 Route::resource('resep', 'ResepController');
 Route::resource('resep_item', 'ResepItemController');
 Route::resource('racikan_item', 'RacikanItemController');

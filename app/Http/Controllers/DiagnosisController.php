@@ -44,7 +44,7 @@ class DiagnosisController extends Controller
       // ->orderBy('transaksi.waktu_masuk_pasien', 'desc')
       // ->first();
 
-      // if ($transaksi->asuransi_pasien == 'bpjs') {
+      // if ($transaksi->no_sep != null) {
       //   $settingBpjs = SettingBpjs::first();
       //   $coder_nik = $settingBpjs->coder_nik;
       //   $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);

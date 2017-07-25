@@ -15,7 +15,8 @@
         "predis/predis": "^1.1",
         "simplesoftwareio/simple-sms": "3.0.*",
         "symfony/psr-http-message-bridge": "^1.0",
-        "webpatser/laravel-uuid": "2.*"
+        "webpatser/laravel-uuid": "2.*",
+		"maatwebsite/excel": "~2.1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
