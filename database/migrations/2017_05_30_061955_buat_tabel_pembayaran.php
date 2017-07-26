@@ -18,6 +18,7 @@ class BuatTabelPembayaran extends Migration
             $table->integer('id_transaksi')->unsigned();
             $table->decimal('harga_bayar', 65, 2);
             $table->string('metode_bayar'); //tunai atau dengan asuransi
+            $table->integer('pembayaran_tambahan'); //0: pembayaran biasa, 1: pembayaran tambahan
 
             $table->timestamps();
 
