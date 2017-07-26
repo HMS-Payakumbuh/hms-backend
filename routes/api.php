@@ -206,8 +206,11 @@ Route::get('obat_pindah/today/{id_stok_obat}', 'ObatPindahController@getTodayOba
 Route::resource('obat_pindah', 'ObatPindahController');
 Route::get('obat_rusak/today/{id_stok_obat}', 'ObatRusakController@getTodayObatRusakByStok');
 Route::resource('obat_rusak', 'ObatRusakController');
+Route::get('obat_tebus/today/{id_stok_obat}', 'ObatTebusController@getTodayObatTebusByStok');
 Route::resource('obat_tebus', 'ObatTebusController');
+Route::get('obat_tindakan/today/{id_stok_obat}', 'ObatTindakanController@getTodayObatTindakanByStok');
 Route::resource('obat_tindakan', 'ObatTindakanController');
+Route::get('obat_eceran/today/{id_stok_obat}', 'ObatEceranController@getTodayObatEceranByStok');
 Route::resource('obat_eceran', 'ObatEceranController');
 Route::get('stock_opname/search_by_location', 'StockOpnameController@searchByLocation');
 Route::resource('stock_opname', 'StockOpnameController');

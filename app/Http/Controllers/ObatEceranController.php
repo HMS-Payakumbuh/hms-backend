@@ -156,4 +156,16 @@ class ObatEceranController extends Controller
         $obat_eceran->delete();
         return response ($id.' deleted', 200);
     }
+
+    public function getTodayObatEceranByStok($id_stok_obat)
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $obat_eceran_items = ObatEceranItem::join('obat_eceran', 'obat_eceran.id', '=', 'obat_eceran_item.id_obat_eceran')
+                                ->whereDate('obat_eceran.waktu_transaksi', '=', date("Y-m-d"))
+                                ->where('obat_eceran_item.id_stok_obat', $id_stok_obat)
+                                ->select('obat_eceran_item.*','obat_eceran.waktu_transaksi')
+                                ->get();
+        return response ($obat_eceran_items, 200)
+                -> header('Content-Type', 'application/json');
+    }
 }
