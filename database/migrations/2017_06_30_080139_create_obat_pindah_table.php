@@ -26,10 +26,15 @@ class CreateObatPindahTable extends Migration
             ->references('id')->on('obat_masuk')
             ->onDelete('restrict');
 
-      $table->integer('id_stok_obat')->unsigned();
-      $table->foreign('id_stok_obat')
+      $table->integer('id_stok_obat_asal')->unsigned();
+      $table->foreign('id_stok_obat_asal')
             ->references('id')->on('stok_obat')
-            ->onDelete('restrict');     
+            ->onDelete('restrict');   
+
+      $table->integer('id_stok_obat_tujuan')->unsigned();
+      $table->foreign('id_stok_obat_tujuan')
+            ->references('id')->on('stok_obat')
+            ->onDelete('restrict');    
 	  
 			$table->dateTime('waktu_pindah');	// Atau pakai timestamp?	
 			$table->integer('jumlah');	
