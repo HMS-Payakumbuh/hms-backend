@@ -11,4 +11,8 @@ class HasiLLab extends Model
   public function tindakan() {
     return $this->belongsTo('App\Tindakan', 'id_tindakan', 'id');
   }
+
+  public function transaksi() {
+    return $this->belongsTo('App\Transaksi', 'id_transaksi', 'id');
+  }
 }
