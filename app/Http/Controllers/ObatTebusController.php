@@ -162,4 +162,16 @@ class ObatTebusController extends Controller
         $obat_tebus->delete();
         return response ($id.' deleted', 200);
     }
+
+    public function getTodayObatTebusByStok($id_stok_obat)
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $obat_tebus_items = ObatTebusItem::join('obat_tebus', 'obat_tebus.id', '=', 'obat_tebus_item.id_obat_tebus')
+                                ->whereDate('obat_tebus.waktu_keluar', '=', date("Y-m-d"))
+                                ->where('obat_tebus_item.id_stok_obat', $id_stok_obat)
+                                ->select('obat_tebus_item.*','obat_tebus.waktu_keluar')
+                                ->get();
+        return response ($obat_tebus_items, 200)
+                -> header('Content-Type', 'application/json');
+    }
 }
