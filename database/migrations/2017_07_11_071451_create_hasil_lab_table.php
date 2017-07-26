@@ -17,7 +17,7 @@ class CreateHasilLabTable extends Migration
           $table->increments('id');
           $table->integer('id_transaksi');
           $table->integer('id_tindakan');
-          $table->binary('dokumen')->nullable();
+          $table->string('dokumen')->nullable();
           $table->timestamps();
 
           $table->foreign('id_transaksi')->references('id')->on('transaksi');

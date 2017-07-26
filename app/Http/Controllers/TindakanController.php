@@ -64,7 +64,7 @@ class TindakanController extends Controller
         $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
         $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
         $currentTindakan = $currentData['response']['data']['procedure']. $currentTindakan;
-        
+
         $requestSet = array(
           'procedure' => $currentTindakan
         );
@@ -87,6 +87,14 @@ class TindakanController extends Controller
                       ->where('id_pasien', '=', $id_pasien)
                       ->where('tanggal_waktu', '=', $tanggal_waktu)
                       ->get();
+    }
+
+    public function getTindakanWithoutHasilLab ($no_pegawai)
+    {
+      return Tindakan::doesntHave('hasilLab')
+        ->with('daftarTindakan', 'transaksi', 'pasien')
+        ->where('np_tenaga_medis', '=', $no_pegawai)
+        ->get();
     }
 
     /**

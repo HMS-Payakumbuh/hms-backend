@@ -100,6 +100,7 @@ Route::resource('tindakan_operasi', 'TindakanOperasiController', ['except' => [
 Route::get('tindakan_operasi/{pemakaianKamarOperasiId}', 'TindakanOperasiController@show');
 Route::post('tindakan_operasi/{id_tindakan}', 'TindakanOperasiController@store');
 
+Route::get('tindakan/hasil_lab/{no_pegawai}', 'TindakanController@getTindakanWithoutHasilLab');
 Route::get('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@show');
 Route::get('tindakan/rekam_medis/{id_pasien}/{tanggal_waktu}', 'TindakanController@getTindakanOfRekamMedis');
 Route::put('tindakan/{no_transaksi}/{no_tindakan}', 'TindakanController@update');
@@ -114,10 +115,8 @@ Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
 ]]);
 
 Route::resource('hasil_lab', 'HasilLabController', ['except' => [
-  'edit', 'create', 'get_empty'
+  'edit', 'create'
 ]]);
-
-Route::get('hasil_lab/empty/{no_pegawai}', 'HasilLabController@get_empty');
 
 Route::resource('ambulans', 'AmbulansController', ['except' => [
   'edit', 'create'

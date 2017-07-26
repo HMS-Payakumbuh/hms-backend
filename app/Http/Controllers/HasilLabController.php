@@ -28,7 +28,7 @@ class HasilLabController extends Controller
       $hasilLab = new HasilLab;
       $hasilLab->id_transaksi = $request->input('id_transaksi');
       $hasilLab->id_tindakan = $request->input('id_tindakan');
-      $hasilLab->dokumen = $request->input('dokumen');
+      $hasilLab->dokumen = $request->dokumen->store('hasil_lab');
       $hasilLab->save();
       return response($hasilLab, 201);
     }
@@ -44,16 +44,6 @@ class HasilLabController extends Controller
       return HasilLab::findOrFail($id)->with('transaksi', 'tindakan', 'tindakan.daftarTindakan', 'tindakan.pasien')->get();
     }
 
-    public function get_empty($no_pegawai)
-    {
-      return HasilLab::with('transaksi', 'tindakan', 'tindakan.daftarTindakan', 'tindakan.pasien')
-        ->whereHas('tindakan', function ($query) use ($no_pegawai) {
-          $query->where('tindakan.np_tenaga_medis', '=', $no_pegawai);
-        })
-        ->where('dokumen', '=', null)
-        ->get();
-    }
-
     /**
      * Update the specified resource in storage.
      *
@@ -64,9 +54,9 @@ class HasilLabController extends Controller
     public function update(Request $request, $id)
     {
       $hasilLab = HasilLab::findOrFail($id);
-      $hasilLab->id_transaksi = $request->input('id_transaksi');
-      $hasilLab->id_transaksi = $request->input('id_tindakan');
-      $hasilLab->id_transaksi = $request->input('dokumen');
+      $hasilLab->id_transaksi = $hasilLab->id_transaksi;
+      $hasilLab->id_tindakan = $hasilLab->id_tindakan;
+      $hasilLab->dokumen = $request->dokumen->store('hasil_lab');
       $hasilLab->save();
       return response($hasilLab, 200);
     }
