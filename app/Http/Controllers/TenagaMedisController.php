@@ -35,6 +35,7 @@ class TenagaMedisController extends Controller
       if ($request->input('jabatan') == 'Dokter') {
         $dokter = new Dokter;
         $dokter->no_pegawai = $request->input('no_pegawai');
+        $dokter->spesialis = $request->input('spesialis');
         $dokter->save();
       }
 
@@ -66,6 +67,7 @@ class TenagaMedisController extends Controller
       if ($request->input('jabatan') == 'Dokter' && $tenagaMedis->jabatan != 'Dokter') {
         $dokter = new Dokter;
         $dokter->no_pegawai = $request->input('no_pegawai');
+        $dokter->spesialis = $request->input('spesialis');
 
         $tenagaMedis->no_pegawai = $request->input('no_pegawai');
         $tenagaMedis->nama = $request->input('nama');
