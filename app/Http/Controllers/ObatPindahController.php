@@ -111,4 +111,15 @@ class ObatPindahController extends Controller
         $obat_pindah->delete();
         return response ($id.' deleted', 200);
     }
+
+    public function getTodayObatPindahByStok($id_stok_obat)
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $obat_pindah = ObatPindah::with('lokasiTujuan')
+                                ->whereDate('waktu_pindah', '=', date("Y-m-d"))
+                                ->where('id_stok_obat', $id_stok_obat)
+                                ->get();
+        return response ($obat_pindah, 200)
+                -> header('Content-Type', 'application/json');
+    }
 }
