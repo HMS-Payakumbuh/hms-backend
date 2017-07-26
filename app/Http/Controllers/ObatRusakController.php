@@ -31,6 +31,7 @@ class ObatRusakController extends Controller
         $obat_rusak = new ObatRusak;
         $obat_rusak->id_jenis_obat = $request->input('id_jenis_obat');
         $obat_rusak->id_obat_masuk = $request->input('id_obat_masuk');
+        $obat_rusak->id_stok_obat = $request->input('id_stok_obat');
 
         date_default_timezone_set('Asia/Jakarta');
         $obat_rusak->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
@@ -94,5 +95,15 @@ class ObatRusakController extends Controller
         $obat_rusak = ObatRusak::find($id);
         $obat_rusak->delete();
         return response ($id.' deleted', 200);
+    }
+
+    public function getTodayObatRusakByStok($id_stok_obat)
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $obat_rusak = ObatRusak::whereDate('waktu_keluar', '=', date("Y-m-d"))
+                                ->where('id_stok_obat', $id_stok_obat)
+                                ->get();
+        return response ($obat_rusak, 200)
+                -> header('Content-Type', 'application/json');
     }
 }

@@ -31,7 +31,8 @@ class ObatPindahController extends Controller
         $obat_pindah = new ObatPindah;
         $obat_pindah->id_jenis_obat = $request->input('id_jenis_obat');
         $obat_pindah->id_obat_masuk = $request->input('id_obat_masuk');
-
+        $obat_pindah->id_stok_obat = $request->input('id_stok_obat');
+        
         date_default_timezone_set('Asia/Jakarta');
         $obat_pindah->waktu_pindah = date("Y-m-d H:i:s"); // Use default in DB instead?
         
@@ -87,6 +88,7 @@ class ObatPindahController extends Controller
         $obat_pindah = ObatPindah::findOrFail($id);
         $obat_pindah->id_jenis_obat = $request->input('id_jenis_obat');
         $obat_pindah->id_obat_masuk = $request->input('id_obat_masuk');
+        $obat_pindah->id_stok_obat = $request->input('id_stok_obat');
         $obat_pindah->waktu_pindah = $request->input('waktu_pindah');
         $obat_pindah->jumlah = $request->input('jumlah');
         $obat_pindah->keterangan = $request->input('keterangan');
@@ -108,5 +110,16 @@ class ObatPindahController extends Controller
         $obat_pindah = ObatPindah::find($id);
         $obat_pindah->delete();
         return response ($id.' deleted', 200);
+    }
+
+    public function getTodayObatPindahByStok($id_stok_obat)
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $obat_pindah = ObatPindah::with('lokasiTujuan')
+                                ->whereDate('waktu_pindah', '=', date("Y-m-d"))
+                                ->where('id_stok_obat', $id_stok_obat)
+                                ->get();
+        return response ($obat_pindah, 200)
+                -> header('Content-Type', 'application/json');
     }
 }

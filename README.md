@@ -14,6 +14,13 @@ To install:
 ```sh
 $ composer require barryvdh/laravel-cors
 ```
+
+## Use JWT
+To install:
+```sh
+$ composer require tymon/jwt-auth
+```
+
 ## Use doctrine/dbal
 To install:
 ```sh
@@ -28,6 +35,8 @@ $ composer require guzzlehttp/guzzle
 $ composer require symfony/psr-http-message-bridge
 ```
 
+<<<<<<< HEAD
+=======
 ## Use Predis
 Predis is used to connect redis with laravel
 To install:
@@ -46,22 +55,8 @@ From : public/nodejs/
 $ node socket.js
 ```
 From : public/redis_server/
-run node_server.exe 
+run node_server.exe
 or
 ```sh
 $ redis_server --maxheap 1024 MB
-```
-
-## Use Laravel--UUID
-To install:
-```sh
-$ composer require "webpatser/laravel-uuid:2.*"
-```
-For Laravel 5: edit `config/app.php` and add the `alias`
-
-```php
-'aliases' => [
-    // ommited
-    'Uuid' => Webpatser\Uuid\Uuid::class,
-]
 ```

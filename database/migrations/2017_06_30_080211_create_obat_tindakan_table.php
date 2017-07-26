@@ -15,39 +15,44 @@ class CreateObatTindakanTable extends Migration
     {
         Schema::create('obat_tindakan', function (Blueprint $table) {
             $table->increments('id');
-            
+
             $table->integer('id_jenis_obat')->unsigned();
             $table->foreign('id_jenis_obat')
                   ->references('id')->on('jenis_obat')
-                  ->onDelete('restrict');                        
-            
+                  ->onDelete('restrict');
+
             $table->integer('id_obat_masuk')->unsigned();
             $table->foreign('id_obat_masuk')
                   ->references('id')->on('obat_masuk')
                   ->onDelete('restrict');
-                  
-            $table->dateTime('waktu_keluar');   // Atau pakai timestamp?    
-            $table->integer('jumlah');  
-            $table->string('keterangan')->nullable();   
-            
-            $table->integer('asal')->unsigned();                     
+
+            $table->integer('id_stok_obat')->unsigned();
+            $table->foreign('id_stok_obat')
+                  ->references('id')->on('stok_obat')
+                  ->onDelete('restrict');
+
+            $table->dateTime('waktu_keluar');   // Atau pakai timestamp?
+            $table->integer('jumlah');
+            $table->string('keterangan')->nullable();
+
+            $table->integer('asal')->unsigned();
             $table->foreign('asal')
                   ->references('id')->on('lokasi_obat')
                   ->onDelete('restrict');
 
-            $table->integer('id_transaksi')->unsigned();  
+            $table->integer('id_transaksi')->unsigned();
             $table->foreign('id_transaksi')
                   ->references('id')->on('transaksi')
                   ->onDelete('restrict');
 
-            $table->integer('id_tindakan')->unsigned();   
+            $table->integer('id_tindakan')->unsigned();
             $table->foreign('id_tindakan')
                   ->references('id')->on('tindakan')
                   ->onDelete('restrict');
 
-            $table->decimal('harga_jual_realisasi', 12, 2)->nullable(); 
-                  
-            $table->timestamps();               
+            $table->decimal('harga_jual_realisasi', 12, 2)->nullable();
+
+            $table->timestamps();
         });
 
     }

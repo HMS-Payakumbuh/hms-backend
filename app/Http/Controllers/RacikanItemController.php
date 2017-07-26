@@ -29,8 +29,8 @@ class RacikanItemController extends Controller
             $racikan_item = new RacikanItem;
 
             $racikan_item->id_item = $value['id_jenis_obat'];
-            $racikan_item->id_jenis_obat = $value['id_obat_masuk'];            
-            $racikan_item->jumlah = $value['jumlah'];       
+            $racikan_item->id_jenis_obat = $value['id_obat_masuk'];
+            $racikan_item->jumlah = $value['jumlah'];
 
             $racikan_item->save();
         }
@@ -60,8 +60,8 @@ class RacikanItemController extends Controller
         $racikan_item = RacikanItem::findOrFail($id);
 
         $racikan_item->id_item = $value['id_jenis_obat'];
-        $racikan_item->id_jenis_obat = $value['id_obat_masuk'];            
-        $racikan_item->jumlah = $value['jumlah'];       
+        $racikan_item->id_jenis_obat = $value['id_obat_masuk'];
+        $racikan_item->jumlah = $value['jumlah'];
 
         $racikan_item->save();
 
@@ -79,6 +79,6 @@ class RacikanItemController extends Controller
     {
         $racikan_item = RacikanItem::find($id);
         $racikan_item->delete();
-        return response ($id.' deleted', 200)
+        return response ($id.' deleted', 200);
     }
 }

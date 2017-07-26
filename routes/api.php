@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\LayananController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +16,9 @@ use App\Http\Controllers\LayananController;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('login', 'AuthController@login');
+Route::post('register', 'AuthController@register');
 
 Route::resource('pasien', 'PasienController', ['except' => [
   'edit', 'create'
@@ -52,6 +54,10 @@ Route::get('transaksi/search_by_pasien', 'TransaksiController@searchByPasien');
 Route::get('transaksi/{id}/bpjs', 'TransaksiController@getStatusBpjs');
 Route::resource('transaksi', 'TransaksiController');
 Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTransaksi');
+
+Route::resource('rujukan', 'RujukanController', ['except' => [
+  'edit', 'create'
+]]);
 
 Route::resource('klaim', 'KlaimController');
 Route::resource('pembayaran', 'PembayaranController');
@@ -196,7 +202,9 @@ Route::resource('obat_masuk', 'ObatMasukController');
 Route::get('stok_obat/search_by_jenis_obat_and_batch', 'StokObatController@searchByJenisObatAndBatch');
 Route::get('stok_obat/search_by_location', 'StokObatController@searchByLocation');
 Route::resource('stok_obat', 'StokObatController');
+Route::get('obat_pindah/today/{id_stok_obat}', 'ObatPindahController@getTodayObatPindahByStok');
 Route::resource('obat_pindah', 'ObatPindahController');
+Route::get('obat_rusak/today/{id_stok_obat}', 'ObatRusakController@getTodayObatRusakByStok');
 Route::resource('obat_rusak', 'ObatRusakController');
 Route::resource('obat_tebus', 'ObatTebusController');
 Route::resource('obat_tindakan', 'ObatTindakanController');

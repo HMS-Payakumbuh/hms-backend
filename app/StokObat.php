@@ -31,4 +31,20 @@ class StokObat extends Model
     {
         return $this->belongsTo('App\LokasiObat', 'lokasi');
     }
+
+    /**
+    *   Get the ObatPindah of the StokObat.
+    */
+    public function obatPindah()
+    {
+        return $this->hasMany('App\ObatPindah', 'id_stok_obat');
+    }
+
+    /**
+    *   Get the ObatRusak of the StokObat.
+    */
+    public function obatRusak()
+    {
+        return $this->hasMany('App\ObatRusak', 'id_stok_obat');
+    }
 }

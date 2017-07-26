@@ -53,9 +53,13 @@ class AsuransiController extends Controller
                                     ->first();
                                     
         if ($exist_asuransi) {
-             return response()->json([
+            if ($exist_asuransi->no_kartu != $payload['no_kartu']) {
+                $exist_asuransi->no_kartu = $payload['no_kartu'];
+                $exist_asuransi->save();
+            }
+            return response()->json([
                 'asuransi' => $exist_asuransi
-            ], 201);
+            ], 201); 
         }
 
         $asuransi = new Asuransi;
