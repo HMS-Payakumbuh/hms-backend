@@ -66,6 +66,16 @@ class TransaksiController extends Controller
         $payload = $request->input('transaksi');
         $transaksi = new Transaksi;
         $transaksi->id_pasien = $payload['id_pasien'];
+
+        $transaksiLama = Transaksi::where('id_pasien', '=', $transaksi->id_pasien)
+            ->where('status', '=', 'open')
+            ->first();
+
+        if ($transaksiLama != null) {
+            $transaksiLama->status = 'closed';
+            $transaksiLama->save();
+        }
+
         $transaksi->kode_jenis_pasien = $payload['kode_jenis_pasien']; //1: pasien umum, 2: pasien asuransi
 
         if ($transaksi->kode_jenis_pasien == 2) {
@@ -109,7 +119,7 @@ class TransaksiController extends Controller
                 'gender' => $pasien->jender
             );
 
-            // $newClaimResponse = $bpjs->newClaim($requestNew);
+            $newClaimResponse = $bpjs->newClaim($requestNew);
 
             $carbon = Carbon::instance($transaksi->waktu_masuk_pasien);
             $requestSet = array(
@@ -123,7 +133,7 @@ class TransaksiController extends Controller
                 'payor_id' => 3,
                 'payor_cd' => 'JKN'
             );
-            // $setClaimResponse = $bpjs->setClaimData($requestSet);
+            $setClaimResponse = $bpjs->setClaimData($requestSet);
             $setClaimResponse = "Set Claim";
         }
 
@@ -135,8 +145,8 @@ class TransaksiController extends Controller
         
         return response()->json([
             'transaksi' => $transaksi,
-            // 'new_claim' => $newClaimResponse,
-            // 'set_claim' => $setClaimResponse
+            'new_claim' => $newClaimResponse,
+            'set_claim' => $setClaimResponse
         ], 201);
     }
 
@@ -215,5 +225,20 @@ class TransaksiController extends Controller
                             ->firstOrFail();
         return response ($transaksi, 200)
                 -> header('Content-Type', 'application/json');
+    }
+
+    public function getStatusBpjs($id)
+    {
+        $transaksi = Transaksi::findOrFail($id);
+        $status_bpjs = null;
+        if ($transaksi->no_sep != null) {
+            $coder_nik = SettingBpjs::first()->coder_nik;
+            $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+            $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
+            $status_bpjs = $currentData['response']['data'];
+        }
+        return response()->json([
+            'status_bpjs' => $status_bpjs
+        ], 200);
     }
 }
