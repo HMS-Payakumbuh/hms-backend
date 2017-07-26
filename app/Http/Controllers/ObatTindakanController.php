@@ -80,6 +80,7 @@ class ObatTindakanController extends Controller
 
         $obat_tindakan->id_jenis_obat = $value['id_jenis_obat'];
         $obat_tindakan->id_obat_masuk = $value['id_obat_masuk'];
+        $obat_tindakan->id_stok_obat = $value['id_stok_obat'];
         $obat_tindakan->jumlah = $value['jumlah'];
         $obat_tindakan->keterangan = $value['keterangan'];
         $obat_tindakan->asal = $value['asal'];
@@ -109,5 +110,15 @@ class ObatTindakanController extends Controller
         $obat_tindakan = ObatTindakan::find($id);
         $obat_tindakan->delete();
         return response ($id.' deleted', 200);
+    }
+
+    public function getTodayObatTindakanByStok($id_stok_obat)
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $obat_tindakan = ObatTindakan::whereDate('waktu_keluar', '=', date("Y-m-d"))
+                                ->where('id_stok_obat', $id_stok_obat)
+                                ->get();
+        return response ($obat_tindakan, 200)
+                -> header('Content-Type', 'application/json');
     }
 }

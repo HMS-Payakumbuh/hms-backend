@@ -57,19 +57,19 @@ class TindakanController extends Controller
         }
       }
 
-      // $transaksi = Transaksi::findOrFail($tindakan->id_transaksi);
-      // if ($transaksi->no_sep != null) {
-      //   $settingBpjs = SettingBpjs::first();
-      //   $coder_nik = $settingBpjs->coder_nik;
-      //   $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-      //   $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
-      //   $currentTindakan = $currentData['response']['data']['procedure']. $currentTindakan;
+      $transaksi = Transaksi::findOrFail($tindakan->id_transaksi);
+      if ($transaksi->no_sep != null) {
+        $settingBpjs = SettingBpjs::first();
+        $coder_nik = $settingBpjs->coder_nik;
+        $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+        $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
+        $currentTindakan = $currentData['response']['data']['procedure']. $currentTindakan;
         
-      //   $requestSet = array(
-      //     'procedure' => $currentTindakan
-      //   );
-      //   $bpjs->setClaimData($requestSet);
-      // }
+        $requestSet = array(
+          'procedure' => $currentTindakan
+        );
+        $bpjs->setClaimData($requestSet);
+      }
 
       return response($response, 201);
     }

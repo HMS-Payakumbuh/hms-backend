@@ -96,4 +96,14 @@ class ObatRusakController extends Controller
         $obat_rusak->delete();
         return response ($id.' deleted', 200);
     }
+
+    public function getTodayObatRusakByStok($id_stok_obat)
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $obat_rusak = ObatRusak::whereDate('waktu_keluar', '=', date("Y-m-d"))
+                                ->where('id_stok_obat', $id_stok_obat)
+                                ->get();
+        return response ($obat_rusak, 200)
+                -> header('Content-Type', 'application/json');
+    }
 }
