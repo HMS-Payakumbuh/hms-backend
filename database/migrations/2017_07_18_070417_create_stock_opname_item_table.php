@@ -36,7 +36,8 @@ class CreateStockOpnameItemTable extends Migration
                   ->references('id')->on('obat_masuk')
                   ->onDelete('restrict');
 
-            $table->integer('jumlah_tercatat');  
+            $table->integer('jumlah_awal');  
+            $table->integer('jumlah_akhir'); 
             $table->integer('jumlah_sebenarnya');  
 
             $table->timestamps();
