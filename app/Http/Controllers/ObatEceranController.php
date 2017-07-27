@@ -18,7 +18,7 @@ class ObatEceranController extends Controller
      */
     public function index()
     {
-       return ObatEceran::with('obatEceranItem.obatMasuk','obatEceranItem.jenisObat')->get();
+       return ObatEceran::with('obatEceranItem.stokObat','obatEceranItem.jenisObat')->get();
     }
 
     /**
@@ -65,15 +65,11 @@ class ObatEceranController extends Controller
 
             $obat_eceran_item->id_obat_eceran = $obat_eceran->id;
             $obat_eceran_item->id_jenis_obat = $value['id_jenis_obat'];
-            $obat_eceran_item->id_obat_masuk = $value['id_obat_masuk'];
             $obat_eceran_item->id_stok_obat = $value['id_stok_obat'];
             $obat_eceran_item->jumlah = $value['jumlah'];
             $obat_eceran_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
-            $obat_eceran_item->keterangan = $value['keterangan'];
 
-            $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_eceran_item->id_obat_masuk)
-                                        ->where('lokasi', 2)
-                                        ->firstOrFail(); //TO-DO: Error handling - firstOrFail?
+            $stok_obat_asal = StokObat::findOrFail($obat_eceran_item->id_stok_obat);
             $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_eceran_item->jumlah);    
 
             if ($obat_eceran_item->save()) {
@@ -125,15 +121,11 @@ class ObatEceranController extends Controller
 
             $obat_eceran_item->id_obat_eceran = $value['id_obat_eceran'];
             $obat_eceran_item->id_jenis_obat = $value['id_jenis_obat'];
-            $obat_eceran_item->id_obat_masuk = $value['id_obat_masuk'];
             $obat_eceran_item->id_stok_obat = $value['id_stok_obat'];
             $obat_eceran_item->jumlah = $value['jumlah'];
-            $obat_eceran_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
-            $obat_eceran_item->keterangan = $value['keterangan'];    
+            $obat_eceran_item->harga_jual_realisasi = $value['harga_jual_realisasi'];  
 
-            $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_eceran_item->id_obat_masuk)
-                                        ->where('lokasi', 2)
-                                        ->first(); //TO-DO: Error handling - firstOrFail?
+            $stok_obat_asal = StokObat::findOrFail($obat_eceran_item->id_stok_obat);
             $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_eceran_item->jumlah);
 
             $obat_eceran_item->save();

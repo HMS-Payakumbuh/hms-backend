@@ -30,7 +30,6 @@ class ObatTindakanController extends Controller
             $obat_tindakan = new ObatTindakan;
 
             $obat_tindakan->id_jenis_obat = $value['id_jenis_obat'];
-            $obat_tindakan->id_obat_masuk = $value['id_obat_masuk'];
             $obat_tindakan->id_stok_obat = $value['id_stok_obat'];
 
             date_default_timezone_set('Asia/Jakarta');
@@ -45,9 +44,7 @@ class ObatTindakanController extends Controller
 
             $obat_tindakan->save();
 
-            $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_tindakan->id_obat_masuk)
-                                    ->where('lokasi', $obat_tindakan->asal)
-                                    ->first(); //TO-DO: Error handling - firstOrFail?
+            $stok_obat_asal = StokObat::firstOrFail($obat_tindakan->id_stok_obat);
             $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_tindakan->jumlah);
             $stok_obat_asal->save();
         }
@@ -62,7 +59,7 @@ class ObatTindakanController extends Controller
      */
     public function show($id)
     {
-        return ObatTindakan::with('obatMasuk','jenisObat','lokasiAsal')->findOrFail($id);
+        return ObatTindakan::with('stokObat','jenisObat','lokasiAsal')->findOrFail($id);
     }
 
     /**
@@ -79,7 +76,6 @@ class ObatTindakanController extends Controller
         $obat_tindakan = ObatTindakan::findOrFail($id);
 
         $obat_tindakan->id_jenis_obat = $value['id_jenis_obat'];
-        $obat_tindakan->id_obat_masuk = $value['id_obat_masuk'];
         $obat_tindakan->id_stok_obat = $value['id_stok_obat'];
         $obat_tindakan->jumlah = $value['jumlah'];
         $obat_tindakan->keterangan = $value['keterangan'];
@@ -89,9 +85,7 @@ class ObatTindakanController extends Controller
         $obat_tindakan->id_tindakan = $value['id_tindakan'];
         $obat_tindakan->save();
 
-        $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_tindakan->id_obat_masuk)
-                                    ->where('lokasi', $obat_tindakan->asal)
-                                    ->first(); //TO-DO: Error handling - firstOrFail?
+        $stok_obat_asal = StokObat::findOrFail($obat_tindakan->id_stok_obat);
         $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_tindakan->jumlah);
         $stok_obat_asal->save();
 

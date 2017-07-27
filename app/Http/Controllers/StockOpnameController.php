@@ -16,7 +16,7 @@ class StockOpnameController extends Controller
      */
     public function index()
     {
-        return StockOpname::with('stockOpnameItem.jenisObat','stockOpnameItem.obatMasuk','lokasiData')->get();
+        return StockOpname::with('stockOpnameItem.jenisObat','stockOpnameItem.stokObat','lokasiData')->get();
     }
 
     /**
@@ -37,11 +37,10 @@ class StockOpnameController extends Controller
 
             $stock_opname_item->id_stock_opname = $stock_opname->id;
             $stock_opname_item->id_jenis_obat = $value['id_jenis_obat'];
-            $stock_opname_item->id_obat_masuk = $value['id_obat_masuk'];
             $stock_opname_item->id_stok_obat = $value['id_stok_obat'];
             $stock_opname_item->jumlah_awal = $value['jumlah_awal'];
             $stock_opname_item->jumlah_akhir = $value['jumlah_akhir'];
-            $stock_opname_item->jumlah_sebenarnya = $value['jumlah_sebenarnya'];
+            $stock_opname_item->jumlah_fisik = $value['jumlah_fisik'];
 
             $stock_opname_item->save();
         }
@@ -57,7 +56,7 @@ class StockOpnameController extends Controller
      */
     public function show($id)
     {
-         return StockOpname::with('stockOpnameItem.jenisObat','stockOpnameItem.obatMasuk','lokasiData')->findOrFail($id);
+         return StockOpname::with('stockOpnameItem.jenisObat','stockOpnameItem.stokObat','lokasiData')->findOrFail($id);
     }
 
     /**
@@ -82,11 +81,10 @@ class StockOpnameController extends Controller
 
             $stock_opname_item->id_stock_opname = $stock_opname->id;
             $stock_opname_item->id_jenis_obat = $value['id_jenis_obat'];
-            $stock_opname_item->id_obat_masuk = $value['id_obat_masuk'];
             $stock_opname_item->id_stok_obat = $value['id_stok_obat'];
             $stock_opname_item->jumlah_awal = $value['jumlah_awal'];
             $stock_opname_item->jumlah_akhir = $value['jumlah_akhir'];
-            $stock_opname_item->jumlah_sebenarnya = $value['jumlah_sebenarnya'];
+            $stock_opname_item->jumlah_fisik = $value['jumlah_fisik'];
 
             $stock_opname_item->save();
         }
@@ -110,7 +108,7 @@ class StockOpnameController extends Controller
 
     public function searchByLocation(Request $request)
     {
-        $stock_opname = StockOpname::with('stockOpnameItem.jenisObat','stockOpnameItem.obatMasuk','lokasiData')
+        $stock_opname = StockOpname::with('stockOpnameItem.jenisObat','stockOpnameItem.stokObat','lokasiData')
                         ->where('lokasi', $request->input('lokasi'))
                         ->get();
         return response ($stock_opname, 200)

@@ -9,14 +9,6 @@ class ObatRusak extends Model
     protected $table = 'obat_rusak';
 
     /**
-    *	Get the ObatMasuk of the ObatRusak.
-    */
-    public function obatMasuk()
-    {
-        return $this->belongsTo('App\ObatMasuk', 'id_obat_masuk');
-    }
-
-    /**
     *	Get the JenisObat of the ObatRusak.
     */
     public function jenisObat()

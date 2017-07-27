@@ -196,6 +196,7 @@ Route::resource('racikan_item', 'RacikanItemController');
 Route::get('jenis_obat/search', 'JenisObatController@search');
 Route::resource('jenis_obat', 'JenisObatController');
 Route::resource('lokasi_obat', 'LokasiObatController');
+Route::get('obat_masuk/today/{id_stok_obat}', 'ObatMasukController@getTodayObatMasukByStok');
 Route::get('obat_masuk/search', 'ObatMasukController@search');
 Route::resource('obat_masuk', 'ObatMasukController');
 Route::get('stok_obat/search_by_jenis_obat_and_batch', 'StokObatController@searchByJenisObatAndBatch');
