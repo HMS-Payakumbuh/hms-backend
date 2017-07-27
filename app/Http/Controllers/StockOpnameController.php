@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 
 use App\StockOpname;
 use App\StockOpnameItem;
+use App\ObatRusak;
+use App\StokObat;
+use App\LokasiObat;
 
 class StockOpnameController extends Controller
 {
@@ -43,6 +46,28 @@ class StockOpnameController extends Controller
             $stock_opname_item->jumlah_fisik = $value['jumlah_fisik'];
 
             $stock_opname_item->save();
+
+            if (($stock_opname_item->jumlah_akhir) > ($stock_opname_item->jumlah_fisik)) {
+                $obat_rusak = new ObatRusak;
+                $obat_rusak->id_jenis_obat =  $stock_opname_item->id_jenis_obat;
+                $obat_rusak->id_stok_obat = $stock_opname_item->id_stok_obat;
+
+                date_default_timezone_set('Asia/Jakarta');
+                $obat_rusak->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
+                
+                $obat_rusak->jumlah = ($stock_opname_item->jumlah_akhir) - ($stock_opname_item->jumlah_fisik);
+                $obat_rusak->alasan = "Selisih";
+
+                $lokasi_obat = LokasiObat::findOrFail($stock_opname->lokasi);
+
+                $obat_rusak->keterangan = "Stock Opname ".$lokasi_obat->nama." ".$obat_rusak->waktu_keluar;
+                $obat_rusak->asal = $stock_opname->lokasi;
+                $obat_rusak->save();
+
+                $stok_obat_asal = StokObat::findOrFail($stock_opname_item->id_stok_obat);
+                $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_rusak->jumlah);
+                $stok_obat_asal->save();
+            }
         }
 
         return response($request->all(), 201);
