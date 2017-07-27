@@ -36,12 +36,28 @@ class HasilLabController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param  string  $kode_pasien
+     * @return \Illuminate\Http\Response
+     */
+    public function show($kode_pasien)
+    {
+      return HasilLab::with('transaksi', 'tindakan', 'tindakan.daftarTindakan', 'tindakan.pasien')
+        ->whereHas('tindakan.pasien', function ($query) use ($kode_pasien) {
+          $query->where('kode_pasien', 'like', '%'.$kode_pasien.'%');
+        })
+        ->get();
+    }
+
+    /**
+     * Downloads file.
+     *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function download($id)
     {
-      return HasilLab::findOrFail($id)->with('transaksi', 'tindakan', 'tindakan.daftarTindakan', 'tindakan.pasien')->get();
+      $file = HasilLab::findOrFail($id)->dokumen;
+      return response()->download(storage_path().'/app/'.$file);
     }
 
     /**

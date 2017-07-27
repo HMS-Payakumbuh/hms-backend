@@ -114,8 +114,9 @@ Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
   'edit', 'create'
 ]]);
 
+Route::get('hasil_lab/download/{path}', 'HasilLabController@download');
 Route::resource('hasil_lab', 'HasilLabController', ['except' => [
-  'edit', 'create'
+  'edit', 'create', 'download'
 ]]);
 
 Route::resource('ambulans', 'AmbulansController', ['except' => [
