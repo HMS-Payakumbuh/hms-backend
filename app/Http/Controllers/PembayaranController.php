@@ -59,6 +59,7 @@ class PembayaranController extends Controller
         $pembayaran->id_transaksi = $payload['id_transaksi'];
         $pembayaran->harga_bayar = $payload['harga_bayar'];
         $pembayaran->metode_bayar = $payload['metode_bayar'];
+        $pembayaran->pembayaran_tambahan = $payload['pembayaran_tambahan'];
         $pembayaran->save();
 
         if (isset($payload['tindakan']) && count($payload['tindakan']) > 0) {

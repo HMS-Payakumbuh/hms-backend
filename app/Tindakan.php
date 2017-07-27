@@ -13,14 +13,14 @@ class Tindakan extends Model
   }
 
   public function hasilLab() {
-    return $this->hasOne('App\HasilLab', 'id', 'id_tindakan');
+    return $this->hasOne('App\HasilLab', 'id_tindakan', 'id');
   }
 
   public function tenagaMedis() {
     return $this->hasOne('App\TenagaMedis', 'no_pegawai', 'np_tenaga_medis');
   }
 
-/**
+  /**
   *	Get the Pasien of the Tindakan.
   */
   public function pasien()
