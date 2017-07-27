@@ -15,4 +15,12 @@ class ObatMasuk extends Model
     {
         return $this->belongsTo('App\JenisObat', 'id_jenis_obat');
     }
+
+    /**
+    *   Get the StokObat of the ObatPindah.
+    */
+    public function stokObat()
+    {
+        return $this->belongsTo('App\StokObat', 'id_stok_obat');
+    }
 }

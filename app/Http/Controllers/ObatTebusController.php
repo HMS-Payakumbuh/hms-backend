@@ -18,7 +18,7 @@ class ObatTebusController extends Controller
      */
     public function index()
     {
-        return ObatTebus::with('obatTebusItem','resep','transaksi.pasien','obatTebusItem.obatMasuk','obatTebusItem.jenisObat')->get();
+        return ObatTebus::with('obatTebusItem','resep','transaksi.pasien','obatTebusItem.stokObat','obatTebusItem.jenisObat')->get();
     }
 
     /**
@@ -68,7 +68,6 @@ class ObatTebusController extends Controller
 
             $obat_tebus_item->id_obat_tebus = $obat_tebus->id;
             $obat_tebus_item->id_jenis_obat = $value['id_jenis_obat'];
-            $obat_tebus_item->id_obat_masuk = $value['id_obat_masuk'];
             $obat_tebus_item->id_stok_obat = $value['id_stok_obat'];
             $obat_tebus_item->jumlah = $value['jumlah'];
             $obat_tebus_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
@@ -77,9 +76,7 @@ class ObatTebusController extends Controller
             $obat_tebus_item->id_resep_item = $value['id_resep_item'];
             $obat_tebus_item->id_racikan_item = $value['id_racikan_item'];         
 
-            $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_tebus_item->id_obat_masuk)
-                                        ->where('lokasi', $obat_tebus_item->asal)
-                                        ->first(); //TO-DO: Error handling - firstOrFail?
+            $stok_obat_asal = StokObat::findOrFail($obat_tebus_item->id_stok_obat);
             $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_tebus_item->jumlah);
 
             if ($obat_tebus_item->save()) {
@@ -87,6 +84,7 @@ class ObatTebusController extends Controller
                 $transaksi->harga_total += $obat_tebus_item->harga_jual_realisasi * $obat_tebus_item->jumlah;
                 $transaksi->save();
             }
+
             $stok_obat_asal->save();
         }           
 
@@ -104,7 +102,7 @@ class ObatTebusController extends Controller
      */
     public function show($id)
     {
-        return ObatTebus::with('obatTebusItem','resep','transaksi.pasien', 'obatTebusItem.obatMasuk','obatTebusItem.jenisObat')->findOrFail($id);
+        return ObatTebus::with('obatTebusItem','resep','transaksi.pasien', 'obatTebusItem.stokObat','obatTebusItem.jenisObat')->findOrFail($id);
     }
 
     /**
@@ -128,7 +126,6 @@ class ObatTebusController extends Controller
 
             $obat_tebus_item->id_obat_tebus = $obat_tebus->id;
             $obat_tebus_item->id_jenis_obat = $value['id_jenis_obat'];
-            $obat_tebus_item->id_obat_masuk = $value['id_obat_masuk'];
             $obat_tebus_item->id_stok_obat = $value['id_stok_obat'];
             $obat_tebus_item->jumlah = $value['jumlah'];
             $obat_tebus_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
@@ -137,9 +134,7 @@ class ObatTebusController extends Controller
             $obat_tebus_item->id_resep_item = $value['id_resep_item'];
             $obat_tebus_item->id_racikan_item = $value['id_racikan_item'];            
 
-            $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_tebus_item->id_obat_masuk)
-                                        ->where('lokasi', $obat_tebus_item->asal)
-                                        ->first(); //TO-DO: Error handling - firstOrFail?
+            $stok_obat_asal = StokObat::findOrFail($obat_tebus_item->id_stok_obat);
             $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_tebus_item->jumlah);
 
             $obat_tebus_item->save();

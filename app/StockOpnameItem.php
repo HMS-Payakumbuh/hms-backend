@@ -17,14 +17,6 @@ class StockOpnameItem extends Model
     }
 
     /**
-    *	Get the ObatMasuk of the StockOpnameItem.
-    */
-    public function obatMasuk()
-    {
-        return $this->belongsTo('App\ObatMasuk', 'id_obat_masuk');
-    }
-
-    /**
     *	Get the StokObat of the StockOpnameItem.
     */
     public function stokObat()

@@ -21,12 +21,10 @@ class CreateStokObatTable extends Migration
 				  ->references('id')->on('jenis_obat')
                   ->onDelete('restrict');
 
-            $table->integer('id_obat_masuk')->unsigned();
-            $table->foreign('id_obat_masuk')
-                  ->references('id')->on('obat_masuk')
-                  ->onDelete('restrict');
-      				
-			$table->integer('jumlah');	
+            $table->string('nomor_batch')->nullable();		
+			$table->integer('jumlah');
+            $table->dateTime('kadaluarsa');
+            $table->string('barcode')->nullable();                  
 
             $table->integer('lokasi')->unsigned();                     
             $table->foreign('lokasi')

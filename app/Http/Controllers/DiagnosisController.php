@@ -38,24 +38,24 @@ class DiagnosisController extends Controller
         $currentDiagnosis = $currentDiagnosis. "#". $diagnosis->kode_diagnosis;
       }
       
-      $transaksi = Transaksi::where([
-        ['id_pasien', '=', $diagnosis->id_pasien]
-      ])
-      ->orderBy('transaksi.waktu_masuk_pasien', 'desc')
-      ->first();
+      // $transaksi = Transaksi::where([
+      //   ['id_pasien', '=', $diagnosis->id_pasien]
+      // ])
+      // ->orderBy('transaksi.waktu_masuk_pasien', 'desc')
+      // ->first();
 
-      if ($transaksi->no_sep != null) {
-        $settingBpjs = SettingBpjs::first();
-        $coder_nik = $settingBpjs->coder_nik;
-        $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-        $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
-        $currentDiagnosis = $currentData['response']['data']['diagnosa']. $currentDiagnosis;
+      // if ($transaksi->no_sep != null) {
+      //   $settingBpjs = SettingBpjs::first();
+      //   $coder_nik = $settingBpjs->coder_nik;
+      //   $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+      //   $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
+      //   $currentDiagnosis = $currentData['response']['data']['diagnosa']. $currentDiagnosis;
         
-        $requestSet = array(
-          'diagnosa' => $currentDiagnosis
-        );
-        $bpjs->setClaimData($requestSet);
-      }
+      //   $requestSet = array(
+      //     'diagnosa' => $currentDiagnosis
+      //   );
+      //   $bpjs->setClaimData($requestSet);
+      // }
 
       return response($request->all(), 201);
     }

@@ -17,10 +17,10 @@ class ObatEceranItem extends Model
     }
 
     /**
-    *	Get the ObatMasuk of the ObatEceranItem
+    *   Get the StokObat of the ObatEceranItem.
     */
-    public function obatMasuk()
+    public function stokObat()
     {
-    	return $this->belongsTo('App\ObatMasuk', 'id_obat_masuk');
+        return $this->belongsTo('App\StokObat', 'id_stok_obat');
     }
 }
