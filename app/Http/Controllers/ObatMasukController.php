@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\ObatMasuk;
 use App\StokObat;
+use Excel;
 
 class ObatMasukController extends Controller
 {
@@ -116,5 +117,15 @@ class ObatMasukController extends Controller
                                 ->get();
         return response ($obat_masuk, 200)
                 -> header('Content-Type', 'application/json');
+    }
+
+    public function export() 
+    {
+        $data = ObatMasuk::get();
+        return Excel::create('obat_masuk', function($excel) use ($data) {
+            $excel->sheet('mySheet', function($sheet) use ($data) {
+                $sheet->fromArray($data);
+            });
+        })->download('xls');
     }
 }
