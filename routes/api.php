@@ -80,8 +80,9 @@ Route::resource('daftar_diagnosis', 'DaftarDiagnosisController', ['except' => [
 ]]);
 
 Route::resource('diagnosis', 'DiagnosisController', ['except' => [
-  'edit', 'create'
+  'edit', 'show', 'create'
 ]]);
+Route::get('diagnosis/{id_pasien}', 'DiagnosisController@getDiagnosisOfPasien');
 Route::get('diagnosis/{id_pasien}/{tanggal_waktu}', 'DiagnosisController@getDiagnosisOfRekamMedis');
 
 Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
