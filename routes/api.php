@@ -84,7 +84,7 @@ Route::resource('diagnosis', 'DiagnosisController', ['except' => [
   'edit', 'show', 'create'
 ]]);
 Route::get('diagnosis/{id_pasien}', 'DiagnosisController@getDiagnosisOfPasien');
-Route::get('diagnosis/{id_pasien}/{tanggal_waktu}', 'DiagnosisController@getDiagnosisOfRekamMedis');
+Route::get('diagnosis/rekam_medis/{id_pasien}/{tanggal_waktu}', 'DiagnosisController@getDiagnosisOfRekamMedis');
 
 Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
   'edit', 'create'
@@ -189,9 +189,12 @@ Route::put('rawatinap/booking/{id}', 'PemakaianKamarRawatInapController@masuk');
 Route::put('tempattidur/{no_kamar}/{no_tempat_tidur}', 'TempatTidurController@update');
 
 // Route::get('resep/search_by_transaksi', 'ResepController@searchByTransaksi');
+Route::get('resep/rekam_medis/{id_pasien}/{tanggal_waktu}', 'ResepController@getResepOfRekamMedis');
 Route::get('resep/search_by_pasien', 'ResepController@searchByPasien');
 // Route::get('resep/search_by_pasien_and_tanggal', 'ResepController@searchByPasienAndTanggal');
-Route::resource('resep', 'ResepController');
+Route::resource('resep', 'ResepController', ['except' => [
+  'edit', 'show', 'create'
+]]);
 Route::resource('resep_item', 'ResepItemController');
 Route::resource('racikan_item', 'RacikanItemController');
 

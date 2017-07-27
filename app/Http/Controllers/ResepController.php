@@ -74,6 +74,24 @@ class ResepController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param  int  $id_pasien
+     * @param  string  $tanggal_waktu
+     * @return \Illuminate\Http\Response
+     */
+    public function getResepOfRekamMedis($id_pasien, $tanggal_waktu)
+    {
+        $with_condition = function ($query) use ($id_pasien, $tanggal_waktu) {
+           $query->where('id_pasien', $id_pasien);
+           $query->where('waktu_masuk_pasien', $tanggal_waktu);
+        };
+        return Resep::with('resepItem', 'resepItem.racikanItem', 'resepItem.racikanItem.jenisObat', 'transaksi')
+        ->whereHas('transaksi', $with_condition)
+        ->get();
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
