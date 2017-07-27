@@ -75,6 +75,19 @@ class DiagnosisController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id_pasien
+     * @return \Illuminate\Http\Response
+     */
+    public function getDiagnosisOfPasien($id_pasien)
+    {
+      return Diagnosis::with('daftarDiagnosis')
+                      ->where('id_pasien', '=', $id_pasien)
+                      ->get();
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id_pasien
      * @param  string $tanggal_waktu
      * @return \Illuminate\Http\Response
      */
