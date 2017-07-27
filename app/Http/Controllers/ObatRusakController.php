@@ -15,7 +15,7 @@ class ObatRusakController extends Controller
      */
     public function index()
     {
-        return ObatRusak::with('obatMasuk','jenisObat','lokasiAsal')->get();
+        return ObatRusak::with('jenisObat','stokObat','lokasiAsal')->get();
     }
 
     /**
@@ -30,7 +30,6 @@ class ObatRusakController extends Controller
         // TO-DO: Restriction checking (jumlah > 0 etc.)
         $obat_rusak = new ObatRusak;
         $obat_rusak->id_jenis_obat = $request->input('id_jenis_obat');
-        $obat_rusak->id_obat_masuk = $request->input('id_obat_masuk');
         $obat_rusak->id_stok_obat = $request->input('id_stok_obat');
 
         date_default_timezone_set('Asia/Jakarta');
@@ -42,9 +41,7 @@ class ObatRusakController extends Controller
         $obat_rusak->asal = $request->input('asal');
         $obat_rusak->save();
 
-        $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_rusak->id_obat_masuk)
-                                    ->where('lokasi', $obat_rusak->asal)
-                                    ->first(); //TO-DO: Error handling - firstOrFail?
+        $stok_obat_asal = StokObat::findOrFail($obat_rusak->id_stok_obat);
         $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_rusak->jumlah);
         $stok_obat_asal->save();
 
@@ -59,7 +56,7 @@ class ObatRusakController extends Controller
      */
     public function show($id)
     {
-        return ObatRusak::with('obatMasuk','jenisObat','lokasiAsal')->findOrFail($id);
+        return ObatRusak::with('jenisObat','stokObat','lokasiAsal')->findOrFail($id);
     }
 
     /**

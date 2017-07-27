@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 
 use App\StockOpname;
 use App\StockOpnameItem;
+use App\ObatRusak;
+use App\StokObat;
+use App\LokasiObat;
 
 class StockOpnameController extends Controller
 {
@@ -16,7 +19,7 @@ class StockOpnameController extends Controller
      */
     public function index()
     {
-        return StockOpname::with('stockOpnameItem.jenisObat','stockOpnameItem.obatMasuk','lokasiData')->get();
+        return StockOpname::with('stockOpnameItem.jenisObat','stockOpnameItem.stokObat','lokasiData')->get();
     }
 
     /**
@@ -37,13 +40,34 @@ class StockOpnameController extends Controller
 
             $stock_opname_item->id_stock_opname = $stock_opname->id;
             $stock_opname_item->id_jenis_obat = $value['id_jenis_obat'];
-            $stock_opname_item->id_obat_masuk = $value['id_obat_masuk'];
             $stock_opname_item->id_stok_obat = $value['id_stok_obat'];
             $stock_opname_item->jumlah_awal = $value['jumlah_awal'];
             $stock_opname_item->jumlah_akhir = $value['jumlah_akhir'];
-            $stock_opname_item->jumlah_sebenarnya = $value['jumlah_sebenarnya'];
+            $stock_opname_item->jumlah_fisik = $value['jumlah_fisik'];
 
             $stock_opname_item->save();
+
+            if (($stock_opname_item->jumlah_akhir) > ($stock_opname_item->jumlah_fisik)) {
+                $obat_rusak = new ObatRusak;
+                $obat_rusak->id_jenis_obat =  $stock_opname_item->id_jenis_obat;
+                $obat_rusak->id_stok_obat = $stock_opname_item->id_stok_obat;
+
+                date_default_timezone_set('Asia/Jakarta');
+                $obat_rusak->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
+                
+                $obat_rusak->jumlah = ($stock_opname_item->jumlah_akhir) - ($stock_opname_item->jumlah_fisik);
+                $obat_rusak->alasan = "Selisih";
+
+                $lokasi_obat = LokasiObat::findOrFail($stock_opname->lokasi);
+
+                $obat_rusak->keterangan = "Stock Opname ".$lokasi_obat->nama." ".$obat_rusak->waktu_keluar;
+                $obat_rusak->asal = $stock_opname->lokasi;
+                $obat_rusak->save();
+
+                $stok_obat_asal = StokObat::findOrFail($stock_opname_item->id_stok_obat);
+                $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_rusak->jumlah);
+                $stok_obat_asal->save();
+            }
         }
 
         return response($request->all(), 201);
@@ -57,7 +81,7 @@ class StockOpnameController extends Controller
      */
     public function show($id)
     {
-         return StockOpname::with('stockOpnameItem.jenisObat','stockOpnameItem.obatMasuk','lokasiData')->findOrFail($id);
+         return StockOpname::with('stockOpnameItem.jenisObat','stockOpnameItem.stokObat','lokasiData')->findOrFail($id);
     }
 
     /**
@@ -82,11 +106,10 @@ class StockOpnameController extends Controller
 
             $stock_opname_item->id_stock_opname = $stock_opname->id;
             $stock_opname_item->id_jenis_obat = $value['id_jenis_obat'];
-            $stock_opname_item->id_obat_masuk = $value['id_obat_masuk'];
             $stock_opname_item->id_stok_obat = $value['id_stok_obat'];
             $stock_opname_item->jumlah_awal = $value['jumlah_awal'];
             $stock_opname_item->jumlah_akhir = $value['jumlah_akhir'];
-            $stock_opname_item->jumlah_sebenarnya = $value['jumlah_sebenarnya'];
+            $stock_opname_item->jumlah_fisik = $value['jumlah_fisik'];
 
             $stock_opname_item->save();
         }
@@ -110,7 +133,7 @@ class StockOpnameController extends Controller
 
     public function searchByLocation(Request $request)
     {
-        $stock_opname = StockOpname::with('stockOpnameItem.jenisObat','stockOpnameItem.obatMasuk','lokasiData')
+        $stock_opname = StockOpname::with('stockOpnameItem.jenisObat','stockOpnameItem.stokObat','lokasiData')
                         ->where('lokasi', $request->input('lokasi'))
                         ->get();
         return response ($stock_opname, 200)

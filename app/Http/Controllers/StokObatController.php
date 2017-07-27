@@ -81,11 +81,9 @@ class StokObatController extends Controller
 
     public function searchByJenisObatAndBatch(Request $request)
     {
-        $stok_obat = StokObat::join('obat_masuk','obat_masuk.id', '=', 'stok_obat.id_obat_masuk')
-                                ->where('stok_obat.id_jenis_obat', $request->input('id_jenis_obat'))
-                                ->where('obat_masuk.nomor_batch', 'LIKE', $request->input('nomor_batch'))
+        $stok_obat = StokObat::where('id_jenis_obat', $request->input('id_jenis_obat'))
+                                ->where('nomor_batch', '=', $request->input('nomor_batch'))
                                 ->where('lokasi', $request->input('lokasi'))
-                                ->select('stok_obat.*')
                                 ->firstOrFail();
         return response ($stok_obat, 200)
                 -> header('Content-Type', 'application/json');
@@ -93,7 +91,7 @@ class StokObatController extends Controller
 
     public function searchByLocation(Request $request)
     {
-        $stok_obat = StokObat::with('obatMasuk', 'jenisObat')
+        $stok_obat = StokObat::with('jenisObat')
                                 ->where('lokasi', $request->input('lokasi'))
                                 ->get();
         return response ($stok_obat, 200)
