@@ -27,6 +27,7 @@ class DokterController extends Controller
     {
       $dokter = new dokter;
       $dokter->no_pegawai = $request->input('no_pegawai');
+      $dokter->spesialis = $request->input('spesialis');
       $dokter->save();
 
       return response($dokter, 201);
@@ -54,6 +55,7 @@ class DokterController extends Controller
     {
       $dokter = Dokter::findOrFail($no_pegawai);
       $dokter->no_pegawai = $request->input('no_pegawai');
+      $dokter->spesialis = $request->input('spesialis');
       $dokter->save();
 
       return response($dokter, 200);

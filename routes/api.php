@@ -51,6 +51,7 @@ Route::delete('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@destroy'
 Route::post('bpjs', 'BpjsController@process');
 Route::get('transaksi/latest/{id_pasien}', 'TransaksiController@getLatestOpenTransaksi');
 Route::get('transaksi/search_by_pasien', 'TransaksiController@searchByPasien');
+Route::get('transaksi/{id}/bpjs', 'TransaksiController@getStatusBpjs');
 Route::resource('transaksi', 'TransaksiController');
 Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTransaksi');
 
@@ -100,6 +101,7 @@ Route::resource('tindakan_operasi', 'TindakanOperasiController', ['except' => [
 Route::get('tindakan_operasi/{pemakaianKamarOperasiId}', 'TindakanOperasiController@show');
 Route::post('tindakan_operasi/{id_tindakan}', 'TindakanOperasiController@store');
 
+Route::get('tindakan/hasil_lab/{no_pegawai}', 'TindakanController@getTindakanWithoutHasilLab');
 Route::get('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@show');
 Route::get('tindakan/rekam_medis/{id_pasien}/{tanggal_waktu}', 'TindakanController@getTindakanOfRekamMedis');
 Route::put('tindakan/{no_transaksi}/{no_tindakan}', 'TindakanController@update');
@@ -113,11 +115,10 @@ Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
   'edit', 'create'
 ]]);
 
+Route::get('hasil_lab/download/{path}', 'HasilLabController@download');
 Route::resource('hasil_lab', 'HasilLabController', ['except' => [
-  'edit', 'create', 'get_empty'
+  'edit', 'create', 'download'
 ]]);
-
-Route::get('hasil_lab/empty/{no_pegawai}', 'HasilLabController@get_empty');
 
 Route::resource('ambulans', 'AmbulansController', ['except' => [
   'edit', 'create'
@@ -206,8 +207,11 @@ Route::get('obat_pindah/today/{id_stok_obat}', 'ObatPindahController@getTodayOba
 Route::resource('obat_pindah', 'ObatPindahController');
 Route::get('obat_rusak/today/{id_stok_obat}', 'ObatRusakController@getTodayObatRusakByStok');
 Route::resource('obat_rusak', 'ObatRusakController');
+Route::get('obat_tebus/today/{id_stok_obat}', 'ObatTebusController@getTodayObatTebusByStok');
 Route::resource('obat_tebus', 'ObatTebusController');
+Route::get('obat_tindakan/today/{id_stok_obat}', 'ObatTindakanController@getTodayObatTindakanByStok');
 Route::resource('obat_tindakan', 'ObatTindakanController');
+Route::get('obat_eceran/today/{id_stok_obat}', 'ObatEceranController@getTodayObatEceranByStok');
 Route::resource('obat_eceran', 'ObatEceranController');
 Route::get('stock_opname/search_by_location', 'StockOpnameController@searchByLocation');
 Route::resource('stock_opname', 'StockOpnameController');
