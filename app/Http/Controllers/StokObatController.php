@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\StokObat;
+use App\LokasiObat;
 
 class StokObatController extends Controller
 {
@@ -90,10 +91,22 @@ class StokObatController extends Controller
     }
 
     public function searchByLocation(Request $request)
-    {
+    {        
         $stok_obat = StokObat::with('jenisObat')
                                 ->where('lokasi', $request->input('lokasi'))
                                 ->get();
+        return response ($stok_obat, 200)
+                -> header('Content-Type', 'application/json');
+    }
+
+    public function searchByLocationType(Request $request)
+    {
+        $lokasi_obat = LokasiObat::where('jenis','=', $request->input('jenis_lokasi'))->first();  
+
+        $stok_obat = StokObat::with('jenisObat')
+                                ->where('lokasi', $lokasi_obat->id)
+                                ->get();
+
         return response ($stok_obat, 200)
                 -> header('Content-Type', 'application/json');
     }
