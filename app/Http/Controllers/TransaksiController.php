@@ -155,7 +155,7 @@ class TransaksiController extends Controller
           })
           ->where('status', '=', 'open')
           ->orderBy('transaksi.waktu_masuk_pasien', 'desc')
-          ->firstOrFail();
+          ->get();
       }
       else if ($field == null) {
         return response()->json([
