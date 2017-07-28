@@ -13,11 +13,28 @@ use App\SettingBpjs;
 
 class TransaksiController extends Controller
 {
-    private function getTransaksi($id = null)
+    private function getTransaksi($id = null, $field = null)
     {
         if (isset($id)) {
+          if (isset($field)) {
+            if ($field == 'kode_pasien') {
+              return Transaksi::with('pasien')
+                ->whereHas('pasien', function ($query) use ($id) {
+                  $query->where('kode_pasien', 'like', '%'.$id.'%');
+                })
+                ->where('status', '=', 'open')
+                ->orderBy('transaksi.waktu_masuk_pasien', 'desc')
+                ->get();
+            }
+            else {
+              return response('', 500);
+            }
+          }
+          else {
             return Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'pembayaran', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'obatEceran.obatEceranItem.jenisObat', 'pemakaianKamarRawatInap.kamar_rawatinap'])->findOrFail($id);
-        } else {
+          }
+        }
+        else {
             return Transaksi::with(['pasien', 'obatTebus.resep', 'obatEceran'])->get();
         }
     }
@@ -148,20 +165,9 @@ class TransaksiController extends Controller
      */
     public function show($id, $field = null)
     {
-      if ($field == 'kode_pasien') {
-        return Transaksi::with('pasien')
-          ->whereHas('pasien', function ($query) use ($id) {
-            $query->where('kode_pasien', 'like', '%'.$id.'%');
-          })
-          ->where('status', '=', 'open')
-          ->orderBy('transaksi.waktu_masuk_pasien', 'desc')
-          ->get();
-      }
-      else if ($field == null) {
         return response()->json([
-          'transaksi' => $this->getTransaksi($id)
+          'transaksi' => $this->getTransaksi($id, $field)
         ]);
-      }
     }
 
     /**

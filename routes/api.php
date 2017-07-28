@@ -49,13 +49,13 @@ Route::put('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@update');
 Route::delete('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@destroy');
 
 Route::post('bpjs', 'BpjsController@process');
+Route::resource('transaksi', 'TransaksiController', ['except' => [
+  'edit', 'show', 'create'
+  ]]);
 Route::get('transaksi/{id}/{field?}', 'TransaksiController@show');
 Route::get('transaksi/latest/{id_pasien}', 'TransaksiController@getLatestOpenTransaksi');
 Route::get('transaksi/search_by_pasien', 'TransaksiController@searchByPasien');
 Route::get('transaksi/{id}/bpjs', 'TransaksiController@getStatusBpjs');
-Route::resource('transaksi', 'TransaksiController', ['except' => [
-  'edit', 'show', 'create'
-]]);
 Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTransaksi');
 
 Route::resource('rujukan', 'RujukanController', ['except' => [
@@ -132,8 +132,9 @@ Route::resource('tenaga_medis', 'TenagaMedisController', ['except' => [
 ]]);
 
 Route::resource('dokter', 'DokterController', ['except' => [
-  'edit', 'create'
+  'edit', 'create', 'periksa'
 ]]);
+Route::post('dokter/periksa', 'DokterController@periksa');
 
 Route::get('jadwal_dokter/{nama_poli}/{np_dokter}/{tanggal}', 'JadwalDokterController@show');
 Route::get('jadwal_dokter/{nama_poli}', 'JadwalDokterController@showAvailable');
