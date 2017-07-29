@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\StokObat;
 use App\LokasiObat;
+use Excel;
 
 class StokObatController extends Controller
 {
@@ -109,5 +110,39 @@ class StokObatController extends Controller
 
         return response ($stok_obat, 200)
                 -> header('Content-Type', 'application/json');
+    }
+
+    public function export() 
+    {
+        $all_stok_obat = StokObat::join('jenis_obat', 'jenis_obat.id', '=', 'stok_obat.id_jenis_obat')
+                            ->join('lokasi_obat', 'lokasi_obat.id', '=', 'stok_obat.lokasi')
+                            ->select('jenis_obat.merek_obat',
+                                    'jenis_obat.nama_generik',
+                                    'jenis_obat.pembuat',
+                                    'jenis_obat.golongan',
+                                    'stok_obat.nomor_batch',
+                                    'stok_obat.kadaluarsa',
+                                    'stok_obat.barcode', 
+                                    'stok_obat.jumlah',
+                                    'jenis_obat.satuan', 
+                                    'lokasi_obat.nama')
+                            ->get();
+
+        $data = [];
+        $data[] = ['Merek obat', 'Nama generik', 'Pembuat', 'Golongan', 'No. batch', 'Kadaluarsa', 'Kode obat', 'Jumlah', 'Satuan', 'Lokasi'];
+
+        foreach($all_stok_obat as $stok_obat) {
+            $data[] = $stok_obat->toArray();
+        }
+
+        return Excel::create('stok_obat', function($excel) use ($data) {
+            $excel->setTitle('Stok Obat')
+                    ->setCreator('user')
+                    ->setCompany('RSUD Payakumbuh')
+                    ->setDescription('Daftar stok obat');
+            $excel->sheet('Sheet1', function($sheet) use ($data) {
+                $sheet->fromArray($data);
+            });
+        })->download('xls');
     }
 }

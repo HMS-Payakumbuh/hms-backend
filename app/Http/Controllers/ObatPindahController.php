@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\ObatPindah;
 use App\StokObat;
+use Excel;
 
 class ObatPindahController extends Controller
 {
@@ -136,5 +137,44 @@ class ObatPindahController extends Controller
                                 ->get();
         return response ($obat_pindah, 200)
                 -> header('Content-Type', 'application/json');
+    }
+
+    public function export() 
+    {
+        $all_obat_pindah = ObatPindah::join('jenis_obat', 'jenis_obat.id', '=', 'obat_pindah.id_jenis_obat')
+                            ->join('stok_obat', 'stok_obat.id', '=', 'obat_pindah.id_stok_obat_asal')
+                            ->join('lokasi_obat as lokasi_asal', 'lokasi_asal.id', '=', 'obat_pindah.asal')
+                            ->join('lokasi_obat as lokasi_tujuan', 'lokasi_tujuan.id', '=', 'obat_pindah.tujuan') // Error: Lokasi tujuan not displayed yet
+                            ->select('jenis_obat.merek_obat',
+                                    'jenis_obat.nama_generik',
+                                    'jenis_obat.pembuat',
+                                    'jenis_obat.golongan',
+                                    'stok_obat.nomor_batch',
+                                    'stok_obat.kadaluarsa',
+                                    'stok_obat.barcode',
+                                    'obat_pindah.waktu_pindah', 
+                                    'obat_pindah.jumlah',
+                                    'jenis_obat.satuan', 
+                                    'lokasi_asal.nama',
+                                    'lokasi_tujuan.nama',
+                                    'obat_pindah.keterangan')
+                            ->get();
+
+        $data = [];
+        $data[] = ['Merek obat', 'Nama generik', 'Pembuat', 'Golongan', 'No. batch', 'Kadaluarsa', 'Kode obat', 'Waktu pindah', 'Jumlah', 'Satuan', 'Lokasi asal', 'Lokasi tujuan', 'Keterangan'];
+
+        foreach($all_obat_pindah as $obat_pindah) {
+            $data[] = $obat_pindah->toArray();
+        }
+
+        return Excel::create('obat_pindah', function($excel) use ($data) {
+            $excel->setTitle('Obat Pindah')
+                    ->setCreator('user')
+                    ->setCompany('RSUD Payakumbuh')
+                    ->setDescription('Daftar obat pindah');
+            $excel->sheet('Sheet1', function($sheet) use ($data) {
+                $sheet->fromArray($data);
+            });
+        })->download('xls');
     }
 }

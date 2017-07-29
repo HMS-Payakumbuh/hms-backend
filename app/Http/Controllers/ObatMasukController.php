@@ -125,9 +125,34 @@ class ObatMasukController extends Controller
 
     public function export() 
     {
-        $data = ObatMasuk::get();
+        $all_obat_masuk = ObatMasuk::join('jenis_obat', 'jenis_obat.id', '=', 'obat_masuk.id_jenis_obat')
+                            ->join('stok_obat', 'stok_obat.id', '=', 'obat_masuk.id_stok_obat')
+                            ->select('jenis_obat.merek_obat',
+                                    'jenis_obat.nama_generik',
+                                    'jenis_obat.pembuat',
+                                    'jenis_obat.golongan',
+                                    'stok_obat.nomor_batch',
+                                    'stok_obat.kadaluarsa',
+                                    'stok_obat.barcode',
+                                    'obat_masuk.waktu_masuk', 
+                                    'obat_masuk.jumlah',
+                                    'jenis_obat.satuan', 
+                                    'obat_masuk.harga_beli_satuan')
+                            ->get();
+
+        $data = [];
+        $data[] = ['Merek obat', 'Nama generik', 'Pembuat', 'Golongan', 'No. batch', 'Kadaluarsa', 'Kode obat', 'Waktu masuk', 'Jumlah', 'Satuan', 'Harga beli satuan'];
+
+        foreach($all_obat_masuk as $obat_masuk) {
+            $data[] = $obat_masuk->toArray();
+        }
+
         return Excel::create('obat_masuk', function($excel) use ($data) {
-            $excel->sheet('mySheet', function($sheet) use ($data) {
+            $excel->setTitle('Obat Masuk')
+                    ->setCreator('user')
+                    ->setCompany('RSUD Payakumbuh')
+                    ->setDescription('Daftar obat masuk');
+            $excel->sheet('Sheet1', function($sheet) use ($data) {
                 $sheet->fromArray($data);
             });
         })->download('xls');
