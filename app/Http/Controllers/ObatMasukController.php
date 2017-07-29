@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\ObatMasuk;
 use App\StokObat;
+use App\LokasiObat;
 use Excel;
 
 class ObatMasukController extends Controller
@@ -28,12 +29,15 @@ class ObatMasukController extends Controller
     public function store(Request $request)
     {
         // TO-DO: Make into transaction?
-        
+        $lokasi_obat = LokasiObat::where('jenis','=',0)->first();
+
         $id_jenis_append = sprintf("%05d", $request->input('id_jenis_obat'));
         $kadaluarsa_clean = str_replace(["-", "–"], '', $request->input('kadaluarsa'));
         $barcode = $id_jenis_append.$request->input('nomor_batch').$kadaluarsa_clean;
 
-        $stok_obat = StokObat::where('barcode','LIKE','%'.$barcode.'%')->first();
+        $stok_obat = StokObat::where('barcode','LIKE','%'.$barcode.'%')
+                            ->where('lokasi','=',$lokasi_obat->id)
+                            ->first();
 
         if (is_null($stok_obat)) {
             $stok_obat = new StokObat;
@@ -42,7 +46,7 @@ class ObatMasukController extends Controller
             $stok_obat->jumlah = $request->input('jumlah');
             $stok_obat->kadaluarsa = $request->input('kadaluarsa');
             $stok_obat->barcode = $barcode;
-            $stok_obat->lokasi = 1; // TO-DO: Dynamic location depending on which is Gudang Utama
+            $stok_obat->lokasi = $lokasi_obat->id;
         } else {
             $stok_obat->jumlah = $stok_obat->jumlah + $request->input('jumlah');
         }
@@ -121,9 +125,34 @@ class ObatMasukController extends Controller
 
     public function export() 
     {
-        $data = ObatMasuk::get();
+        $all_obat_masuk = ObatMasuk::join('jenis_obat', 'jenis_obat.id', '=', 'obat_masuk.id_jenis_obat')
+                            ->join('stok_obat', 'stok_obat.id', '=', 'obat_masuk.id_stok_obat')
+                            ->select('jenis_obat.merek_obat',
+                                    'jenis_obat.nama_generik',
+                                    'jenis_obat.pembuat',
+                                    'jenis_obat.golongan',
+                                    'stok_obat.nomor_batch',
+                                    'stok_obat.kadaluarsa',
+                                    'stok_obat.barcode',
+                                    'obat_masuk.waktu_masuk', 
+                                    'obat_masuk.jumlah',
+                                    'jenis_obat.satuan', 
+                                    'obat_masuk.harga_beli_satuan')
+                            ->get();
+
+        $data = [];
+        $data[] = ['Merek obat', 'Nama generik', 'Pembuat', 'Golongan', 'No. batch', 'Kadaluarsa', 'Kode obat', 'Waktu masuk', 'Jumlah', 'Satuan', 'Harga beli satuan'];
+
+        foreach($all_obat_masuk as $obat_masuk) {
+            $data[] = $obat_masuk->toArray();
+        }
+
         return Excel::create('obat_masuk', function($excel) use ($data) {
-            $excel->sheet('mySheet', function($sheet) use ($data) {
+            $excel->setTitle('Obat Masuk')
+                    ->setCreator('user')
+                    ->setCompany('RSUD Payakumbuh')
+                    ->setDescription('Daftar obat masuk');
+            $excel->sheet('Sheet1', function($sheet) use ($data) {
                 $sheet->fromArray($data);
             });
         })->download('xls');
