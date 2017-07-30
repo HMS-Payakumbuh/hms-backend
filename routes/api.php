@@ -179,10 +179,15 @@ Route::resource('kamarjenazah', 'KamarJenazahController', ['except' => [
   'edit', 'create'
 ]]);
 
+Route::get('rawatinap/available/{tanggal}/booked', 'KamarRawatInapController@getAvailableKamarMinusBookedByNamaKamar');
+Route::get('rawatinap/available/{tanggal}/now', 'KamarRawatInapController@getAvailableKamarMinusNowByNamaKamar');
+Route::get('rawatinap/list/all', 'KamarRawatInapController@getAll');
 Route::get('rawatinap/{no_kamar}', 'KamarRawatInapController@show');
 Route::put('rawatinap/{no_kamar}', 'KamarRawatInapController@update');
 Route::post('rawatinap/{no_kamar}', 'PemakaianKamarRawatInapController@store');
-Route::put('rawatinap/booking/{id}', 'PemakaianKamarRawatInapController@masuk');
+Route::put('rawatinap/booking/{id}', 'PemakaianKamarRawatInapController@masuk');\
+Route::get('rawatinap/booking/{tanggal}/now', 'KamarRawatInapController@getAvailableKamarMinusNow');
+Route::get('rawatinap/booking/{tanggal}/booked', 'KamarRawatInapController@getAvailableKamarMinusBooked');
 
 Route::put('tempattidur/{no_kamar}/{no_tempat_tidur}', 'TempatTidurController@update');
 

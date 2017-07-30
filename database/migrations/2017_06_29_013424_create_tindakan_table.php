@@ -15,7 +15,7 @@ class CreateTindakanTable extends Migration
     {
         Schema::create('tindakan', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('id_transaksi');
+            $table->integer('id_transaksi')->nullable();
             $table->decimal('harga', 65, 2);
             $table->string('keterangan')->nullable();
             $table->integer('id_pembayaran')->nullable();
