@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\AntrianFrontOffice;
+use App\Pasien;
+use App\RekamMedis;
 use App\Poliklinik;
+use App\Laboratorium;
 use Carbon\Carbon;
-use SMS;
+use Textmagic\Services\TextmagicRestClient;
 
 class AntrianSMSController extends Controller
 {
@@ -17,9 +20,6 @@ class AntrianSMSController extends Controller
      */
     public function index()
     {
-        SMS::send('Your SMS Message', null, function($sms) {
-            $sms->to('6281317370628');
-        });
         return AntrianFrontOffice::all();
     }
 
@@ -29,27 +29,88 @@ class AntrianSMSController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function parseMessage(Request $request)
     {
+        $pieces = explode("_", $request->input('message'));
+
         $antrian_front_office = new AntrianFrontOffice;
-        $antrian_front_office->nama_layanan_poli = $request->input('nama_layanan_poli');
-        $antrian_front_office->nama_layanan_lab = $request->input('nama_layanan_lab');
-        $antrian_front_office->jenis = $request->input('jenis');
-        $antrian_front_office->kategori_antrian = $request->input('kategori_antrian');
-        $antrian_front_office->kesempatan = $request->input('kesempatan');
-        $antrian_front_office->save();
+        $antrian_front_office->jenis = 0;
+        $antrian_front_office->kesempatan = 3;
 
-        if ($request->input('nama_layanan_poli')) {
-            $poli = Poliklinik::findOrFail($request->input('nama_layanan_poli'));
-            if ($poli && $poli->sisa_pelayanan <= 0) {
-                AntrianFrontOffice::destroy($antrian_front_office->nama_layanan_poli, $antrian_front_office->no_antrian);
-                return response()->json([
-                    'error' => 'Pembuatan Antrian Gagal'
-                ], 500);
+        try {
+            $pasien = Pasien::where('kode_pasien', '=', $pieces[0])->first();
+            if ($pasien) 
+                $antrian_front_office->nama_pasien = $pasien->nama_pasien;    
+            else
+                $antrian_front_office->nama_pasien = $pieces[0];
+
+            if (substr($pieces[1], 0, 4) === 'Poli')
+                $antrian_front_office->nama_layanan_poli = $pieces[1];
+            else
+                $antrian_front_office->nama_layanan_lab = $pieces[1];
+
+            if ($antrian_front_office->nama_layanan_poli) {
+                $layanan = Poliklinik::where('nama', '=', $antrian_front_office->nama_layanan_poli)->first();
+                $antrian_front_office->kategori_antrian = $layanan->kategori_antrian;
+            } else if ($antrian_front_office->nama_layanan_lab) {
+                $layanan = Laboratorium::where('nama', '=', $antrian_front_office->nama_layanan_lab)->first();
+                $antrian_front_office->kategori_antrian = $layanan->kategori_antrian;
             }
-        }
 
-        return response($antrian_front_office, 201);
+            if (count($pieces) > 2) {
+                $rekam_medis = RekamMedis::where('id_pasien', '=', $pasien->id)->first();
+                $tanggal_kontrol = Carbon::parse(json_decode($rekam_medis->rencana_penatalaksanaan)->tanggal);
+                var_dump('Tanggal Kontrol : '.$tanggal_kontrol);
+                var_dump('Tanggal Sekarang : '.Carbon::now());
+                if (Carbon::parse(json_decode($rekam_medis->rencana_penatalaksanaan)->tanggal)->gt(Carbon::now()))
+                    return response('Pendaftaran gagal. Maaf Anda belum dapat melakukan kontrol.', 500);
+            }
+
+            $antrian_front_office->save();
+
+            if ($layanan) {
+                $panjang_antrian = count(AntrianFrontOffice::where('kategori_antrian', '=', $layanan->kategori_antrian)->get());
+                $minutes = $panjang_antrian * 5;
+                $now = Carbon::now();
+                $waktu_datang = 'Pendaftaran berhasil. Anda mendapat nomor antrian '.$antrian_front_office->kategori_antrian.$antrian_front_office->no_antrian.'. Datanglah sebelum Pukul '.$now->copy()->addMinutes($minutes)->toTimeString().'.';
+            }
+            
+            return response($waktu_datang, 201);
+        } catch (\Exception $e) {
+            if ($e instanceof RestException) {
+                print '[ERROR] ' . $e->getMessage() . "\n";
+                foreach ($e->getErrors() as $key => $value) {
+                    print '[' . $key . '] ' . implode(',', $value) . "\n";
+                }
+            } else {
+                print '[ERROR] ' . $e->getMessage() . "\n";
+            }
+            return response($e, 500);
+        } 
+    }
+
+    public function sendMessage($text, $phone) {
+        //send message to user
+        $client = new TextmagicRestClient('jessicaandjani', 'Z1HuSc1UIKQMgOfmGeFmtmAMMRH7GK');
+        $result = ' ';
+        try {
+            $result = $client->messages->create(
+                array(
+                    'text' => $text,
+                    'phones' => implode(', ', array($phone))
+                )
+            );
+        } catch (\Exception $e) {
+            if ($e instanceof RestException) {
+                print '[ERROR] ' . $e->getMessage() . "\n";
+                foreach ($e->getErrors() as $key => $value) {
+                    print '[' . $key . '] ' . implode(',', $value) . "\n";
+                }
+            } else {
+                print '[ERROR] ' . $e->getMessage() . "\n";
+            }
+            return;
+        }
     }
 
     /**
