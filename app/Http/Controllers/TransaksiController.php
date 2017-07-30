@@ -130,6 +130,7 @@ class TransaksiController extends Controller
                 'upgrade_class_ind' => $transaksi->status_naik_kelas,
                 'tarif_rs' => $settingBpjs->tarif_rs,
                 'kode_tarif' => $settingBpjs->kd_tarif_rs,
+                'nama_dokter' => 'RUDY, DR',
                 'payor_id' => 3,
                 'payor_cd' => 'JKN'
             );
