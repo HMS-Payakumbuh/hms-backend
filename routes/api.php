@@ -171,6 +171,7 @@ Route::put('pemakaiankamarrawatinap/{id}/{no_kamar}/{no_tempat_tidur}', 'Pemakai
 Route::delete('pemakaiankamarrawatinap/{id}/{no_kamar}/{no_tempat_tidur}', 'PemakaianKamarRawatinapController@destroy');
 Route::delete('pemakaiankamarrawatinap/booking/{id}', 'PemakaianKamarRawatinapController@destroyBooking');
 Route::put('pemakaiankamarrawatinap/pindah/{id}', 'PemakaianKamarRawatinapController@pindahKamar');
+Route::put('pemakaiankamarrawatinap/update/waktu_keluar/{id}', 'PemakaianKamarRawatinapController@updatePerkiraanWaktuKeluar');
 Route::get('pemakaiankamarrawatinap/{id}', 'PemakaianKamarRawatinapController@show');
 Route::get('pemakaiankamarrawatinap/search/booked/{no_kamar}', 'PemakaianKamarRawatinapController@getAllPemakaianKamarBookedByNoKamar');
 Route::get('pemakaiankamarrawatinap/search/booked/{tanggal}/{no_kamar}', 'PemakaianKamarRawatinapController@getAllPemakaianKamarBookedWithTanggal');

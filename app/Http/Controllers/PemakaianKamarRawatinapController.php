@@ -285,6 +285,17 @@ class PemakaianKamarRawatinapController extends Controller
         return response($pemakaianKamarRawatinap, 200);
     }
 
+    public function updatePerkiraanWaktuKeluar(Request $request, $id)
+    {
+        $pemakaianKamarRawatinap = PemakaianKamarRawatinap::findOrFail($id);
+
+        date_default_timezone_set('Asia/Jakarta');
+        $pemakaianKamarRawatinap->perkiraan_waktu_keluar = $request->input('perkiraan_waktu_keluar');
+        $pemakaianKamarRawatinap->save();
+
+        return response($pemakaianKamarRawatinap, 200);
+    }
+
     public function pindahKamar(Request $request, $id)
     {
         $pindah = false;
