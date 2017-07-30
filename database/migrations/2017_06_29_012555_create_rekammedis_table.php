@@ -24,6 +24,7 @@ class CreateRekammedisTable extends Migration
             $table->jsonb('anamnesis')->nullable();
             $table->jsonb('rencana_penatalaksanaan')->nullable();
             $table->jsonb('pelayanan_lain')->nullable();
+            $table->jsonb('perkembangan_pasien')->nullable();
             $table->timestamps();
 
             $table->unique(['id_pasien', 'tanggal_waktu']);

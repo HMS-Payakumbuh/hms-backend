@@ -23,6 +23,12 @@ class AntrianController extends Controller
         return Antrian::all();
     }
 
+    public function cleanup()
+    {       
+        Antrian::truncate();
+        return response('', 204);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -68,7 +74,11 @@ class AntrianController extends Controller
                 ], 500);
             }
         }
-        Redis::publish('antrian', json_encode(['kategori_antrian' => '']));
+        if ($request->input('nama_layanan_poli'))
+            Redis::publish('antrian', json_encode(['nama_layanan' => $antrian->nama_layanan_poli]));
+        else if ($request->input('nama_layanan_lab'))
+            Redis::publish('antrian', json_encode(['nama_layanan' => $antrian->nama_layanan_lab]));
+
         return response($antrian, 201);
     }
 
@@ -80,7 +90,8 @@ class AntrianController extends Controller
      */
     public function show($nama_layanan)
     {
-        return Antrian::where([['status', '=', 0], ['nama_layanan_poli', '=', $nama_layanan]])
+        return Antrian::with(['transaksi.pasien'])
+          ->where([['status', '=', 0], ['nama_layanan_poli', '=', $nama_layanan]])
           ->orWhere([['status', '=', 0], ['nama_layanan_lab', '=', $nama_layanan]])
           ->with('transaksi', 'transaksi.pasien')
           ->get();
@@ -104,7 +115,11 @@ class AntrianController extends Controller
         $antrian->save();
         if ($antrian->kesempatan <= 0)
             $antrian->delete();
-        Redis::publish('antrian', json_encode(['kategori_antrian' => '']));
+        if ($antrian->nama_layanan_poli)
+            Redis::publish('antrian', json_encode(['nama_layanan' => $antrian->nama_layanan_poli]));
+        else if ($antrian->nama_layanan_lab)
+            Redis::publish('antrian', json_encode(['nama_layanan' => $antrian->nama_layanan_lab]));
+
 		return response($antrian, 200);
     }
 
@@ -122,7 +137,10 @@ class AntrianController extends Controller
 	    ->first();
 	    $antrian->status = 1;
         $antrian->save();
-        Redis::publish('antrian', json_encode(['kategori_antrian' => '']));
+        if ($antrian->nama_layanan_poli)
+            Redis::publish('antrian', json_encode(['nama_layanan' => $antrian->nama_layanan_poli]));
+        else if ($antrian->nama_layanan_lab)
+            Redis::publish('antrian', json_encode(['nama_layanan' => $antrian->nama_layanan_lab]));
         return response($antrian, 204);
     }
 }
