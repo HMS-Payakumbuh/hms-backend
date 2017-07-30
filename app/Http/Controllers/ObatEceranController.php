@@ -8,6 +8,7 @@ use App\ObatEceran;
 use App\StokObat;
 use App\ObatEceranItem;
 use App\Transaksi;
+use Excel;
 
 class ObatEceranController extends Controller
 {
@@ -18,7 +19,7 @@ class ObatEceranController extends Controller
      */
     public function index()
     {
-       return ObatEceran::with('obatEceranItem.obatMasuk','obatEceranItem.jenisObat')->get();
+       return ObatEceran::with('obatEceranItem.stokObat','obatEceranItem.jenisObat')->get();
     }
 
     /**
@@ -65,15 +66,11 @@ class ObatEceranController extends Controller
 
             $obat_eceran_item->id_obat_eceran = $obat_eceran->id;
             $obat_eceran_item->id_jenis_obat = $value['id_jenis_obat'];
-            $obat_eceran_item->id_obat_masuk = $value['id_obat_masuk'];
             $obat_eceran_item->id_stok_obat = $value['id_stok_obat'];
             $obat_eceran_item->jumlah = $value['jumlah'];
             $obat_eceran_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
-            $obat_eceran_item->keterangan = $value['keterangan'];
 
-            $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_eceran_item->id_obat_masuk)
-                                        ->where('lokasi', 2)
-                                        ->firstOrFail(); //TO-DO: Error handling - firstOrFail?
+            $stok_obat_asal = StokObat::findOrFail($obat_eceran_item->id_stok_obat);
             $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_eceran_item->jumlah);    
 
             if ($obat_eceran_item->save()) {
@@ -125,15 +122,11 @@ class ObatEceranController extends Controller
 
             $obat_eceran_item->id_obat_eceran = $value['id_obat_eceran'];
             $obat_eceran_item->id_jenis_obat = $value['id_jenis_obat'];
-            $obat_eceran_item->id_obat_masuk = $value['id_obat_masuk'];
             $obat_eceran_item->id_stok_obat = $value['id_stok_obat'];
             $obat_eceran_item->jumlah = $value['jumlah'];
-            $obat_eceran_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
-            $obat_eceran_item->keterangan = $value['keterangan'];    
+            $obat_eceran_item->harga_jual_realisasi = $value['harga_jual_realisasi'];  
 
-            $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_eceran_item->id_obat_masuk)
-                                        ->where('lokasi', 2)
-                                        ->first(); //TO-DO: Error handling - firstOrFail?
+            $stok_obat_asal = StokObat::findOrFail($obat_eceran_item->id_stok_obat);
             $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_eceran_item->jumlah);
 
             $obat_eceran_item->save();
@@ -155,5 +148,53 @@ class ObatEceranController extends Controller
         $obat_eceran = ObatEceran::find($id);
         $obat_eceran->delete();
         return response ($id.' deleted', 200);
+    }
+
+    public function getTodayObatEceranByStok($id_stok_obat)
+    {
+        date_default_timezone_set('Asia/Jakarta');
+        $obat_eceran_items = ObatEceranItem::join('obat_eceran', 'obat_eceran.id', '=', 'obat_eceran_item.id_obat_eceran')
+                                ->whereDate('obat_eceran.waktu_transaksi', '=', date("Y-m-d"))
+                                ->where('obat_eceran_item.id_stok_obat', $id_stok_obat)
+                                ->select('obat_eceran_item.*','obat_eceran.waktu_transaksi')
+                                ->get();
+        return response ($obat_eceran_items, 200)
+                -> header('Content-Type', 'application/json');
+    }
+
+    public function export() 
+    {
+        $all_obat_eceran_item = ObatEceranItem::join('obat_eceran', 'obat_eceran.id', '=', 'obat_eceran_item.id_obat_eceran')
+                            ->join('jenis_obat', 'jenis_obat.id', '=', 'obat_eceran_item.id_jenis_obat')
+                            ->join('stok_obat', 'stok_obat.id', '=', 'obat_eceran_item.id_stok_obat')
+                            ->select('jenis_obat.merek_obat',
+                                    'jenis_obat.nama_generik',
+                                    'jenis_obat.pembuat',
+                                    'jenis_obat.golongan',
+                                    'stok_obat.nomor_batch',
+                                    'stok_obat.kadaluarsa',
+                                    'stok_obat.barcode',
+                                    'obat_eceran.waktu_transaksi', 
+                                    'obat_eceran_item.jumlah',
+                                    'jenis_obat.satuan', 
+                                    'obat_eceran_item.harga_jual_realisasi')
+                            ->get();
+
+        $data = [];
+        $data[] = ['Merek obat', 'Nama generik', 'Pembuat', 'Golongan', 'No. batch', 'Kadaluarsa', 'Kode obat', 'Waktu keluar', 'Jumlah', 'Satuan', 'Harga jual satuan'];
+
+        foreach($all_obat_eceran_item as $obat_eceran_item) {
+            $data[] = $obat_eceran_item->toArray();
+        }
+
+        return Excel::create('obat_eceran', function($excel) use ($data) {
+            $excel->setTitle('Obat Eceran')
+                    ->setCreator('user')
+                    ->setCompany('RSUD Payakumbuh')
+                    ->setDescription('Daftar obat eceran');
+            $excel->sheet('Sheet1', function($sheet) use ($data) {
+                $sheet->fromArray($data);
+            });
+        })->download('xls');
     }
 }

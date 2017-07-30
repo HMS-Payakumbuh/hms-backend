@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\ObatRusak;
 use App\StokObat;
+use Excel;
 
 class ObatRusakController extends Controller
 {
@@ -15,7 +16,7 @@ class ObatRusakController extends Controller
      */
     public function index()
     {
-        return ObatRusak::with('obatMasuk','jenisObat','lokasiAsal')->get();
+        return ObatRusak::with('jenisObat','stokObat','lokasiAsal')->get();
     }
 
     /**
@@ -30,7 +31,6 @@ class ObatRusakController extends Controller
         // TO-DO: Restriction checking (jumlah > 0 etc.)
         $obat_rusak = new ObatRusak;
         $obat_rusak->id_jenis_obat = $request->input('id_jenis_obat');
-        $obat_rusak->id_obat_masuk = $request->input('id_obat_masuk');
         $obat_rusak->id_stok_obat = $request->input('id_stok_obat');
 
         date_default_timezone_set('Asia/Jakarta');
@@ -42,9 +42,7 @@ class ObatRusakController extends Controller
         $obat_rusak->asal = $request->input('asal');
         $obat_rusak->save();
 
-        $stok_obat_asal = StokObat::where('id_obat_masuk', $obat_rusak->id_obat_masuk)
-                                    ->where('lokasi', $obat_rusak->asal)
-                                    ->first(); //TO-DO: Error handling - firstOrFail?
+        $stok_obat_asal = StokObat::findOrFail($obat_rusak->id_stok_obat);
         $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_rusak->jumlah);
         $stok_obat_asal->save();
 
@@ -59,7 +57,7 @@ class ObatRusakController extends Controller
      */
     public function show($id)
     {
-        return ObatRusak::with('obatMasuk','jenisObat','lokasiAsal')->findOrFail($id);
+        return ObatRusak::with('jenisObat','stokObat','lokasiAsal')->findOrFail($id);
     }
 
     /**
@@ -105,5 +103,43 @@ class ObatRusakController extends Controller
                                 ->get();
         return response ($obat_rusak, 200)
                 -> header('Content-Type', 'application/json');
+    }
+
+    public function export() 
+    {
+        $all_obat_rusak = ObatRusak::join('jenis_obat', 'jenis_obat.id', '=', 'obat_rusak.id_jenis_obat')
+                            ->join('stok_obat', 'stok_obat.id', '=', 'obat_rusak.id_stok_obat')
+                            ->join('lokasi_obat', 'lokasi_obat.id', '=', 'obat_rusak.asal')
+                            ->select('jenis_obat.merek_obat',
+                                    'jenis_obat.nama_generik',
+                                    'jenis_obat.pembuat',
+                                    'jenis_obat.golongan',
+                                    'stok_obat.nomor_batch',
+                                    'stok_obat.kadaluarsa',
+                                    'stok_obat.barcode',
+                                    'obat_rusak.waktu_keluar', 
+                                    'obat_rusak.jumlah',
+                                    'jenis_obat.satuan', 
+                                    'obat_rusak.alasan',
+                                    'obat_rusak.keterangan',
+                                    'lokasi_obat.nama')
+                            ->get();
+
+        $data = [];
+        $data[] = ['Merek obat', 'Nama generik', 'Pembuat', 'Golongan', 'No. batch', 'Kadaluarsa', 'Kode obat', 'Waktu keluar', 'Jumlah', 'Satuan', 'Alasan', 'Keterangan', 'Lokasi asal'];
+
+        foreach($all_obat_rusak as $obat_rusak) {
+            $data[] = $obat_rusak->toArray();
+        }
+
+        return Excel::create('obat_rusak', function($excel) use ($data) {
+            $excel->setTitle('Obat ObatRusak')
+                    ->setCreator('user')
+                    ->setCompany('RSUD Payakumbuh')
+                    ->setDescription('Daftar obat rusak');
+            $excel->sheet('Sheet1', function($sheet) use ($data) {
+                $sheet->fromArray($data);
+            });
+        })->download('xls');
     }
 }

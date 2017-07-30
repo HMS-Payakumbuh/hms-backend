@@ -13,11 +13,28 @@ use App\SettingBpjs;
 
 class TransaksiController extends Controller
 {
-    private function getTransaksi($id = null)
+    private function getTransaksi($id = null, $field = null)
     {
         if (isset($id)) {
+          if (isset($field)) {
+            if ($field == 'kode_pasien') {
+              return Transaksi::with('pasien')
+                ->whereHas('pasien', function ($query) use ($id) {
+                  $query->where('kode_pasien', 'like', '%'.$id.'%');
+                })
+                ->where('status', '=', 'open')
+                ->orderBy('transaksi.waktu_masuk_pasien', 'desc')
+                ->get();
+            }
+            else {
+              return response('', 500);
+            }
+          }
+          else {
             return Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'pembayaran', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'obatEceran.obatEceranItem.jenisObat', 'pemakaianKamarRawatInap.kamar_rawatinap'])->findOrFail($id);
-        } else {
+          }
+        }
+        else {
             return Transaksi::with(['pasien', 'obatTebus.resep', 'obatEceran'])->get();
         }
     }
@@ -46,16 +63,6 @@ class TransaksiController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -66,6 +73,16 @@ class TransaksiController extends Controller
         $payload = $request->input('transaksi');
         $transaksi = new Transaksi;
         $transaksi->id_pasien = $payload['id_pasien'];
+
+        $transaksiLama = Transaksi::where('id_pasien', '=', $transaksi->id_pasien)
+            ->where('status', '=', 'open')
+            ->first();
+
+        if ($transaksiLama != null) {
+            $transaksiLama->status = 'closed';
+            $transaksiLama->save();
+        }
+
         $transaksi->kode_jenis_pasien = $payload['kode_jenis_pasien']; //1: pasien umum, 2: pasien asuransi
 
         if ($transaksi->kode_jenis_pasien == 2) {
@@ -74,10 +91,10 @@ class TransaksiController extends Controller
         else {
             $transaksi->asuransi_pasien = 'tunai';
         }
-        
+
         $transaksi->harga_total = 0;
         $transaksi->jenis_rawat = $payload['jenis_rawat']; //1: rawat inap, 2: rawat jalan
-        
+
         if ($transaksi->jenis_rawat == 2) {
             $transaksi->kelas_rawat = 3;
         }
@@ -98,7 +115,7 @@ class TransaksiController extends Controller
             $settingBpjs = SettingBpjs::first();
             $coder_nik = $settingBpjs->coder_nik;
             $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-            
+
             $asuransi = Asuransi::where('id_pasien', $transaksi->id_pasien)->where('nama_asuransi', 'bpjs')->first();
             $pasien = Pasien::findOrFail($transaksi->id_pasien);
             $requestNew = array(
@@ -109,7 +126,7 @@ class TransaksiController extends Controller
                 'gender' => $pasien->jender
             );
 
-            // $newClaimResponse = $bpjs->newClaim($requestNew);
+            $newClaimResponse = $bpjs->newClaim($requestNew);
 
             $carbon = Carbon::instance($transaksi->waktu_masuk_pasien);
             $requestSet = array(
@@ -123,7 +140,7 @@ class TransaksiController extends Controller
                 'payor_id' => 3,
                 'payor_cd' => 'JKN'
             );
-            // $setClaimResponse = $bpjs->setClaimData($requestSet);
+            $setClaimResponse = $bpjs->setClaimData($requestSet);
             $setClaimResponse = "Set Claim";
         }
 
@@ -132,11 +149,11 @@ class TransaksiController extends Controller
         $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
         $transaksi->no_transaksi = 'INV' . $code_str;
         $transaksi->save();
-        
+
         return response()->json([
             'transaksi' => $transaksi,
-            // 'new_claim' => $newClaimResponse,
-            // 'set_claim' => $setClaimResponse
+            'new_claim' => $newClaimResponse,
+            'set_claim' => $setClaimResponse
         ], 201);
     }
 
@@ -146,22 +163,11 @@ class TransaksiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id, $field = null)
     {
         return response()->json([
-            'transaksi' => $this->getTransaksi($id)
+          'transaksi' => $this->getTransaksi($id, $field)
         ]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
     }
 
     /**
@@ -215,5 +221,20 @@ class TransaksiController extends Controller
                             ->firstOrFail();
         return response ($transaksi, 200)
                 -> header('Content-Type', 'application/json');
+    }
+
+    public function getStatusBpjs($id)
+    {
+        $transaksi = Transaksi::findOrFail($id);
+        $status_bpjs = null;
+        if ($transaksi->no_sep != null) {
+            $coder_nik = SettingBpjs::first()->coder_nik;
+            $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+            $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
+            $status_bpjs = $currentData['response']['data'];
+        }
+        return response()->json([
+            'status_bpjs' => $status_bpjs
+        ], 200);
     }
 }

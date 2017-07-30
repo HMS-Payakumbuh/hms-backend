@@ -9,14 +9,6 @@ class ObatPindah extends Model
     protected $table = 'obat_pindah';
 
     /**
-    *	Get the ObatMasuk of the ObatPindah.
-    */
-    public function obatMasuk()
-    {
-        return $this->belongsTo('App\ObatMasuk', 'id_obat_masuk');
-    }
-
-    /**
     *	Get the JenisObat of the ObatPindah.
     */
     public function jenisObat()
@@ -25,11 +17,19 @@ class ObatPindah extends Model
     }
 
     /**
-    *   Get the StokObat of the ObatPindah.
+    *   Get the StokObatAsal of the ObatPindah.
     */
-    public function stokObat()
+    public function stokObatAsal()
     {
-        return $this->belongsTo('App\StokObat', 'id_stok_obat');
+        return $this->belongsTo('App\StokObat', 'id_stok_obat_asal');
+    }
+
+    /**
+    *   Get the StokObatTujuan of the ObatPindah.
+    */
+    public function stokObatTujuan()
+    {
+        return $this->belongsTo('App\StokObat', 'id_stok_obat_tujuan');
     }
 
     /**

@@ -31,14 +31,9 @@ class CreateStockOpnameItemTable extends Migration
                   ->references('id')->on('jenis_obat')
                   ->onDelete('restrict');
 
-            $table->integer('id_obat_masuk')->unsigned();
-            $table->foreign('id_obat_masuk')
-                  ->references('id')->on('obat_masuk')
-                  ->onDelete('restrict');
-
             $table->integer('jumlah_awal');  
             $table->integer('jumlah_akhir'); 
-            $table->integer('jumlah_sebenarnya');  
+            $table->integer('jumlah_fisik');  
 
             $table->timestamps();
         });

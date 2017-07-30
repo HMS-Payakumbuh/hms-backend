@@ -20,14 +20,16 @@ class CreateObatMasukTable extends Migration
 			$table->foreign('id_jenis_obat')
 				  ->references('id')->on('jenis_obat')
                   ->onDelete('restrict');
+
+            $table->integer('id_stok_obat')->unsigned();
+            $table->foreign('id_stok_obat')
+                  ->references('id')->on('stok_obat')
+                  ->onDelete('restrict');
 				  
-			$table->string('nomor_batch')->nullable();
 			$table->dateTime('waktu_masuk');	// Atau pake timestampnya?					
 			$table->integer('jumlah');	
 			$table->decimal('harga_beli_satuan', 12, 2);
-			$table->dateTime('kadaluarsa');			
-            $table->string('barcode')->nullable();
-				  
+            
             $table->timestamps();
         });
     }

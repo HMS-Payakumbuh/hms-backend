@@ -57,19 +57,19 @@ class TindakanController extends Controller
         }
       }
 
-      // $transaksi = Transaksi::findOrFail($tindakan->id_transaksi);
-      // if ($transaksi->no_sep != null) {
-      //   $settingBpjs = SettingBpjs::first();
-      //   $coder_nik = $settingBpjs->coder_nik;
-      //   $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-      //   $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
-      //   $currentTindakan = $currentData['response']['data']['procedure']. $currentTindakan;
-        
-      //   $requestSet = array(
-      //     'procedure' => $currentTindakan
-      //   );
-      //   $bpjs->setClaimData($requestSet);
-      // }
+      $transaksi = Transaksi::findOrFail($tindakan->id_transaksi);
+      if ($transaksi->no_sep != null) {
+        $settingBpjs = SettingBpjs::first();
+        $coder_nik = $settingBpjs->coder_nik;
+        $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+        $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
+        $currentTindakan = $currentData['response']['data']['procedure']. $currentTindakan;
+
+        $requestSet = array(
+          'procedure' => $currentTindakan
+        );
+        $bpjs->setClaimData($requestSet);
+      }
 
       return response($response, 201);
     }
@@ -88,6 +88,36 @@ class TindakanController extends Controller
                       ->where('tanggal_waktu', '=', $tanggal_waktu)
                       ->get();
     }
+    
+    /**
+     * Display the specified resource.
+     *
+     * @param  string $no_pegawai
+     * @return \Illuminate\Http\Response
+     */
+    public function getTindakanWithoutHasilLab ($no_pegawai)
+    {
+      return Tindakan::doesntHave('hasilLab')
+        ->with('daftarTindakan', 'transaksi', 'pasien')
+        ->where('np_tenaga_medis', '=', $no_pegawai)
+        ->get();
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  string $nama_lab
+     * @param  string  $kode_pasien
+     * @return \Illuminate\Http\Response
+     */
+     public function getTindakanOfLabByKodePasien ($nama_lab, $kode_pasien) {
+       return Tindakan::with('daftarTindakan', 'transaksi', 'pasien')
+        ->whereHas('pasien', function ($query) use ($kode_pasien) {
+          $query->where('kode_pasien', '=', $kode_pasien);
+        })
+        ->where('nama_lab', '=', $nama_lab)
+        ->get();
+     }
 
     /**
      * Display the specified resource.

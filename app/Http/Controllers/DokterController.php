@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Dokter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
 
 class DokterController extends Controller
 {
@@ -27,6 +28,7 @@ class DokterController extends Controller
     {
       $dokter = new dokter;
       $dokter->no_pegawai = $request->input('no_pegawai');
+      $dokter->spesialis = $request->input('spesialis');
       $dokter->save();
 
       return response($dokter, 201);
@@ -54,6 +56,7 @@ class DokterController extends Controller
     {
       $dokter = Dokter::findOrFail($no_pegawai);
       $dokter->no_pegawai = $request->input('no_pegawai');
+      $dokter->spesialis = $request->input('spesialis');
       $dokter->save();
 
       return response($dokter, 200);
@@ -69,5 +72,24 @@ class DokterController extends Controller
     {
       Dokter::destroy($no_pegawai);
       return response('', 204);
+    }
+
+    /**
+     * Sends id transaksi to assigned dokter.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function periksa(Request $request)
+    {
+      $no_pegawai = $request->input('no_pegawai');
+      $nama_poli = $request->input('nama_poli');
+      $id_transaksi = $request->input('id_transaksi');
+      Redis::publish('periksa', json_encode([
+        'no_pegawai' => $no_pegawai,
+        'nama_poli' => $nama_poli,
+        'id_transaksi' => $id_transaksi
+      ]));
+      return response($request, 200);
     }
 }
