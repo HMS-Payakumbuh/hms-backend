@@ -93,22 +93,22 @@ Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
   'edit', 'create'
 ]]);
 
+Route::get('tindakan/rekam_medis/{id_pasien}/{tanggal_waktu}', 'TindakanController@getTindakanOfRekamMedis');
+Route::get('tindakan/hasil_lab/{no_pegawai}', 'TindakanController@getTindakanWithoutHasilLab');
+Route::get('tindakan/laboratorium/{nama_lab}/{kode_pasien}', 'TindakanController@getTindakanOfLabByKodePasien');
+
 Route::resource('tindakan', 'TindakanController', ['except' => [
   'edit', 'create', 'show', 'update', 'destroy'
 ]]);
+Route::get('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@show');
+Route::put('tindakan/{no_transaksi}/{no_tindakan}', 'TindakanController@update');
+Route::delete('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@destroy');
 
 Route::resource('tindakan_operasi', 'TindakanOperasiController', ['except' => [
   'edit', 'create', 'show', 'update', 'destroy'
 ]]);
-
 Route::get('tindakan_operasi/{pemakaianKamarOperasiId}', 'TindakanOperasiController@show');
 Route::post('tindakan_operasi/{id_tindakan}', 'TindakanOperasiController@store');
-
-Route::get('tindakan/hasil_lab/{no_pegawai}', 'TindakanController@getTindakanWithoutHasilLab');
-Route::get('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@show');
-Route::get('tindakan/rekam_medis/{id_pasien}/{tanggal_waktu}', 'TindakanController@getTindakanOfRekamMedis');
-Route::put('tindakan/{no_transaksi}/{no_tindakan}', 'TindakanController@update');
-Route::delete('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@destroy');
 
 Route::resource('poliklinik', 'PoliklinikController', ['except' => [
   'edit', 'create'

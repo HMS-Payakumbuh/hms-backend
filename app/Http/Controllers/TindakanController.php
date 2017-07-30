@@ -88,7 +88,13 @@ class TindakanController extends Controller
                       ->where('tanggal_waktu', '=', $tanggal_waktu)
                       ->get();
     }
-
+    
+    /**
+     * Display the specified resource.
+     *
+     * @param  string $no_pegawai
+     * @return \Illuminate\Http\Response
+     */
     public function getTindakanWithoutHasilLab ($no_pegawai)
     {
       return Tindakan::doesntHave('hasilLab')
@@ -96,6 +102,22 @@ class TindakanController extends Controller
         ->where('np_tenaga_medis', '=', $no_pegawai)
         ->get();
     }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  string $nama_lab
+     * @param  string  $kode_pasien
+     * @return \Illuminate\Http\Response
+     */
+     public function getTindakanOfLabByKodePasien ($nama_lab, $kode_pasien) {
+       return Tindakan::with('daftarTindakan', 'transaksi', 'pasien')
+        ->whereHas('pasien', function ($query) use ($kode_pasien) {
+          $query->where('kode_pasien', '=', $kode_pasien);
+        })
+        ->where('nama_lab', '=', $nama_lab)
+        ->get();
+     }
 
     /**
      * Display the specified resource.
