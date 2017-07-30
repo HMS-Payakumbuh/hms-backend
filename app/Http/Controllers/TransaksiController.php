@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Input;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Transaksi;
@@ -13,7 +14,7 @@ use App\SettingBpjs;
 
 class TransaksiController extends Controller
 {
-    private function getTransaksi($id = null, $field = null)
+    private function getTransaksi($id = null, $field = null, $kode_pasien = null)
     {
         if (isset($id)) {
           if (isset($field)) {
@@ -35,7 +36,32 @@ class TransaksiController extends Controller
           }
         }
         else {
-            return Transaksi::with(['pasien', 'obatTebus.resep', 'obatEceran'])->get();
+            if (isset($kode_pasien) && isset($field)) {
+                return Transaksi::with(['pasien', 'obatTebus.resep', 'obatEceran'])
+                    ->whereHas('pasien', function ($query) use ($kode_pasien) {
+                      $query->where('kode_pasien', '=', $kode_pasien);
+                    })
+                    ->where('status', '=', $field)
+                    ->get();
+            }
+            else {
+                if (isset($kode_pasien)) {
+                    return Transaksi::with(['pasien', 'obatTebus.resep', 'obatEceran'])
+                        ->whereHas('pasien', function ($query) use ($kode_pasien) {
+                          $query->where('kode_pasien', '=', $kode_pasien);
+                        })
+                        ->get();
+                }
+                
+                if (isset($field)) {
+                    return Transaksi::with(['pasien', 'obatTebus.resep', 'obatEceran'])
+                        ->where('status', '=', $field)
+                        ->get();
+                }
+                
+                return Transaksi::with(['pasien', 'obatTebus.resep', 'obatEceran'])
+                    ->get();
+            }
         }
     }
 
@@ -55,10 +81,12 @@ class TransaksiController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $status = $request->input('status');
+        $kode_pasien = $request->input('kode_pasien');
         return response()->json([
-            'allTransaksi' => $this->getTransaksi()
+            'allTransaksi' => $this->getTransaksi(null, $status, $kode_pasien)
         ]);
     }
 
