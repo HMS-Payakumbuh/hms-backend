@@ -11,10 +11,10 @@ http.listen(80, function(){
     redis.on('message', function(channel, message) {
 	    console.log('Message Recieved: ' + message);
 	    message = JSON.parse(message);
-	    if (message.kategori_antrian === '')
-	    	io.emit('antrianLayanan', message);
+	    if (message.kategori_antrian)
+	    	io.emit('antrianFrontOffice'+message.kategori_antrian, message);
 	    else
-		    io.emit('antrianFrontOffice'+message.kategori_antrian, message);
+		    io.emit('antrianLayanan'+message.nama_layanan, message);
 	});
 });
 redis.on('error', function (error) {

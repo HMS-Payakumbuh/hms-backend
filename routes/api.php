@@ -35,8 +35,9 @@ Route::resource('antrian_sms', 'AntrianSMSController', ['except' => [
 ]]);
 
 Route::resource('antrian_front_office', 'AntrianFrontOfficeController', ['except' => [
-  'edit', 'show', 'create', 'update', 'delete'
+  'edit', 'show', 'cleanup', 'create', 'update', 'delete'
 ]]);
+Route::get('antrian_front_office/cleanup', 'AntrianFrontOfficeController@cleanup');
 Route::get('antrian_front_office/{kategori_antrian}', 'AntrianFrontOfficeController@show');
 Route::put('antrian_front_office/{nama_layanan}/{no_antrian}', 'AntrianFrontOfficeController@update');
 Route::delete('antrian_front_office/{nama_layanan}/{no_antrian}', 'AntrianFrontOfficeController@destroy');
@@ -44,6 +45,7 @@ Route::delete('antrian_front_office/{nama_layanan}/{no_antrian}', 'AntrianFrontO
 Route::resource('antrian', 'AntrianController', ['except' => [
   'edit', 'show', 'create', 'update', 'delete'
 ]]);
+Route::get('antrian/cleanup', 'AntrianController@cleanup');
 Route::get('antrian/{nama_layanan}', 'AntrianController@show');
 Route::put('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@update');
 Route::delete('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@destroy');
