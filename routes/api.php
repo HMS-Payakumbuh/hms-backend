@@ -31,8 +31,9 @@ Route::get('rekam_medis/{id_pasien}', 'RekamMedisController@show');
 Route::put('rekam_medis/{id_pasien}/{tanggal_waktu}', 'RekamMedisController@update');
 
 Route::resource('antrian_sms', 'AntrianSMSController', ['except' => [
-  'edit', 'create'
+  'edit', 'create', 'store'
 ]]);
+Route::post('antrian_sms/parse_message', 'AntrianSMSController@parseMessage');
 
 Route::resource('antrian_front_office', 'AntrianFrontOfficeController', ['except' => [
   'edit', 'show', 'cleanup', 'create', 'update', 'delete'
@@ -46,6 +47,7 @@ Route::resource('antrian', 'AntrianController', ['except' => [
   'edit', 'show', 'create', 'update', 'delete'
 ]]);
 Route::get('antrian/cleanup', 'AntrianController@cleanup');
+Route::get('antrian/processed/{nama_layanan}', 'AntrianController@getProcessed');
 Route::get('antrian/{nama_layanan}', 'AntrianController@show');
 Route::put('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@update');
 Route::delete('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@destroy');
