@@ -24,7 +24,7 @@ class AntrianController extends Controller
     }
 
     public function cleanup()
-    {       
+    {
         Antrian::truncate();
         return response('', 204);
     }
@@ -95,6 +95,22 @@ class AntrianController extends Controller
           ->orWhere([['status', '=', 0], ['nama_layanan_lab', '=', $nama_layanan]])
           ->with('transaksi', 'transaksi.pasien')
           ->get();
+    }
+
+    public function getProcessed($nama_layanan)
+    {
+      return Antrian::with('transaksi', 'transaksi.pasien')
+        ->where([
+          ['status', '=', 1],
+          ['nama_layanan_poli', '=', $nama_layanan],
+          ['waktu_masuk_antrian', '>=', date('Y-m-d').' 00:00:00']
+        ])
+        ->orWhere([
+          ['status', '=', 1],
+          ['nama_layanan_lab', '=', $nama_layanan],
+          ['waktu_masuk_antrian', '>=', date('Y-m-d').' 00:00:00']
+        ])
+        ->get();
     }
 
     /**
