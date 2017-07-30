@@ -169,13 +169,18 @@ Route::resource('pemakaiankamarrawatinap', 'PemakaianKamarRawatinapController', 
   'edit', 'create'
 ]]);
 
+Route::resource('pemeriksaan', 'PemakaianKamarRawatinapController', ['except' => [
+  'edit', 'create'
+]]);
+
 Route::post('pemakaiankamarrawatinap/booking/{tanggal}', 'PemakaianKamarRawatInapController@storeBooked');
 
 Route::put('pemakaiankamarrawatinap/{id}/{no_kamar}/{no_tempat_tidur}', 'PemakaianKamarRawatinapController@update');
 Route::delete('pemakaiankamarrawatinap/{id}/{no_kamar}/{no_tempat_tidur}', 'PemakaianKamarRawatinapController@destroy');
 Route::delete('pemakaiankamarrawatinap/booking/{id}', 'PemakaianKamarRawatinapController@destroyBooking');
 Route::put('pemakaiankamarrawatinap/pindah/{id}', 'PemakaianKamarRawatinapController@pindahKamar');
-Route::put('pemakaiankamarrawatinap/update/waktu_keluar/{id}', 'PemakaianKamarRawatinapController@updatePerkiraanWaktuKeluar');
+Route::put('pemakaiankamarrawatinap/update/rawatinap/waktu_keluar/{id}', 'PemakaianKamarRawatinapController@updatePerkiraanWaktuKeluar');
+Route::put('pemakaiankamarrawatinap/update/rawatinap/ventilator/icu/{id}', 'PemakaianKamarRawatinapController@tambahDurasiPemakaianVentilator');
 Route::get('pemakaiankamarrawatinap/{id}', 'PemakaianKamarRawatinapController@show');
 Route::get('pemakaiankamarrawatinap/search/booked/{no_kamar}', 'PemakaianKamarRawatinapController@getAllPemakaianKamarBookedByNoKamar');
 Route::get('pemakaiankamarrawatinap/search/booked/{tanggal}/{no_kamar}', 'PemakaianKamarRawatinapController@getAllPemakaianKamarBookedWithTanggal');

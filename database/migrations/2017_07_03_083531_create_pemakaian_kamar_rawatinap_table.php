@@ -27,6 +27,7 @@ class CreatePemakaianKamarRawatinapTable extends Migration
             $table->date('tanggal_booking')->nullable();
             $table->integer('harga');
             $table->string('no_pegawai')->nullable();
+            $table->integer('durasi_pemakaian_ventilator')->nullable();
 
             $table->timestamps();
 
