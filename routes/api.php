@@ -94,14 +94,12 @@ Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
 ]]);
 
 Route::get('tindakan/rekam_medis/{id_pasien}/{tanggal_waktu}', 'TindakanController@getTindakanOfRekamMedis');
-Route::get('tindakan/hasil_lab/{no_pegawai}', 'TindakanController@getTindakanWithoutHasilLab');
-Route::get('tindakan/laboratorium/{nama_lab}/{kode_pasien}', 'TindakanController@getTindakanOfLabByKodePasien');
+Route::get('tindakan/hasil_lab/{nama_lab}/{kode_pasien}', 'TindakanController@getTindakanWithoutHasilLab');
 
 Route::resource('tindakan', 'TindakanController', ['except' => [
-  'edit', 'create', 'show', 'update', 'destroy'
+  'edit', 'create', 'show', 'destroy'
 ]]);
 Route::get('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@show');
-Route::put('tindakan/{no_transaksi}/{no_tindakan}', 'TindakanController@update');
 Route::delete('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@destroy');
 
 Route::resource('tindakan_operasi', 'TindakanOperasiController', ['except' => [
@@ -119,8 +117,10 @@ Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
 ]]);
 
 Route::get('hasil_lab/download/{path}', 'HasilLabController@download');
+Route::get('hasil_lab/empty/{no_pegawai}', 'HasilLabController@getEmptyHasilLab');
+Route::post('hasil_lab/upload/{id}', 'HasilLabController@upload');
 Route::resource('hasil_lab', 'HasilLabController', ['except' => [
-  'edit', 'create', 'download'
+  'edit', 'create', 'getEmptyHasilLab', 'download', 'upload'
 ]]);
 
 Route::resource('ambulans', 'AmbulansController', ['except' => [
