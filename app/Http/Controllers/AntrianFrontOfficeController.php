@@ -20,6 +20,12 @@ class AntrianFrontOfficeController extends Controller
         return AntrianFrontOffice::all();
     }
 
+    public function cleanup()
+    {       
+        AntrianFrontOffice::truncate();
+        return response('', 204);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -31,6 +37,7 @@ class AntrianFrontOfficeController extends Controller
         $antrian_front_office = new AntrianFrontOffice;
         $antrian_front_office->nama_layanan_poli = $request->input('nama_layanan_poli');
         $antrian_front_office->nama_layanan_lab = $request->input('nama_layanan_lab');
+        $antrian_front_office->nama_pasien = $request->input('nama_pasien');
         $antrian_front_office->jenis = $request->input('jenis');
         $antrian_front_office->kategori_antrian = $request->input('kategori_antrian');
         $antrian_front_office->kesempatan = $request->input('kesempatan');

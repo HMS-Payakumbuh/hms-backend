@@ -17,6 +17,7 @@ class CreateAntrianFrontOfficeTable extends Migration
             $table->increments('no_antrian');
             $table->string('nama_layanan_poli')->nullable();
             $table->string('nama_layanan_lab')->nullable();
+            $table->string('nama_pasien')->nullable();
             $table->integer('jenis'); //0: umum, 1: khusus
             $table->integer('kesempatan');
             $table->string('kategori_antrian');

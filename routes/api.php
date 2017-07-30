@@ -31,12 +31,14 @@ Route::get('rekam_medis/{id_pasien}', 'RekamMedisController@show');
 Route::put('rekam_medis/{id_pasien}/{tanggal_waktu}', 'RekamMedisController@update');
 
 Route::resource('antrian_sms', 'AntrianSMSController', ['except' => [
-  'edit', 'create'
+  'edit', 'create', 'store'
 ]]);
+Route::post('antrian_sms/parse_message', 'AntrianSMSController@parseMessage');
 
 Route::resource('antrian_front_office', 'AntrianFrontOfficeController', ['except' => [
-  'edit', 'show', 'create', 'update', 'delete'
+  'edit', 'show', 'cleanup', 'create', 'update', 'delete'
 ]]);
+Route::get('antrian_front_office/cleanup', 'AntrianFrontOfficeController@cleanup');
 Route::get('antrian_front_office/{kategori_antrian}', 'AntrianFrontOfficeController@show');
 Route::put('antrian_front_office/{nama_layanan}/{no_antrian}', 'AntrianFrontOfficeController@update');
 Route::delete('antrian_front_office/{nama_layanan}/{no_antrian}', 'AntrianFrontOfficeController@destroy');
@@ -44,6 +46,8 @@ Route::delete('antrian_front_office/{nama_layanan}/{no_antrian}', 'AntrianFrontO
 Route::resource('antrian', 'AntrianController', ['except' => [
   'edit', 'show', 'create', 'update', 'delete'
 ]]);
+Route::get('antrian/cleanup', 'AntrianController@cleanup');
+Route::get('antrian/processed/{nama_layanan}', 'AntrianController@getProcessed');
 Route::get('antrian/{nama_layanan}', 'AntrianController@show');
 Route::put('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@update');
 Route::delete('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@destroy');
@@ -52,11 +56,11 @@ Route::post('bpjs', 'BpjsController@process');
 Route::resource('transaksi', 'TransaksiController', ['except' => [
   'edit', 'show', 'create'
   ]]);
-Route::get('transaksi/{id}/{field?}', 'TransaksiController@show');
-Route::get('transaksi/latest/{id_pasien}', 'TransaksiController@getLatestOpenTransaksi');
 Route::get('transaksi/search_by_pasien', 'TransaksiController@searchByPasien');
+Route::get('transaksi/latest/{id_pasien}', 'TransaksiController@getLatestOpenTransaksi');
 Route::get('transaksi/{id}/bpjs', 'TransaksiController@getStatusBpjs');
 Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTransaksi');
+Route::get('transaksi/{id}/{field?}', 'TransaksiController@show');
 
 Route::resource('rujukan', 'RujukanController', ['except' => [
   'edit', 'create'
@@ -94,14 +98,12 @@ Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
 ]]);
 
 Route::get('tindakan/rekam_medis/{id_pasien}/{tanggal_waktu}', 'TindakanController@getTindakanOfRekamMedis');
-Route::get('tindakan/hasil_lab/{no_pegawai}', 'TindakanController@getTindakanWithoutHasilLab');
-Route::get('tindakan/laboratorium/{nama_lab}/{kode_pasien}', 'TindakanController@getTindakanOfLabByKodePasien');
+Route::get('tindakan/hasil_lab/{nama_lab}/{kode_pasien}', 'TindakanController@getTindakanWithoutHasilLab');
 
 Route::resource('tindakan', 'TindakanController', ['except' => [
-  'edit', 'create', 'show', 'update', 'destroy'
+  'edit', 'create', 'show', 'destroy'
 ]]);
 Route::get('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@show');
-Route::put('tindakan/{no_transaksi}/{no_tindakan}', 'TindakanController@update');
 Route::delete('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@destroy');
 
 Route::resource('tindakan_operasi', 'TindakanOperasiController', ['except' => [
@@ -119,8 +121,10 @@ Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
 ]]);
 
 Route::get('hasil_lab/download/{path}', 'HasilLabController@download');
+Route::get('hasil_lab/empty/{no_pegawai}', 'HasilLabController@getEmptyHasilLab');
+Route::post('hasil_lab/upload/{id}', 'HasilLabController@upload');
 Route::resource('hasil_lab', 'HasilLabController', ['except' => [
-  'edit', 'create', 'download'
+  'edit', 'create', 'getEmptyHasilLab', 'download', 'upload'
 ]]);
 
 Route::resource('ambulans', 'AmbulansController', ['except' => [

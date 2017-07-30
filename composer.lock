@@ -449,33 +449,33 @@
         },
         {
             "name": "doctrine/inflector",
-            "version": "v1.1.0",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/inflector.git",
-                "reference": "90b2128806bfde671b6952ab8bea493942c1fdae"
+                "reference": "e11d84c6e018beedd929cff5220969a3c6d1d462"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/inflector/zipball/90b2128806bfde671b6952ab8bea493942c1fdae",
-                "reference": "90b2128806bfde671b6952ab8bea493942c1fdae",
+                "url": "https://api.github.com/repos/doctrine/inflector/zipball/e11d84c6e018beedd929cff5220969a3c6d1d462",
+                "reference": "e11d84c6e018beedd929cff5220969a3c6d1d462",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.2"
+                "php": "^7.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "4.*"
+                "phpunit/phpunit": "^6.2"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.1.x-dev"
+                    "dev-master": "1.2.x-dev"
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "Doctrine\\Common\\Inflector\\": "lib/"
+                "psr-4": {
+                    "Doctrine\\Common\\Inflector\\": "lib/Doctrine/Common/Inflector"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -512,7 +512,11 @@
                 "singularize",
                 "string"
             ],
+<<<<<<< HEAD
             "time": "2015-11-06 14:35:42"
+=======
+            "time": "2017-07-22T12:18:28+00:00"
+>>>>>>> upstream/master
         },
         {
             "name": "doctrine/lexer",
@@ -1267,16 +1271,16 @@
         },
         {
             "name": "maatwebsite/excel",
-            "version": "2.1.19",
+            "version": "2.1.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Maatwebsite/Laravel-Excel.git",
-                "reference": "f4535ac21968f6086438e098cdf289b350aa993c"
+                "reference": "a8baf7de1030d261318f90fa5c273a47ef616b59"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Maatwebsite/Laravel-Excel/zipball/f4535ac21968f6086438e098cdf289b350aa993c",
-                "reference": "f4535ac21968f6086438e098cdf289b350aa993c",
+                "url": "https://api.github.com/repos/Maatwebsite/Laravel-Excel/zipball/a8baf7de1030d261318f90fa5c273a47ef616b59",
+                "reference": "a8baf7de1030d261318f90fa5c273a47ef616b59",
                 "shasum": ""
             },
             "require": {
@@ -1292,7 +1296,7 @@
             },
             "require-dev": {
                 "mockery/mockery": "~0.9",
-                "orchestra/testbench": "3.1.*",
+                "orchestra/testbench": "3.1.*|3.2.*|3.3.*|3.4.*|3.5.*",
                 "phpseclib/phpseclib": "~1.0",
                 "phpunit/phpunit": "~4.0"
             },
@@ -1341,7 +1345,11 @@
                 "import",
                 "laravel"
             ],
+<<<<<<< HEAD
             "time": "2017-07-02 07:00:56"
+=======
+            "time": "2017-07-26T18:04:04+00:00"
+>>>>>>> upstream/master
         },
         {
             "name": "monolog/monolog",
@@ -1583,16 +1591,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v3.0.6",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "0808939f81c1347a3c8a82a5925385a08074b0f1"
+                "reference": "4d4896e553f2094e657fe493506dc37c509d4e2b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/0808939f81c1347a3c8a82a5925385a08074b0f1",
-                "reference": "0808939f81c1347a3c8a82a5925385a08074b0f1",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/4d4896e553f2094e657fe493506dc37c509d4e2b",
+                "reference": "4d4896e553f2094e657fe493506dc37c509d4e2b",
                 "shasum": ""
             },
             "require": {
@@ -1630,7 +1638,11 @@
                 "parser",
                 "php"
             ],
+<<<<<<< HEAD
             "time": "2017-06-28 20:53:48"
+=======
+            "time": "2017-07-28T14:45:09+00:00"
+>>>>>>> upstream/master
         },
         {
             "name": "paragonie/random_compat",
@@ -1738,6 +1750,7 @@
             "time": "2015-05-01 07:00:55"
         },
         {
+<<<<<<< HEAD
             "name": "plivo/plivo-php",
             "version": "v1.1.7",
             "source": {
@@ -1786,6 +1799,8 @@
             "time": "2017-04-25 07:35:31"
         },
         {
+=======
+>>>>>>> upstream/master
             "name": "predis/predis",
             "version": "v1.1.1",
             "source": {
@@ -1934,16 +1949,16 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.8.10",
+            "version": "v0.8.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "7ab97e5a32202585309f3ee35a0c08d2a8e588b1"
+                "reference": "b193cd020e8c6b66cea6457826ae005e94e6d2c0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/7ab97e5a32202585309f3ee35a0c08d2a8e588b1",
-                "reference": "7ab97e5a32202585309f3ee35a0c08d2a8e588b1",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/b193cd020e8c6b66cea6457826ae005e94e6d2c0",
+                "reference": "b193cd020e8c6b66cea6457826ae005e94e6d2c0",
                 "shasum": ""
             },
             "require": {
@@ -2003,7 +2018,11 @@
                 "interactive",
                 "shell"
             ],
+<<<<<<< HEAD
             "time": "2017-07-22 15:14:19"
+=======
+            "time": "2017-07-29T19:30:02+00:00"
+>>>>>>> upstream/master
         },
         {
             "name": "ramsey/uuid",
@@ -2088,6 +2107,7 @@
             "time": "2017-03-26 20:37:53"
         },
         {
+<<<<<<< HEAD
             "name": "simplesoftwareio/simple-sms",
             "version": "3.0.1",
             "source": {
@@ -2154,6 +2174,8 @@
             "time": "2016-07-04 14:52:38"
         },
         {
+=======
+>>>>>>> upstream/master
             "name": "swiftmailer/swiftmailer",
             "version": "v5.4.8",
             "source": {
@@ -3124,6 +3146,51 @@
             "time": "2017-07-10 14:18:27"
         },
         {
+            "name": "textmagic/sdk",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/textmagic/textmagic-rest-php.git",
+                "reference": "b81cd04df7ab6fd21f0ddd75bf987cf3f65fe9c6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/textmagic/textmagic-rest-php/zipball/b81cd04df7ab6fd21f0ddd75bf987cf3f65fe9c6",
+                "reference": "b81cd04df7ab6fd21f0ddd75bf987cf3f65fe9c6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.5.*"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "Services/TextmagicRestClient.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Denis",
+                    "email": "denis@textmagic.com"
+                }
+            ],
+            "description": "A PHP wrapper for Textmagic API",
+            "homepage": "http://github.com/textmagic/textmagic-rest-php",
+            "keywords": [
+                "api",
+                "sms",
+                "textmagic"
+            ],
+            "time": "2015-10-26T14:22:41+00:00"
+        },
+        {
             "name": "tijsverkoyen/css-to-inline-styles",
             "version": "2.2.0",
             "source": {
@@ -3171,6 +3238,7 @@
             "time": "2016-09-20 12:50:39"
         },
         {
+<<<<<<< HEAD
             "name": "twilio/sdk",
             "version": "4.12.0",
             "source": {
@@ -3221,6 +3289,8 @@
             "time": "2016-09-01 18:42:52"
         },
         {
+=======
+>>>>>>> upstream/master
             "name": "tymon/jwt-auth",
             "version": "0.5.12",
             "source": {
@@ -3331,7 +3401,11 @@
                 "env",
                 "environment"
             ],
+<<<<<<< HEAD
             "time": "2016-09-01 10:05:43"
+=======
+            "time": "2016-09-01T10:05:43+00:00"
+>>>>>>> upstream/master
         }
     ],
     "packages-dev": [
@@ -4809,7 +4883,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "textmagic/sdk": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

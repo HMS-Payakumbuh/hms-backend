@@ -180,11 +180,10 @@ return [
 
 		// CORS Handler - https://github.com/barryvdh/laravel-cors
 		Barryvdh\Cors\ServiceProvider::class,
-        
-        SimpleSoftwareIO\SMS\SMSServiceProvider::class,
 
         // LaravelExcel
         Maatwebsite\Excel\ExcelServiceProvider::class
+
     ],
 
     /*
@@ -232,7 +231,6 @@ return [
         'Route' => Illuminate\Support\Facades\Route::class,
         'Schema' => Illuminate\Support\Facades\Schema::class,
         'Session' => Illuminate\Support\Facades\Session::class,
-        'SMS' => SimpleSoftwareIO\SMS\Facades\SMS::class,
         'Storage' => Illuminate\Support\Facades\Storage::class,
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
