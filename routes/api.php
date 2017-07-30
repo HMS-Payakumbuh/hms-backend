@@ -56,11 +56,11 @@ Route::post('bpjs', 'BpjsController@process');
 Route::resource('transaksi', 'TransaksiController', ['except' => [
   'edit', 'show', 'create'
   ]]);
-Route::get('transaksi/{id}/{field?}', 'TransaksiController@show');
-Route::get('transaksi/latest/{id_pasien}', 'TransaksiController@getLatestOpenTransaksi');
 Route::get('transaksi/search_by_pasien', 'TransaksiController@searchByPasien');
+Route::get('transaksi/latest/{id_pasien}', 'TransaksiController@getLatestOpenTransaksi');
 Route::get('transaksi/{id}/bpjs', 'TransaksiController@getStatusBpjs');
 Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTransaksi');
+Route::get('transaksi/{id}/{field?}', 'TransaksiController@show');
 
 Route::resource('rujukan', 'RujukanController', ['except' => [
   'edit', 'create'
