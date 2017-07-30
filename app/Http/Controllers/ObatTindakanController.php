@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\ObatTindakan;
 use App\StokObat;
+use Excel;
 
 class ObatTindakanController extends Controller
 {
@@ -114,5 +115,42 @@ class ObatTindakanController extends Controller
                                 ->get();
         return response ($obat_tindakan, 200)
                 -> header('Content-Type', 'application/json');
+    }
+
+    public function export() 
+    {
+        $all_obat_tindakan = ObatTindakan::join('jenis_obat', 'jenis_obat.id', '=', 'obat_tindakan.id_jenis_obat')
+                            ->join('stok_obat', 'stok_obat.id', '=', 'obat_tindakan.id_stok_obat')
+                            ->join('lokasi_obat', 'lokasi_obat.id', '=', 'obat_tindakan.asal')
+                            ->select('jenis_obat.merek_obat',
+                                    'jenis_obat.nama_generik',
+                                    'jenis_obat.pembuat',
+                                    'jenis_obat.golongan',
+                                    'stok_obat.nomor_batch',
+                                    'stok_obat.kadaluarsa',
+                                    'stok_obat.barcode',
+                                    'obat_tindakan.waktu_keluar', 
+                                    'obat_tindakan.jumlah',
+                                    'jenis_obat.satuan', 
+                                    'lokasi_obat.nama',
+                                    'obat_tindakan.keterangan')
+                            ->get();
+
+        $data = [];
+        $data[] = ['Merek obat', 'Nama generik', 'Pembuat', 'Golongan', 'No. batch', 'Kadaluarsa', 'Kode obat', 'Waktu keluar', 'Jumlah', 'Satuan', 'Lokasi asal', 'Keterangan'];
+
+        foreach($all_obat_tindakan as $obat_tindakan) {
+            $data[] = $obat_tindakan->toArray();
+        }
+
+        return Excel::create('obat_tindakan', function($excel) use ($data) {
+            $excel->setTitle('Obat Tindakan')
+                    ->setCreator('user')
+                    ->setCompany('RSUD Payakumbuh')
+                    ->setDescription('Daftar obat tindakan');
+            $excel->sheet('Sheet1', function($sheet) use ($data) {
+                $sheet->fromArray($data);
+            });
+        })->download('xls');
     }
 }

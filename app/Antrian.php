@@ -11,8 +11,7 @@ class Antrian extends Model
     const CREATED_AT = 'waktu_masuk_antrian';
     const UPDATED_AT = 'waktu_perubahan_antrian';
 
-    public function transaksi()
-	{
-		return $this->belongsTo('App\Transaksi', 'id_transaksi');
-	}
+    public function transaksi() {
+      return $this->belongsTo('App\Transaksi', 'id_transaksi', 'id');
+    }
 }

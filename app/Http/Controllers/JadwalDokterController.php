@@ -71,7 +71,7 @@ class JadwalDokterController extends Controller
         ->where('waktu_selesai_praktik', '>=', Carbon::now()->format('H:i:s'))
         ->join('tenaga_medis', 'jadwal_dokter.np_dokter', '=', 'tenaga_medis.no_pegawai')
         ->select('jadwal_dokter.*', 'tenaga_medis.nama AS nama_dokter')
-        ->first();
+        ->get();
     }
 
     /**

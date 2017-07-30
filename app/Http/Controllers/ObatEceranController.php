@@ -8,6 +8,7 @@ use App\ObatEceran;
 use App\StokObat;
 use App\ObatEceranItem;
 use App\Transaksi;
+use Excel;
 
 class ObatEceranController extends Controller
 {
@@ -159,5 +160,41 @@ class ObatEceranController extends Controller
                                 ->get();
         return response ($obat_eceran_items, 200)
                 -> header('Content-Type', 'application/json');
+    }
+
+    public function export() 
+    {
+        $all_obat_eceran_item = ObatEceranItem::join('obat_eceran', 'obat_eceran.id', '=', 'obat_eceran_item.id_obat_eceran')
+                            ->join('jenis_obat', 'jenis_obat.id', '=', 'obat_eceran_item.id_jenis_obat')
+                            ->join('stok_obat', 'stok_obat.id', '=', 'obat_eceran_item.id_stok_obat')
+                            ->select('jenis_obat.merek_obat',
+                                    'jenis_obat.nama_generik',
+                                    'jenis_obat.pembuat',
+                                    'jenis_obat.golongan',
+                                    'stok_obat.nomor_batch',
+                                    'stok_obat.kadaluarsa',
+                                    'stok_obat.barcode',
+                                    'obat_eceran.waktu_transaksi', 
+                                    'obat_eceran_item.jumlah',
+                                    'jenis_obat.satuan', 
+                                    'obat_eceran_item.harga_jual_realisasi')
+                            ->get();
+
+        $data = [];
+        $data[] = ['Merek obat', 'Nama generik', 'Pembuat', 'Golongan', 'No. batch', 'Kadaluarsa', 'Kode obat', 'Waktu keluar', 'Jumlah', 'Satuan', 'Harga jual satuan'];
+
+        foreach($all_obat_eceran_item as $obat_eceran_item) {
+            $data[] = $obat_eceran_item->toArray();
+        }
+
+        return Excel::create('obat_eceran', function($excel) use ($data) {
+            $excel->setTitle('Obat Eceran')
+                    ->setCreator('user')
+                    ->setCompany('RSUD Payakumbuh')
+                    ->setDescription('Daftar obat eceran');
+            $excel->sheet('Sheet1', function($sheet) use ($data) {
+                $sheet->fromArray($data);
+            });
+        })->download('xls');
     }
 }

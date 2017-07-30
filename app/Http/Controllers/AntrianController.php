@@ -93,6 +93,7 @@ class AntrianController extends Controller
         return Antrian::with(['transaksi.pasien'])
           ->where([['status', '=', 0], ['nama_layanan_poli', '=', $nama_layanan]])
           ->orWhere([['status', '=', 0], ['nama_layanan_lab', '=', $nama_layanan]])
+          ->with('transaksi', 'transaksi.pasien')
           ->get();
     }
 
