@@ -13,11 +13,28 @@ use App\SettingBpjs;
 
 class TransaksiController extends Controller
 {
-    private function getTransaksi($id = null)
+    private function getTransaksi($id = null, $field = null)
     {
         if (isset($id)) {
+          if (isset($field)) {
+            if ($field == 'kode_pasien') {
+              return Transaksi::with('pasien')
+                ->whereHas('pasien', function ($query) use ($id) {
+                  $query->where('kode_pasien', 'like', '%'.$id.'%');
+                })
+                ->where('status', '=', 'open')
+                ->orderBy('transaksi.waktu_masuk_pasien', 'desc')
+                ->get();
+            }
+            else {
+              return response('', 500);
+            }
+          }
+          else {
             return Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'pembayaran', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'obatEceran.obatEceranItem.jenisObat', 'pemakaianKamarRawatInap.kamar_rawatinap'])->findOrFail($id);
-        } else {
+          }
+        }
+        else {
             return Transaksi::with(['pasien', 'obatTebus.resep', 'obatEceran'])->get();
         }
     }
@@ -43,16 +60,6 @@ class TransaksiController extends Controller
         return response()->json([
             'allTransaksi' => $this->getTransaksi()
         ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -84,10 +91,10 @@ class TransaksiController extends Controller
         else {
             $transaksi->asuransi_pasien = 'tunai';
         }
-        
+
         $transaksi->harga_total = 0;
         $transaksi->jenis_rawat = $payload['jenis_rawat']; //1: rawat inap, 2: rawat jalan
-        
+
         if ($transaksi->jenis_rawat == 2) {
             $transaksi->kelas_rawat = 3;
         }
@@ -108,7 +115,7 @@ class TransaksiController extends Controller
             $settingBpjs = SettingBpjs::first();
             $coder_nik = $settingBpjs->coder_nik;
             $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-            
+
             $asuransi = Asuransi::where('id_pasien', $transaksi->id_pasien)->where('nama_asuransi', 'bpjs')->first();
             $pasien = Pasien::findOrFail($transaksi->id_pasien);
             $requestNew = array(
@@ -143,7 +150,7 @@ class TransaksiController extends Controller
         $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
         $transaksi->no_transaksi = 'INV' . $code_str;
         $transaksi->save();
-        
+
         return response()->json([
             'transaksi' => $transaksi,
             'new_claim' => $newClaimResponse,
@@ -157,22 +164,11 @@ class TransaksiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id, $field = null)
     {
         return response()->json([
-            'transaksi' => $this->getTransaksi($id)
+          'transaksi' => $this->getTransaksi($id, $field)
         ]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
     }
 
     /**
