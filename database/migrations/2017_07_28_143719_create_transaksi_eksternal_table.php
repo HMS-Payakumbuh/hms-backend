@@ -18,6 +18,7 @@ class CreateTransaksiEksternalTable extends Migration
             $table->string('no_transaksi')->unique()->nullable();
             $table->decimal('harga_total', 65, 2);
             $table->string('status'); //status transaksi (open/closed)
+            $table->timestamps();
         });
     }
 
@@ -28,6 +29,6 @@ class CreateTransaksiEksternalTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('transaksi');
+        Schema::dropIfExists('transaksi_eksternal');
     }
 }
