@@ -21,7 +21,7 @@ class TransaksiController extends Controller
             if ($field == 'kode_pasien') {
               return Transaksi::with('pasien')
                 ->whereHas('pasien', function ($query) use ($id) {
-                  $query->where('kode_pasien', 'like', '%'.$id.'%');
+                  $query->where('kode_pasien', '=', $id);
                 })
                 ->where('status', '=', 'open')
                 ->orderBy('transaksi.waktu_masuk_pasien', 'desc')
@@ -52,13 +52,13 @@ class TransaksiController extends Controller
                         })
                         ->get();
                 }
-                
+
                 if (isset($field)) {
                     return Transaksi::with(['pasien', 'obatTebus.resep', 'obatEceran'])
                         ->where('status', '=', $field)
                         ->get();
                 }
-                
+
                 return Transaksi::with(['pasien', 'obatTebus.resep', 'obatEceran'])
                     ->get();
             }
