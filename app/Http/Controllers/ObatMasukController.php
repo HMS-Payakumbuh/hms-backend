@@ -30,6 +30,13 @@ class ObatMasukController extends Controller
      */
     public function store(Request $request)
     {
+        $today = new DateTime();
+        $kadaluarsa = new DateTime($request->input('kadaluarsa'));
+
+        if ($today >= $kadaluarsa) {
+            return response ('error', 401);
+        }
+
         // TO-DO: Make into transaction?
         $lokasi_obat = LokasiObat::where('jenis','=',0)->first();
 
