@@ -47,7 +47,7 @@ Route::resource('antrian', 'AntrianController', ['except' => [
   'edit', 'show', 'create', 'update', 'delete'
 ]]);
 Route::get('antrian/cleanup', 'AntrianController@cleanup');
-Route::get('antrian/processed/{nama_layanan}', 'AntrianController@getProcessed');
+Route::get('antrian/{nama_layanan}/status/{status}', 'AntrianController@getAntrianWithStatus');
 Route::get('antrian/{nama_layanan}', 'AntrianController@show');
 Route::put('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@update');
 Route::delete('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@destroy');
