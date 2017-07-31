@@ -18,7 +18,7 @@ class CreateObatEceranTable extends Migration
 
             $table->integer('id_transaksi')->unsigned()->nullable();
             $table->foreign('id_transaksi')
-                  ->references('id')->on('transaksi')
+                  ->references('id')->on('transaksi_eksternal')
                   ->onDelete('restrict');
 
             $table->integer('id_pembayaran')->unsigned()->nullable();  
@@ -26,8 +26,6 @@ class CreateObatEceranTable extends Migration
                   ->references('id')->on('pembayaran')
                   ->onDelete('restrict');
 
-            $table->string('nama_pembeli')->nullable();
-            $table->string('alamat')->nullable();
             $table->dateTime('waktu_transaksi'); // Atau pakai timestamp?
                   
             $table->timestamps();               
