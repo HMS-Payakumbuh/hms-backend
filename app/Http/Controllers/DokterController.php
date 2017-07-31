@@ -85,11 +85,16 @@ class DokterController extends Controller
       $no_pegawai = $request->input('no_pegawai');
       $nama_poli = $request->input('nama_poli');
       $id_transaksi = $request->input('id_transaksi');
+      $response = json_encode([
+        'no_pegawai' => $no_pegawai,
+        'nama_poli' => $nama_poli,
+        'id_transaksi' => $id_transaksi
+      ]);
       Redis::publish('periksa', json_encode([
         'no_pegawai' => $no_pegawai,
         'nama_poli' => $nama_poli,
         'id_transaksi' => $id_transaksi
       ]));
-      return response($request, 200);
+      return response($response, 200);
     }
 }
