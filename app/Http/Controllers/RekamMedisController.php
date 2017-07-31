@@ -74,6 +74,7 @@ class RekamMedisController extends Controller
         $rekam_medis->anamnesis = $request->input('anamnesis');
         $rekam_medis->rencana_penatalaksanaan = $request->input('rencana_penatalaksanaan');
         $rekam_medis->pelayanan_lain = $request->input('pelayanan_lain');
+        $rekam_medis->perkembangan_pasien = $request->input('perkembangan_pasien');
         $rekam_medis->save();
         return response($rekam_medis, 200);
     }

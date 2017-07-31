@@ -17,13 +17,17 @@ class CreatePemakaianKamarRawatinapTable extends Migration
             $table->increments('id');
             $table->string('no_kamar');
             $table->integer('no_tempat_tidur');
-            $table->integer('id_transaksi');
+            $table->integer('id_transaksi')->nullable();
             $table->integer('id_pembayaran')->nullable();
             $table->dateTime('waktu_masuk')->nullable();
             $table->dateTime('waktu_keluar')->nullable();
+            $table->dateTime('perkiraan_waktu_keluar')->nullable();
+            $table->date('nama_booking')->nullable();
+            $table->date('kontak_booking')->nullable();
             $table->date('tanggal_booking')->nullable();
             $table->integer('harga');
-            $table->string('no_pegawai');
+            $table->string('no_pegawai')->nullable();
+            $table->integer('durasi_pemakaian_ventilator')->nullable();
 
             $table->timestamps();
 
