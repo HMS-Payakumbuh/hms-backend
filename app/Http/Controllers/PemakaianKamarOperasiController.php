@@ -21,7 +21,7 @@ class PemakaianKamarOperasiController extends Controller
                             ->join('tindakan', 'pemakaian_kamar_operasi.no_tindakan', '=', 'tindakan.id')
                             ->join('daftar_tindakan', 'tindakan.kode_tindakan', '=', 'daftar_tindakan.kode')
                             ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
-                            ->select(DB::raw('pemakaian_kamar_operasi.id, pemakaian_kamar_operasi.no_kamar, pemakaian_kamar_operasi.id_transaksi, pasien.nama_pasien, daftar_tindakan.nama as nama_tindakan, pemakaian_kamar_operasi.waktu_masuk, pemakaian_kamar_operasi.waktu_keluar'))
+                            ->select(DB::raw('pemakaian_kamar_operasi.id, pemakaian_kamar_operasi.no_kamar, pemakaian_kamar_operasi.id_transaksi, pasien.nama_pasien, daftar_tindakan.nama as nama_tindakan, pemakaian_kamar_operasi.waktu_masuk, pemakaian_kamar_operasi.waktu_keluar, pemakaian_kamar_operasi.waktu_masuk_real, pemakaian_kamar_operasi.waktu_keluar_real'))
                             ->get();
 
 

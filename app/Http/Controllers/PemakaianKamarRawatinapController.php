@@ -26,7 +26,7 @@ class PemakaianKamarRawatinapController extends Controller
                             ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
                             ->join('tenaga_medis', 'pemakaian_kamar_rawatinap.no_pegawai', '=', 'tenaga_medis.no_pegawai')
                             ->join('kamar_rawatinap', 'pemakaian_kamar_rawatinap.no_kamar', '=', 'kamar_rawatinap.no_kamar')
-                            ->select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.id_transaksi, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, kamar_rawatinap.kelas, pemakaian_kamar_rawatinap.harga, pasien.nama_pasien, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))
+                            ->select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.id_transaksi, kamar_rawatinap.jenis_kamar, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, kamar_rawatinap.kelas, pemakaian_kamar_rawatinap.harga, pasien.nama_pasien, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))
                             ->where('pemakaian_kamar_rawatinap.waktu_masuk', '!=', null)           
                             ->get();          
 
@@ -52,11 +52,8 @@ class PemakaianKamarRawatinapController extends Controller
     public function getAllPemakaianKamarBooked()
     {
         $pemakaianKamarRawatinap = PemakaianKamarRawatinap
-                            ::join('transaksi', 'pemakaian_kamar_rawatinap.id_transaksi', '=', 'transaksi.id')
-                            ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
-                            ->join('tenaga_medis', 'pemakaian_kamar_rawatinap.no_pegawai', '=', 'tenaga_medis.no_pegawai')
-                            ->join('kamar_rawatinap', 'pemakaian_kamar_rawatinap.no_kamar', '=', 'kamar_rawatinap.no_kamar')
-                            ->select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.tanggal_booking, pemakaian_kamar_rawatinap.id_transaksi, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, kamar_rawatinap.kelas, pasien.nama_pasien, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))
+                            ::join('kamar_rawatinap', 'pemakaian_kamar_rawatinap.no_kamar', '=', 'kamar_rawatinap.no_kamar')
+                            ->select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.harga, pemakaian_kamar_rawatinap.tanggal_booking, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, kamar_rawatinap.kelas, pemakaian_kamar_rawatinap.nama_booking, pemakaian_kamar_rawatinap.kontak_booking, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))
                             ->where('pemakaian_kamar_rawatinap.waktu_masuk', '=', null)           
                             ->get();
 
@@ -84,12 +81,12 @@ class PemakaianKamarRawatinapController extends Controller
         $pemakaianKamarRawatinap = PemakaianKamarRawatinap
                             ::select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.id_transaksi, pemakaian_kamar_rawatinap.tanggal_booking, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))       
                             ->where('pemakaian_kamar_rawatinap.tanggal_booking', '=', $tanggal)
+                            ->where('pemakaian_kamar_rawatinap.waktu_masuk', '=', null)
                             ->where('pemakaian_kamar_rawatinap.no_kamar', '=', $no_kamar)          
                             ->get();          
 
         return $pemakaianKamarRawatinap;
     }
-
 
     /**
      * Store a newly created resource in storage.
@@ -145,6 +142,8 @@ class PemakaianKamarRawatinapController extends Controller
         $pemakaianKamarRawatinap->waktu_keluar = null;
         $pemakaianKamarRawatinap->harga = $request->input('harga'); 
         $pemakaianKamarRawatinap->no_pegawai= $request->input('no_pegawai');
+        $pemakaianKamarRawatinap->nama_booking= $request->input('nama_booking');
+        $pemakaianKamarRawatinap->kontak_booking= $request->input('kontak_booking');
         $pemakaianKamarRawatinap->tanggal_booking = $tanggal;
         $pemakaianKamarRawatinap->save();
 
@@ -279,6 +278,34 @@ class PemakaianKamarRawatinapController extends Controller
 
         date_default_timezone_set('Asia/Jakarta');
         $pemakaianKamarRawatinap->waktu_masuk = date("Y-m-d H:i:s");
+        $pemakaianKamarRawatinap->id_transaksi = $request->input('id_transaksi');
+        $pemakaianKamarRawatinap->no_pegawai= $request->input('no_pegawai');
+        $pemakaianKamarRawatinap->save();
+
+        return response($pemakaianKamarRawatinap, 200);
+    }
+
+    public function updatePerkiraanWaktuKeluar(Request $request, $id)
+    {
+        $pemakaianKamarRawatinap = PemakaianKamarRawatinap::findOrFail($id);
+
+       
+        if( $request->input('perkiraan_waktu_keluar') != null) {
+            $pemakaianKamarRawatinap->perkiraan_waktu_keluar = $request->input('perkiraan_waktu_keluar');
+            $pemakaianKamarRawatinap->save();
+        }
+
+        return response($pemakaianKamarRawatinap, 200);
+    }
+
+    public function tambahDurasiPemakaianVentilator(Request $request, $id)
+    {
+        $pemakaianKamarRawatinap = PemakaianKamarRawatinap::findOrFail($id);
+
+        if($pemakaianKamarRawatinap->durasi_pemakaian_ventilator == null)
+            $pemakaianKamarRawatinap->durasi_pemakaian_ventilator = (int)$request->input('durasi_pemakaian_ventilator');
+        else 
+            $pemakaianKamarRawatinap->durasi_pemakaian_ventilator = (int)$pemakaianKamarRawatinap->durasi_pemakaian_ventilator + (int)$request->input('durasi_pemakaian_ventilator');
         $pemakaianKamarRawatinap->save();
 
         return response($pemakaianKamarRawatinap, 200);
