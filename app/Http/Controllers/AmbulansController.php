@@ -44,6 +44,11 @@ class AmbulansController extends Controller
       return Ambulans::findOrFail($nama);
     }
 
+    public function getAvailable()
+    {
+      return Ambulans::where('status', '=', 'Available')->get();
+    }
+
     /**
      * Update the specified resource in storage.
      *
