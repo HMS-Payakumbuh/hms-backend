@@ -6,6 +6,8 @@ use App\Resep;
 use App\ResepItem;
 use App\RacikanItem;
 use Illuminate\Http\Request;
+use App\TransaksiEksternal;
+use App\Transaksi;
 
 class ResepController extends Controller
 {
@@ -16,7 +18,7 @@ class ResepController extends Controller
      */
     public function index()
     {
-        return Resep::with('resepItem', 'resepItem.racikanItem', 'resepItem.racikanItem.jenisObat', 'transaksi','transaksi.pasien')->get();
+        return Resep::with('resepItem', 'resepItem.racikanItem', 'resepItem.racikanItem.jenisObat', 'transaksi','transaksi.pasien','transaksiEksternal')->get();
     }
 
     /**
@@ -31,13 +33,50 @@ class ResepController extends Controller
       $i = 0;
       foreach ($request->all() as $key => $value) {
         $resep[$i] = new Resep;
-        $resep[$i]->id_transaksi = $value['id_transaksi'];
         $resep[$i]->eksternal = $value['eksternal'];
-        $resep[$i]->nama = $value['nama'];
-        $resep[$i]->alamat = $value['alamat'];
+        
+        if ($value['id_transaksi']) {      
+            $resep[$i]->id_transaksi = $value['id_transaksi'];   
+        } else {
+            if ($resep[$i]->eksternal) {
+                $transaksi = new TransaksiEksternal;             
+                $transaksi->harga_total = 0;
+                $transaksi->status = 'open';
+                $transaksi->nama = $value['nama'];
+                $transaksi->alamat = $value['alamat'];
+                $transaksi->no_telepon = $value['no_telepon'];
+                $transaksi->umur = $value['umur'];
+                $transaksi->save();
+
+                $transaksi = TransaksiEksternal::findOrFail($transaksi->id);
+                $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
+                $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
+                $transaksi->no_transaksi = 'EKS' . $code_str;
+                $transaksi->save();
+
+                $resep[$i]->id_transaksi_eksternal = $transaksi->id;
+            } else {
+                $transaksi = new Transaksi;        
+                $transaksi->kode_jenis_pasien = 1;
+                $transaksi->asuransi_pasien = 'tunai';        
+                $transaksi->harga_total = 0;
+                $transaksi->jenis_rawat = 2;
+                $transaksi->kelas_rawat = 3;
+                $transaksi->status_naik_kelas = 0;
+                $transaksi->status = 'open';
+                $transaksi->save();
+
+                $transaksi = Transaksi::findOrFail($transaksi->id);
+                $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
+                $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
+                $transaksi->no_transaksi = 'INV' . $code_str;
+                $transaksi->save();
+
+                $resep[$i]->id_transaksi = $transaksi->id;
+            }
+        }
+        
         $resep[$i]->nama_dokter = $value['nama_dokter'];
-        $resep[$i]->no_telp = $value['no_telp'];
-        $resep[$i]->umur = $value['umur'];        
         $resep[$i]->tebus = $value['tebus'];
 
         $resep[$i]->save();
@@ -70,7 +109,7 @@ class ResepController extends Controller
      */
     public function show($id)
     {
-        return Resep::with('resepItem', 'resepItem.racikanItem', 'resepItem.racikanItem.jenisObat', 'transaksi','transaksi.pasien')->findOrFail($id);
+        return Resep::with('resepItem', 'resepItem.racikanItem', 'resepItem.racikanItem.jenisObat', 'transaksi','transaksi.pasien', 'transaksiEksternal')->findOrFail($id);
     }
 
     /**
@@ -102,14 +141,9 @@ class ResepController extends Controller
     {
         $resep = Resep::findOrFail($id);
         $resep->id_transaksi = $value['id_transaksi'];
+        $resep->id_transaksi_eksternal = $value['id_transaksi_eksternal'];   
         $resep->eksternal = $value['eksternal'];
-        $resep->nama = $value['nama'];
-        $resep->alamat = $value['alamat'];
-        $resep->nama = $value['nama'];
-        $resep->alamat = $value['alamat'];
         $resep->nama_dokter = $value['nama_dokter'];
-        $resep->no_telp = $value['no_telp'];
-        $resep->umur = $value['umur'];
         $resep->tebus = $value['tebus'];
         $resep->save();
 
