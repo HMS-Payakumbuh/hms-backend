@@ -41,6 +41,10 @@ class TransaksiEksternalController extends Controller
         $transaksi = new TransaksiEksternal;
         $transaksi->harga_total = 0;
         $transaksi->status = 'open';
+        $transaksi->nama = $payload['nama'];
+        $transaksi->alamat = $payload['alamat'];
+        $transaksi->no_telepon = $payload['no_telepon'];
+        $transaksi->umur = $payload['umur'];
         $transaksi->save();
 
         $transaksi = Transaksi::findOrFail($transaksi->id);
