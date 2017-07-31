@@ -131,6 +131,7 @@ Route::resource('hasil_lab', 'HasilLabController', ['except' => [
   'edit', 'create', 'getEmptyHasilLab', 'download', 'upload'
 ]]);
 
+Route::get('ambulans/available', 'AmbulansController@getAvailable');
 Route::resource('ambulans', 'AmbulansController', ['except' => [
   'edit', 'create'
 ]]);
