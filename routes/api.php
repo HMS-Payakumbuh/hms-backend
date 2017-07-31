@@ -50,6 +50,7 @@ Route::get('antrian/cleanup', 'AntrianController@cleanup');
 Route::get('antrian/{nama_layanan}/status/{status}', 'AntrianController@getAntrianWithStatus');
 Route::get('antrian/{nama_layanan}', 'AntrianController@show');
 Route::put('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@update');
+Route::put('antrian/process/{id_transaksi}/{no_antrian}', 'AntrianController@processAntrian');
 Route::delete('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@destroy');
 
 Route::post('bpjs', 'BpjsController@process');
