@@ -112,9 +112,12 @@ class StokObatController extends Controller
                 -> header('Content-Type', 'application/json');
     }
 
-    public function export() 
+    public function export($lokasi) 
     {
-        $all_stok_obat = StokObat::join('jenis_obat', 'jenis_obat.id', '=', 'stok_obat.id_jenis_obat')
+        $all_stok_obat = StokObat::when($lokasi > 0, function ($query) use ($lokasi) {
+                                 return $query->where('stok_obat.lokasi', '=', $lokasi);
+                            })
+                            ->join('jenis_obat', 'jenis_obat.id', '=', 'stok_obat.id_jenis_obat')
                             ->join('lokasi_obat', 'lokasi_obat.id', '=', 'stok_obat.lokasi')
                             ->select('jenis_obat.merek_obat',
                                     'jenis_obat.nama_generik',
