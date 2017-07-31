@@ -15,20 +15,26 @@ class CreateResepTable extends Migration
     {
         Schema::create('resep', function (Blueprint $table) {
             $table->increments('id');
+
             $table->integer('id_transaksi')->unsigned()->nullable();
-            $table->string('nama')->nullable();
-            $table->string('alamat')->nullable();
-            $table->string('nama_dokter')->nullable();
-            $table->string('no_telp')->nullable();
-            $table->integer('umur')->nullable();
-            $table->boolean('eksternal');
-            $table->timestamps();
             $table
               ->foreign('id_transaksi')
               ->references('id')
               ->on('transaksi')
               ->onDelete('restrict');
+
+            $table->integer('id_transaksi_eksternal')->unsigned()->nullable();
+            $table
+              ->foreign('id_transaksi_eksternal')
+              ->references('id')
+              ->on('transaksi_eksternal')
+              ->onDelete('restrict');
+
+            $table->string('nama_dokter');
+            $table->boolean('eksternal');
             $table->boolean('tebus');
+
+            $table->timestamps();
         });
     }
 

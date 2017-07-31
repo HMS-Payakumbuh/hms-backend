@@ -215,7 +215,7 @@ Route::get('resep/rekam_medis/{id_pasien}/{tanggal_waktu}', 'ResepController@get
 Route::get('resep/search_by_pasien', 'ResepController@searchByPasien');
 // Route::get('resep/search_by_pasien_and_tanggal', 'ResepController@searchByPasienAndTanggal');
 Route::resource('resep', 'ResepController', ['except' => [
-  'edit', 'show', 'create'
+  'edit', 'create'
 ]]);
 Route::resource('resep_item', 'ResepItemController');
 Route::resource('racikan_item', 'RacikanItemController');

@@ -23,4 +23,12 @@ class Resep extends Model
     {
         return $this->belongsTo('App\Transaksi', 'id_transaksi');
     }
+
+    /**
+    * Get the TransaksiEksternal of the Resep.
+    */
+    public function transaksiEksternal()
+    {
+        return $this->belongsTo('App\TransaksiEksternal', 'id_transaksi_eksternal');
+    }
 }
