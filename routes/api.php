@@ -230,7 +230,7 @@ Route::get('obat_masuk/today/{id_stok_obat}', 'ObatMasukController@getTodayObatM
 Route::get('obat_masuk/search', 'ObatMasukController@search');
 Route::resource('obat_masuk', 'ObatMasukController');
 
-Route::get('stok_obat/export', 'StokObatController@export');
+Route::get('stok_obat/export/{lokasi}', 'StokObatController@export');
 Route::get('stok_obat/search_by_jenis_obat_and_batch', 'StokObatController@searchByJenisObatAndBatch');
 Route::get('stok_obat/search_by_location_type', 'StokObatController@searchByLocationType');
 Route::get('stok_obat/search_by_location', 'StokObatController@searchByLocation');

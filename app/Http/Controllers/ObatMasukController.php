@@ -7,6 +7,8 @@ use App\ObatMasuk;
 use App\StokObat;
 use App\LokasiObat;
 use Excel;
+use DateTime;
+use DateInterval;
 
 class ObatMasukController extends Controller
 {
@@ -28,6 +30,13 @@ class ObatMasukController extends Controller
      */
     public function store(Request $request)
     {
+        $today = new DateTime();
+        $kadaluarsa = new DateTime($request->input('kadaluarsa'));
+
+        if ($today >= $kadaluarsa) {
+            return response ('error', 401);
+        }
+
         // TO-DO: Make into transaction?
         $lokasi_obat = LokasiObat::where('jenis','=',0)->first();
 
@@ -123,9 +132,14 @@ class ObatMasukController extends Controller
                 -> header('Content-Type', 'application/json');
     }
 
-    public function export() 
+    public function export(Request $request) 
     {
-        $all_obat_masuk = ObatMasuk::join('jenis_obat', 'jenis_obat.id', '=', 'obat_masuk.id_jenis_obat')
+        $tanggal_mulai = new DateTime($request->tanggal_mulai);
+        $tanggal_selesai = new DateTime($request->tanggal_selesai);
+        $tanggal_selesai->add(new DateInterval("P1D")); // Plus 1 day
+
+        $all_obat_masuk = ObatMasuk::whereBetween('waktu_masuk', array($tanggal_mulai, $tanggal_selesai))
+                            ->join('jenis_obat', 'jenis_obat.id', '=', 'obat_masuk.id_jenis_obat')
                             ->join('stok_obat', 'stok_obat.id', '=', 'obat_masuk.id_stok_obat')
                             ->select('jenis_obat.merek_obat',
                                     'jenis_obat.nama_generik',

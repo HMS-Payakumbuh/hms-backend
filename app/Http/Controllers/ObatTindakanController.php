@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\ObatTindakan;
 use App\StokObat;
 use Excel;
+use DateTime;
+use DateInterval;
 
 class ObatTindakanController extends Controller
 {
@@ -117,11 +119,16 @@ class ObatTindakanController extends Controller
                 -> header('Content-Type', 'application/json');
     }
 
-    public function export() 
+    public function export(Request $request) 
     {
+        $tanggal_mulai = new DateTime($request->tanggal_mulai);
+        $tanggal_selesai = new DateTime($request->tanggal_selesai);
+        $tanggal_selesai->add(new DateInterval("P1D")); // Plus 1 day
+
         $all_obat_tindakan = ObatTindakan::join('jenis_obat', 'jenis_obat.id', '=', 'obat_tindakan.id_jenis_obat')
                             ->join('stok_obat', 'stok_obat.id', '=', 'obat_tindakan.id_stok_obat')
-                            ->join('lokasi_obat', 'lokasi_obat.id', '=', 'obat_tindakan.asal')
+                            ->join('lokasi_obat', 'lokasi_obat.id', '=', 'obat_tindakan.asal')                           
+                            ->whereBetween('obat_tindakan.waktu_keluar', array($tanggal_mulai, $tanggal_selesai))
                             ->select('jenis_obat.merek_obat',
                                     'jenis_obat.nama_generik',
                                     'jenis_obat.pembuat',
