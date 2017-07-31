@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\ObatPindah;
 use App\StokObat;
 use Excel;
+use DateTime;
+use DateInterval;
 
 class ObatPindahController extends Controller
 {
@@ -139,9 +141,14 @@ class ObatPindahController extends Controller
                 -> header('Content-Type', 'application/json');
     }
 
-    public function export() 
+    public function export(Request $request) 
     {
-        $all_obat_pindah = ObatPindah::join('jenis_obat', 'jenis_obat.id', '=', 'obat_pindah.id_jenis_obat')
+        $tanggal_mulai = new DateTime($request->tanggal_mulai);
+        $tanggal_selesai = new DateTime($request->tanggal_selesai);
+        $tanggal_selesai->add(new DateInterval("P1D")); // Plus 1 day
+
+        $all_obat_pindah = ObatPindah::whereBetween('waktu_pindah', array($tanggal_mulai, $tanggal_selesai))
+                            ->join('jenis_obat', 'jenis_obat.id', '=', 'obat_pindah.id_jenis_obat')
                             ->join('stok_obat', 'stok_obat.id', '=', 'obat_pindah.id_stok_obat_asal')
                             ->join('lokasi_obat as lokasi_asal', 'lokasi_asal.id', '=', 'obat_pindah.asal')
                             ->join('lokasi_obat as lokasi_tujuan', 'lokasi_tujuan.id', '=', 'obat_pindah.tujuan') // Error: Lokasi tujuan not displayed yet

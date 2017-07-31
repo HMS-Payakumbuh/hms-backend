@@ -9,6 +9,8 @@ use App\StokObat;
 use App\ObatEceranItem;
 use App\Transaksi;
 use Excel;
+use DateTime;
+use DateInterval;
 
 class ObatEceranController extends Controller
 {
@@ -162,11 +164,16 @@ class ObatEceranController extends Controller
                 -> header('Content-Type', 'application/json');
     }
 
-    public function export() 
+    public function export(Request $request) 
     {
+        $tanggal_mulai = new DateTime($request->tanggal_mulai);
+        $tanggal_selesai = new DateTime($request->tanggal_selesai);
+        $tanggal_selesai->add(new DateInterval("P1D")); // Plus 1 day
+
         $all_obat_eceran_item = ObatEceranItem::join('obat_eceran', 'obat_eceran.id', '=', 'obat_eceran_item.id_obat_eceran')
                             ->join('jenis_obat', 'jenis_obat.id', '=', 'obat_eceran_item.id_jenis_obat')
                             ->join('stok_obat', 'stok_obat.id', '=', 'obat_eceran_item.id_stok_obat')
+                            ->whereBetween('obat_eceran.waktu_transaksi', array($tanggal_mulai, $tanggal_selesai))
                             ->select('jenis_obat.merek_obat',
                                     'jenis_obat.nama_generik',
                                     'jenis_obat.pembuat',

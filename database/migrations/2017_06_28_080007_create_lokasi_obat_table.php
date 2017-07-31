@@ -16,7 +16,7 @@ class CreateLokasiObatTable extends Migration
         Schema::create('lokasi_obat', function (Blueprint $table) {
             $table->increments('id');
 			$table->string('nama');            
-            $table->integer('jenis'); //0 : Gudang Utama, 1: Apotek, 2: Poliklinik, 3: Lain-lain
+            $table->integer('jenis'); //0 : Gudang Utama, 1: Apotek, 2: Poliklinik, 3: Rawat Inap, 4: ICU Inap, 5: Operasi, 6: Gudang, 7: Lain-lain
             $table->timestamps();
         });
     }
