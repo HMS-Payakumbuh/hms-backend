@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use DB;
 use App\Antrian;
 use App\Transaksi;
 use App\Pasien;
@@ -25,7 +26,14 @@ class AntrianController extends Controller
 
     public function cleanup()
     {
-        Antrian::truncate();
+        $all_antrian = Antrian::where('status', '=', 0)
+                ->orWhere('status', '=', 1)
+                ->get();
+        foreach ($all_antrian as $antrian) {
+            $antrian->status = 2;
+            $antrian->save();
+        }
+        DB::statement('ALTER SEQUENCE antrian_no_antrian_seq RESTART WITH 1');  
         return response('', 204);
     }
 

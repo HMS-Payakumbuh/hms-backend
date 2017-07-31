@@ -30,7 +30,7 @@ class PasienController extends Controller
         $pasien = new Pasien;
         if ($request->input('id')) {
             $pasien = Pasien::findOrFail($request->input('id'));
-            return response($pasien, 201);
+            return response($pasien, 200);
         }
         $pasien->nama_pasien = $request->input('nama_pasien');
         $pasien->tanggal_lahir = Carbon::parse($request->input('tanggal_lahir'));

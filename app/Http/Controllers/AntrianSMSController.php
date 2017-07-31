@@ -9,6 +9,7 @@ use App\RekamMedis;
 use App\Poliklinik;
 use App\Laboratorium;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Redis;
 use Textmagic\Services\TextmagicRestClient;
 
 class AntrianSMSController extends Controller
@@ -67,6 +68,7 @@ class AntrianSMSController extends Controller
             }
 
             $antrian_front_office->save();
+            Redis::publish('antrian', json_encode(['kategori_antrian' => $antrian_front_office->kategori_antrian]));
 
             if ($layanan) {
                 $panjang_antrian = count(AntrianFrontOffice::where('kategori_antrian', '=', $layanan->kategori_antrian)->get());
