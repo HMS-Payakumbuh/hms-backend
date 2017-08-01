@@ -10,7 +10,7 @@ class TransaksiEksternalController extends Controller
 
     private function getTransaksi($id = null) {
         if (isset($id)) {
-            return TransaksiEksternal::findOrFail($id);
+            return TransaksiEksternal::with(['obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'obatEceran.obatEceranItem.jenisObat'])->findOrFail($id);
         }
         else {
             return TransaksiEksternal::get();
@@ -25,7 +25,7 @@ class TransaksiEksternalController extends Controller
     public function index()
     {
         return response()->json([
-            'allTransaksi' => $this->getTransaksi();
+            'allTransaksi' => $this->getTransaksi()
         ]);
     }
 
@@ -54,7 +54,7 @@ class TransaksiEksternalController extends Controller
         $transaksi->save();
 
         return response()->json([
-            'transaksi' => $transaksi;
+            'transaksi' => $transaksi
         ], 201);
     }
 
@@ -67,7 +67,7 @@ class TransaksiEksternalController extends Controller
     public function show($id)
     {
         return response()->json([
-            'transaksi' => $this->getTransaksi($id);
+            'transaksi' => $this->getTransaksi($id)
         ]);
     }
 

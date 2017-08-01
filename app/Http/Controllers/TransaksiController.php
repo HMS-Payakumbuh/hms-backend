@@ -31,12 +31,12 @@ class TransaksiController extends Controller
             }
           }
           else {
-            return Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'pembayaran', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'obatEceran.obatEceranItem.jenisObat', 'pemakaianKamarRawatInap.kamar_rawatinap'])->findOrFail($id);
+            return Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'pembayaran', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'pemakaianKamarRawatInap.kamar_rawatinap'])->findOrFail($id);
           }
         }
         else {
             if (isset($kode_pasien) && isset($field)) {
-                return Transaksi::with(['pasien', 'obatTebus.resep', 'obatEceran'])
+                return Transaksi::with(['pasien', 'obatTebus.resep'])
                     ->whereHas('pasien', function ($query) use ($kode_pasien) {
                       $query->where('kode_pasien', '=', $kode_pasien);
                     })
@@ -45,7 +45,7 @@ class TransaksiController extends Controller
             }
             else {
                 if (isset($kode_pasien)) {
-                    return Transaksi::with(['pasien', 'obatTebus.resep', 'obatEceran'])
+                    return Transaksi::with(['pasien', 'obatTebus.resep'])
                         ->whereHas('pasien', function ($query) use ($kode_pasien) {
                           $query->where('kode_pasien', '=', $kode_pasien);
                         })
@@ -53,12 +53,12 @@ class TransaksiController extends Controller
                 }
 
                 if (isset($field)) {
-                    return Transaksi::with(['pasien', 'obatTebus.resep', 'obatEceran'])
+                    return Transaksi::with(['pasien', 'obatTebus.resep'])
                         ->where('status', '=', $field)
                         ->get();
                 }
 
-                return Transaksi::with(['pasien', 'obatTebus.resep', 'obatEceran'])
+                return Transaksi::with(['pasien', 'obatTebus.resep'])
                     ->get();
             }
         }
