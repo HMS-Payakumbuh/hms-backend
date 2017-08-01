@@ -48,11 +48,15 @@ Route::get('antrian/cleanup', 'AntrianController@cleanup');
 Route::get('antrian/{nama_layanan}/status/{status}', 'AntrianController@getAntrianWithStatus');
 Route::get('antrian/{nama_layanan}', 'AntrianController@show');
 Route::put('antrian/{id_transaksi}/{no_antrian}', 'AntrianController@update');
+Route::put('antrian/process/{id_transaksi}/{no_antrian}', 'AntrianController@processAntrian');
 Route::delete('antrian/{id_transaksi}/{no_antrian}', 'AntrianController@destroy');
 
 Route::post('bpjs', 'BpjsController@process');
 Route::resource('transaksi', 'TransaksiController', ['except' => [
-  'edit', 'show', 'create'
+  'edit', 'create'
+  ]]);
+Route::resource('transaksi_eksternal', 'TransaksiEksternalController', ['except' => [
+  'edit', 'create'
   ]]);
 Route::get('transaksi/search_by_pasien', 'TransaksiController@searchByPasien');
 Route::get('transaksi/latest/{id_pasien}', 'TransaksiController@getLatestOpenTransaksi');
@@ -125,6 +129,7 @@ Route::resource('hasil_lab', 'HasilLabController', ['except' => [
   'edit', 'create', 'getEmptyHasilLab', 'download', 'upload'
 ]]);
 
+Route::get('ambulans/available', 'AmbulansController@getAvailable');
 Route::resource('ambulans', 'AmbulansController', ['except' => [
   'edit', 'create'
 ]]);
@@ -210,7 +215,7 @@ Route::get('resep/rekam_medis/{id_pasien}/{tanggal_waktu}', 'ResepController@get
 Route::get('resep/search_by_pasien', 'ResepController@searchByPasien');
 // Route::get('resep/search_by_pasien_and_tanggal', 'ResepController@searchByPasienAndTanggal');
 Route::resource('resep', 'ResepController', ['except' => [
-  'edit', 'show', 'create'
+  'edit', 'create'
 ]]);
 Route::resource('resep_item', 'ResepItemController');
 Route::resource('racikan_item', 'RacikanItemController');
@@ -225,7 +230,7 @@ Route::get('obat_masuk/today/{id_stok_obat}', 'ObatMasukController@getTodayObatM
 Route::get('obat_masuk/search', 'ObatMasukController@search');
 Route::resource('obat_masuk', 'ObatMasukController');
 
-Route::get('stok_obat/export', 'StokObatController@export');
+Route::get('stok_obat/export/{lokasi}', 'StokObatController@export');
 Route::get('stok_obat/search_by_jenis_obat_and_batch', 'StokObatController@searchByJenisObatAndBatch');
 Route::get('stok_obat/search_by_location_type', 'StokObatController@searchByLocationType');
 Route::get('stok_obat/search_by_location', 'StokObatController@searchByLocation');

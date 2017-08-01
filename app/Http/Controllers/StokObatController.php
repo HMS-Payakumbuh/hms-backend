@@ -83,9 +83,11 @@ class StokObatController extends Controller
 
     public function searchByJenisObatAndBatch(Request $request)
     {
+        $lokasi_obat = LokasiObat::where('jenis','=', $request->input('jenis_lokasi'))->first();  
+
         $stok_obat = StokObat::where('id_jenis_obat', $request->input('id_jenis_obat'))
                                 ->where('nomor_batch', '=', $request->input('nomor_batch'))
-                                ->where('lokasi', $request->input('lokasi'))
+                                ->where('lokasi', $lokasi_obat->id)
                                 ->firstOrFail();
         return response ($stok_obat, 200)
                 -> header('Content-Type', 'application/json');
@@ -112,9 +114,12 @@ class StokObatController extends Controller
                 -> header('Content-Type', 'application/json');
     }
 
-    public function export() 
+    public function export($lokasi) 
     {
-        $all_stok_obat = StokObat::join('jenis_obat', 'jenis_obat.id', '=', 'stok_obat.id_jenis_obat')
+        $all_stok_obat = StokObat::when($lokasi > 0, function ($query) use ($lokasi) {
+                                 return $query->where('stok_obat.lokasi', '=', $lokasi);
+                            })
+                            ->join('jenis_obat', 'jenis_obat.id', '=', 'stok_obat.id_jenis_obat')
                             ->join('lokasi_obat', 'lokasi_obat.id', '=', 'stok_obat.lokasi')
                             ->select('jenis_obat.merek_obat',
                                     'jenis_obat.nama_generik',

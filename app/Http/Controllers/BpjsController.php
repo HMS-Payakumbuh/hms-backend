@@ -56,9 +56,9 @@ class BpjsController extends Controller
 		$client = new Client();
 		$response = $client->request('GET', 'http://api.asterix.co.id/SepWebRest/peserta/0000110507578', [
 			'headers' => [
-				'X-cons-id' => $data,
-				'X-timestamp' => $tStamp,
-				'X-signature' => $encodedSignature
+				'X-Cons-ID' => $data,
+				'X-Timestamp' => $tStamp,
+				'X-Signature' => $encodedSignature
 			]
 		]);
 		return $response->getBody();

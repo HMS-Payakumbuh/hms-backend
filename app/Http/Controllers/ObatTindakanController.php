@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\ObatTindakan;
 use App\StokObat;
 use Excel;
+use DateTime;
+use DateInterval;
 
 class ObatTindakanController extends Controller
 {
@@ -45,7 +47,7 @@ class ObatTindakanController extends Controller
 
             $obat_tindakan->save();
 
-            $stok_obat_asal = StokObat::firstOrFail($obat_tindakan->id_stok_obat);
+            $stok_obat_asal = StokObat::where('id', '=', $obat_tindakan->id_stok_obat)->first();
             $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_tindakan->jumlah);
             $stok_obat_asal->save();
         }
@@ -117,11 +119,16 @@ class ObatTindakanController extends Controller
                 -> header('Content-Type', 'application/json');
     }
 
-    public function export() 
+    public function export(Request $request)
     {
+        $tanggal_mulai = new DateTime($request->tanggal_mulai);
+        $tanggal_selesai = new DateTime($request->tanggal_selesai);
+        $tanggal_selesai->add(new DateInterval("P1D")); // Plus 1 day
+
         $all_obat_tindakan = ObatTindakan::join('jenis_obat', 'jenis_obat.id', '=', 'obat_tindakan.id_jenis_obat')
                             ->join('stok_obat', 'stok_obat.id', '=', 'obat_tindakan.id_stok_obat')
                             ->join('lokasi_obat', 'lokasi_obat.id', '=', 'obat_tindakan.asal')
+                            ->whereBetween('obat_tindakan.waktu_keluar', array($tanggal_mulai, $tanggal_selesai))
                             ->select('jenis_obat.merek_obat',
                                     'jenis_obat.nama_generik',
                                     'jenis_obat.pembuat',
@@ -129,9 +136,9 @@ class ObatTindakanController extends Controller
                                     'stok_obat.nomor_batch',
                                     'stok_obat.kadaluarsa',
                                     'stok_obat.barcode',
-                                    'obat_tindakan.waktu_keluar', 
+                                    'obat_tindakan.waktu_keluar',
                                     'obat_tindakan.jumlah',
-                                    'jenis_obat.satuan', 
+                                    'jenis_obat.satuan',
                                     'lokasi_obat.nama',
                                     'obat_tindakan.keterangan')
                             ->get();

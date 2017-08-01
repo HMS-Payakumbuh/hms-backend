@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Transaksi;
+use App\TransaksiEksternal;
 use App\ObatTebus;
 use App\StokObat;
 use App\ObatTebusItem;
 use App\Resep;
 use Excel;
+use DateTime;
+use DateInterval;
 
 class ObatTebusController extends Controller
 {
@@ -19,7 +22,7 @@ class ObatTebusController extends Controller
      */
     public function index()
     {
-        return ObatTebus::with('obatTebusItem','resep','transaksi.pasien','obatTebusItem.stokObat','obatTebusItem.jenisObat')->get();
+        return ObatTebus::with('obatTebusItem','resep','transaksi.pasien','obatTebusItem.stokObat','obatTebusItem.jenisObat','transaksiEksternal')->get();
     }
 
     /**
@@ -34,30 +37,16 @@ class ObatTebusController extends Controller
         // TO-DO: Restriction checking (jumlah > 0 etc.)
 
         $obat_tebus = new ObatTebus;
-        $obat_tebus->id_resep = $request->input('id_resep');
+        $obat_tebus->id_resep = $request->input('id_resep');        
 
         $resep = Resep::findOrFail($obat_tebus->id_resep);
 
-        if ($request->input('id_transaksi')) {
-            $obat_tebus->id_transaksi = $request->input('id_transaksi');               
+        $obat_tebus->eksternal = $resep->eksternal;
+
+        if ($obat_tebus->eksternal) {
+            $obat_tebus->id_transaksi_eksternal = $resep->id_transaksi_eksternal; 
         } else {
-            $transaksi = new Transaksi;        
-            $transaksi->kode_jenis_pasien = 1;
-            $transaksi->asuransi_pasien = 'tunai';        
-            $transaksi->harga_total = 0;
-            $transaksi->jenis_rawat = 2;
-            $transaksi->kelas_rawat = 3;
-            $transaksi->status_naik_kelas = 0;
-            $transaksi->status = 'open';
-            $transaksi->save();
-
-            $transaksi = Transaksi::findOrFail($transaksi->id);
-            $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
-            $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
-            $transaksi->no_transaksi = 'INV' . $code_str;
-            $transaksi->save();
-
-            $obat_tebus->id_transaksi = $transaksi->id;  
+            $obat_tebus->id_transaksi = $resep->id_transaksi;    
         }
 
         date_default_timezone_set('Asia/Jakarta');
@@ -81,9 +70,15 @@ class ObatTebusController extends Controller
             $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_tebus_item->jumlah);
 
             if ($obat_tebus_item->save()) {
-                $transaksi = Transaksi::findOrFail($obat_tebus->id_transaksi);
-                $transaksi->harga_total += $obat_tebus_item->harga_jual_realisasi * $obat_tebus_item->jumlah;
-                $transaksi->save();
+                if ($obat_tebus->eksternal) {
+                    $transaksi = TransaksiEksternal::findOrFail($obat_tebus->id_transaksi_eksternal);
+                    $transaksi->harga_total += $obat_tebus_item->harga_jual_realisasi * $obat_tebus_item->jumlah;
+                    $transaksi->save();
+                } else {
+                    $transaksi = Transaksi::findOrFail($obat_tebus->id_transaksi);
+                    $transaksi->harga_total += $obat_tebus_item->harga_jual_realisasi * $obat_tebus_item->jumlah;
+                    $transaksi->save();
+                }
             }
 
             $stok_obat_asal->save();
@@ -103,7 +98,7 @@ class ObatTebusController extends Controller
      */
     public function show($id)
     {
-        return ObatTebus::with('obatTebusItem','resep','transaksi.pasien', 'obatTebusItem.stokObat','obatTebusItem.jenisObat')->findOrFail($id);
+        return ObatTebus::with('obatTebusItem','resep','transaksi.pasien', 'obatTebusItem.stokObat','obatTebusItem.jenisObat','transaksiEksternal')->findOrFail($id);
     }
 
     /**
@@ -171,11 +166,16 @@ class ObatTebusController extends Controller
                 -> header('Content-Type', 'application/json');
     }
 
-    public function export() 
+    public function export(Request $request) 
     {
+        $tanggal_mulai = new DateTime($request->tanggal_mulai);
+        $tanggal_selesai = new DateTime($request->tanggal_selesai);
+        $tanggal_selesai->add(new DateInterval("P1D")); // Plus 1 day
+
         $all_obat_tebus_item = ObatTebusItem::join('obat_tebus', 'obat_tebus.id', '=', 'obat_tebus_item.id_obat_tebus')
                             ->join('jenis_obat', 'jenis_obat.id', '=', 'obat_tebus_item.id_jenis_obat')
                             ->join('stok_obat', 'stok_obat.id', '=', 'obat_tebus_item.id_stok_obat')
+                            ->whereBetween('obat_tebus.waktu_keluar', array($tanggal_mulai, $tanggal_selesai))
                             ->select('jenis_obat.merek_obat',
                                     'jenis_obat.nama_generik',
                                     'jenis_obat.pembuat',

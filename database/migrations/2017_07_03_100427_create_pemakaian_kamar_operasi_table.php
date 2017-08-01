@@ -16,7 +16,7 @@ class CreatePemakaianKamarOperasiTable extends Migration
         Schema::create('pemakaian_kamar_operasi', function (Blueprint $table) {
             $table->increments('id');
             $table->string('no_kamar');
-            $table->integer('id_transaksi')->nullable()
+            $table->integer('id_transaksi')->nullable();
             $table->integer('no_pembayaran')->nullable();
             $table->integer('no_tindakan');
             $table->dateTime('waktu_masuk')->nullable();

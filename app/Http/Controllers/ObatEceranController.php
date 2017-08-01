@@ -7,8 +7,10 @@ use Illuminate\Http\Request;
 use App\ObatEceran;
 use App\StokObat;
 use App\ObatEceranItem;
-use App\Transaksi;
+use App\TransaksiEksternal;
 use Excel;
+use DateTime;
+use DateInterval;
 
 class ObatEceranController extends Controller
 {
@@ -19,7 +21,7 @@ class ObatEceranController extends Controller
      */
     public function index()
     {
-       return ObatEceran::with('obatEceranItem.stokObat','obatEceranItem.jenisObat')->get();
+       return ObatEceran::with('transaksiEksternal','obatEceranItem.stokObat','obatEceranItem.jenisObat')->get();
     }
 
     /**
@@ -31,8 +33,6 @@ class ObatEceranController extends Controller
     public function store(Request $request)
     {
         $obat_eceran = new ObatEceran;
-        $obat_eceran->nama_pembeli = $request->input('nama_pembeli');
-        $obat_eceran->alamat = $request->input('alamat');
 
         date_default_timezone_set('Asia/Jakarta');
         $obat_eceran->waktu_transaksi = date("Y-m-d H:i:s"); // Use default in DB instead?
@@ -40,20 +40,19 @@ class ObatEceranController extends Controller
         if ($request->input('id_transaksi')) {
             $obat_eceran->id_transaksi = $request->input('id_transaksi');               
         } else {
-            $transaksi = new Transaksi;        
-            $transaksi->kode_jenis_pasien = 1;
-            $transaksi->asuransi_pasien = 'tunai';        
+            $transaksi = new TransaksiEksternal;             
             $transaksi->harga_total = 0;
-            $transaksi->jenis_rawat = 2;
-            $transaksi->kelas_rawat = 3;
-            $transaksi->status_naik_kelas = 0;
             $transaksi->status = 'open';
+            $transaksi->nama = $request->input('nama');
+            $transaksi->alamat = $request->input('alamat');
+            $transaksi->no_telepon = $request->input('no_telepon');
+            $transaksi->umur = $request->input('umur');
             $transaksi->save();
 
-            $transaksi = Transaksi::findOrFail($transaksi->id);
+            $transaksi = TransaksiEksternal::findOrFail($transaksi->id);
             $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
             $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
-            $transaksi->no_transaksi = 'INV' . $code_str;
+            $transaksi->no_transaksi = 'EKS' . $code_str;
             $transaksi->save();
 
             $obat_eceran->id_transaksi = $transaksi->id;  
@@ -74,7 +73,7 @@ class ObatEceranController extends Controller
             $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_eceran_item->jumlah);    
 
             if ($obat_eceran_item->save()) {
-                $transaksi = Transaksi::findOrFail($obat_eceran->id_transaksi);
+                $transaksi = TransaksiEksternal::findOrFail($obat_eceran->id_transaksi);
                 $transaksi->harga_total += $obat_eceran_item->harga_jual_realisasi * $obat_eceran_item->jumlah;
                 $transaksi->save();
             }
@@ -93,7 +92,7 @@ class ObatEceranController extends Controller
      */
     public function show($id)
     {
-        return ObatEceran::with('obatEceranItem.obatMasuk','obatEceranItem.jenisObat')->findOrFail($id);
+        return ObatEceran::with('transaksiEksternal','obatEceranItem.obatMasuk','obatEceranItem.jenisObat')->findOrFail($id);
     }
 
     /**
@@ -162,11 +161,16 @@ class ObatEceranController extends Controller
                 -> header('Content-Type', 'application/json');
     }
 
-    public function export() 
+    public function export(Request $request) 
     {
+        $tanggal_mulai = new DateTime($request->tanggal_mulai);
+        $tanggal_selesai = new DateTime($request->tanggal_selesai);
+        $tanggal_selesai->add(new DateInterval("P1D")); // Plus 1 day
+
         $all_obat_eceran_item = ObatEceranItem::join('obat_eceran', 'obat_eceran.id', '=', 'obat_eceran_item.id_obat_eceran')
                             ->join('jenis_obat', 'jenis_obat.id', '=', 'obat_eceran_item.id_jenis_obat')
                             ->join('stok_obat', 'stok_obat.id', '=', 'obat_eceran_item.id_stok_obat')
+                            ->whereBetween('obat_eceran.waktu_transaksi', array($tanggal_mulai, $tanggal_selesai))
                             ->select('jenis_obat.merek_obat',
                                     'jenis_obat.nama_generik',
                                     'jenis_obat.pembuat',

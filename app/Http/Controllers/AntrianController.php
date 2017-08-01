@@ -131,6 +131,21 @@ class AntrianController extends Controller
     /**
      * Update the specified resource in storage.
      *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function processAntrian(Request $request, $id_transaksi, $no_antrian) {
+      $antrian = Antrian::where('id_transaksi', '=', $id_transaksi)
+        ->where('no_antrian', '=', $no_antrian)
+  	    ->first();
+      $antrian->status = 2;
+      $antrian->save();
+      return response($antrian, 200);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
      * @param  integer  $id_transaksi
      * @param  string  $no_antrian
      * @return \Illuminate\Http\Response
