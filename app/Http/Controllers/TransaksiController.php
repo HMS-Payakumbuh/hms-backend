@@ -208,13 +208,35 @@ class TransaksiController extends Controller
     public function update(Request $request, $id)
     {
         $payload = $request->input('transaksi');
-        $transaksi = Transaksi::findOrFail($id);
+        $transaksi = Transaksi::with(['tindakan.daftarTindakan', 'obatTebus.obatTebusItem.jenisObat'])
+            ->findOrFail($id);
         $transaksi->update($payload);
 
         if ($transaksi->status == 'closed' && isset($transaksi->no_sep)) {
             $coder_nik = SettingBpjs::first()->coder_nik;
             $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-            $bpjs->finalizeClaim();
+            $response = json_decode($bpjs->group(1)->getBody(), true);
+            
+            if ($response['metadata']['code'] == 200) {
+                if ($response['special_cmg_option'] != null) {
+                    $special_cmg = '';
+                    foreach ($response['special_cmg_option'] as $key => $value) {
+                        if (substr($value['code'], 1) != 'D') {
+                            $special_cmg = $special_cmg . "#" . $value['code'];
+                        }
+                        else {
+                            $name = explode(" ", $value['description']);
+                            foreach ($transaksi['obat_tebus']['obat_tebus_item'] as $key_obat => $obat) {
+                                if (strtolower($obat['jenis_obat']['nama_generik']) == strtolower($name[0])) {
+                                    $special_cmg = $special_cmg . "#" . $value['code'];
+                                }
+                            }
+                        }
+                    }
+                }
+                $bpjs->group(2, $special_cmg);
+                $bpjs->finalizeClaim();
+            }
         }
 
         return response()->json([
