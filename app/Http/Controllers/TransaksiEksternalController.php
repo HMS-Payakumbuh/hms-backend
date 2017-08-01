@@ -8,11 +8,15 @@ use App\TransaksiEksternal;
 class TransaksiEksternalController extends Controller
 {
 
-    private function getTransaksi($id = null) {
+    private function getTransaksi($id = null, $field = null) {
         if (isset($id)) {
             return TransaksiEksternal::with(['obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'obatEceran.obatEceranItem.jenisObat'])->findOrFail($id);
         }
         else {
+            if (isset($field)) {
+                return TransaksiEksternal::where('status', '=', $field)
+                    ->get();
+            }
             return TransaksiEksternal::get();
         }
     }
@@ -22,10 +26,12 @@ class TransaksiEksternalController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $status = $request->input('status');
+
         return response()->json([
-            'allTransaksi' => $this->getTransaksi()
+            'allTransaksi' => $this->getTransaksi(null, $status)
         ]);
     }
 
