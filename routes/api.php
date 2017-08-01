@@ -30,14 +30,12 @@ Route::resource('rekam_medis', 'RekamMedisController', ['except' => [
 Route::get('rekam_medis/{id_pasien}', 'RekamMedisController@show');
 Route::put('rekam_medis/{id_pasien}/{tanggal_waktu}', 'RekamMedisController@update');
 
-Route::resource('antrian_sms', 'AntrianSMSController', ['except' => [
-  'edit', 'create', 'store'
-]]);
 Route::post('antrian_sms/parse_message', 'AntrianSMSController@parseMessage');
 
 Route::resource('antrian_front_office', 'AntrianFrontOfficeController', ['except' => [
   'edit', 'show', 'cleanup', 'create', 'update', 'delete'
 ]]);
+Route::get('antrian_front_office/set_kuota', 'AntrianFrontOfficeController@setKuota');
 Route::get('antrian_front_office/cleanup', 'AntrianFrontOfficeController@cleanup');
 Route::get('antrian_front_office/{kategori_antrian}', 'AntrianFrontOfficeController@show');
 Route::put('antrian_front_office/{nama_layanan}/{no_antrian}', 'AntrianFrontOfficeController@update');
@@ -49,8 +47,8 @@ Route::resource('antrian', 'AntrianController', ['except' => [
 Route::get('antrian/cleanup', 'AntrianController@cleanup');
 Route::get('antrian/{nama_layanan}/status/{status}', 'AntrianController@getAntrianWithStatus');
 Route::get('antrian/{nama_layanan}', 'AntrianController@show');
-Route::put('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@update');
-Route::delete('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@destroy');
+Route::put('antrian/{id_transaksi}/{no_antrian}', 'AntrianController@update');
+Route::delete('antrian/{id_transaksi}/{no_antrian}', 'AntrianController@destroy');
 
 Route::post('bpjs', 'BpjsController@process');
 Route::resource('transaksi', 'TransaksiController', ['except' => [

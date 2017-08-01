@@ -182,7 +182,7 @@ return [
 		Barryvdh\Cors\ServiceProvider::class,
 
         // LaravelExcel
-        Maatwebsite\Excel\ExcelServiceProvider::class
+        Maatwebsite\Excel\ExcelServiceProvider::class,
 
     ],
 

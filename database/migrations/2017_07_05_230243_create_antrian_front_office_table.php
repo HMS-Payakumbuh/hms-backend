@@ -21,6 +21,7 @@ class CreateAntrianFrontOfficeTable extends Migration
             $table->integer('jenis'); //0: umum, 1: khusus
             $table->integer('kesempatan');
             $table->string('kategori_antrian');
+            $table->boolean('via_sms')->nullable();
             $table->dateTime('waktu_masuk_antrian');
             $table->dateTime('waktu_perubahan_antrian');
 

@@ -10,7 +10,7 @@ use App\Poliklinik;
 use App\Laboratorium;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Redis;
-use Textmagic\Services\TextmagicRestClient;
+use Log;
 
 class AntrianSMSController extends Controller
 {
@@ -24,6 +24,11 @@ class AntrianSMSController extends Controller
         return AntrianFrontOffice::all();
     }
 
+    public function sendMessage($text, $phone) {
+        //send message to user
+       Redis::publish('sms', json_encode(['text' => $text, 'sender_phone' => $phone]));
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -32,13 +37,25 @@ class AntrianSMSController extends Controller
      */
     public function parseMessage(Request $request)
     {
-        $pieces = explode("_", $request->input('message'));
+        $inbound_id = $request->id;
+        $sender_phone = $request->sender;
+        $receiver_phone = $request->receiver;
+        $message_time = $request->messageTime;
+        $message = $request->text;
 
-        $antrian_front_office = new AntrianFrontOffice;
-        $antrian_front_office->jenis = 0;
-        $antrian_front_office->kesempatan = 3;
-
+        Log::info("Receive Message");
+        Log::info($sender_phone);
+        Log::info($receiver_phone);
+        Log::info($message_time);
+        Log::info($message);
         try {
+            $pieces = explode("_", $message);
+
+            $antrian_front_office = new AntrianFrontOffice;
+            $antrian_front_office->jenis = 0;
+            $antrian_front_office->kesempatan = 3;
+            $antrian_front_office->via_sms = true;
+
             $pasien = Pasien::where('kode_pasien', '=', $pieces[0])->first();
             if ($pasien) 
                 $antrian_front_office->nama_pasien = $pasien->nama_pasien;    
@@ -53,6 +70,12 @@ class AntrianSMSController extends Controller
             if ($antrian_front_office->nama_layanan_poli) {
                 $layanan = Poliklinik::where('nama', '=', $antrian_front_office->nama_layanan_poli)->first();
                 $antrian_front_office->kategori_antrian = $layanan->kategori_antrian;
+                if ($layanan->sisa_pelayanan <= 0) {
+                  $text = '[PAYAKUMBUH] Pendaftaran gagal. Maaf layanan yang Anda tuju sudah habis.';
+                  Log::info('Mengirim SMS ke nomor '.$sender_phone);
+                  self::sendMessage($text, $sender_phone);
+                  return response($text, 500);
+                }
             } else if ($antrian_front_office->nama_layanan_lab) {
                 $layanan = Laboratorium::where('nama', '=', $antrian_front_office->nama_layanan_lab)->first();
                 $antrian_front_office->kategori_antrian = $layanan->kategori_antrian;
@@ -60,11 +83,15 @@ class AntrianSMSController extends Controller
 
             if (count($pieces) > 2) {
                 $rekam_medis = RekamMedis::where('id_pasien', '=', $pasien->id)->first();
-                $tanggal_kontrol = Carbon::parse(json_decode($rekam_medis->rencana_penatalaksanaan)->tanggal);
-                var_dump('Tanggal Kontrol : '.$tanggal_kontrol);
-                var_dump('Tanggal Sekarang : '.Carbon::now());
-                if (Carbon::parse(json_decode($rekam_medis->rencana_penatalaksanaan)->tanggal)->gt(Carbon::now()))
-                    return response('Pendaftaran gagal. Maaf Anda belum dapat melakukan kontrol.', 500);
+                if ($rekam_medis && $pieces[2] === '1') {
+                  $tanggal_kontrol = Carbon::parse(json_decode($rekam_medis->rencana_penatalaksanaan)->tanggal);
+                  if (Carbon::parse(json_decode($rekam_medis->rencana_penatalaksanaan)->tanggal)->gt(Carbon::now())) {
+                    $text = '[PAYAKUMBUH] Pendaftaran gagal. Maaf Anda belum dapat melakukan kontrol.';
+                    Log::info('Mengirim SMS ke nomor '.$sender_phone);
+                    self::sendMessage($text, $sender_phone);
+                    return response($text, 500);
+                  }
+                }
             }
 
             $antrian_front_office->save();
@@ -72,12 +99,13 @@ class AntrianSMSController extends Controller
 
             if ($layanan) {
                 $panjang_antrian = count(AntrianFrontOffice::where('kategori_antrian', '=', $layanan->kategori_antrian)->get());
-                $minutes = $panjang_antrian * 5;
+                $minutes = $panjang_antrian * 3;
                 $now = Carbon::now();
-                $waktu_datang = 'Pendaftaran berhasil. Anda mendapat nomor antrian '.$antrian_front_office->kategori_antrian.$antrian_front_office->no_antrian.'. Datanglah sebelum Pukul '.$now->copy()->addMinutes($minutes)->toTimeString().'.';
+                $text = '[PAYAKUMBUH] Pendaftaran berhasil. Anda mendapat nomor antrian '.$antrian_front_office->kategori_antrian.$antrian_front_office->no_antrian.'. Datanglah sebelum Pukul '.$now->copy()->addMinutes($minutes)->toTimeString().'.';
             }
-            
-            return response($waktu_datang, 201);
+            Log::info('Mengirim SMS ke nomor '.$sender_phone);
+            self::sendMessage($text, $sender_phone);
+            return response($text, 201);
         } catch (\Exception $e) {
             if ($e instanceof RestException) {
                 print '[ERROR] ' . $e->getMessage() . "\n";
@@ -87,33 +115,12 @@ class AntrianSMSController extends Controller
             } else {
                 print '[ERROR] ' . $e->getMessage() . "\n";
             }
+            self::sendMessage('[PAYAKUMBUH] Format SMS Anda salah. Silahkan kirim ulang SMS Anda dengan format yang benar.', $sender_phone);
             return response($e, 500);
         } 
     }
 
-    public function sendMessage($text, $phone) {
-        //send message to user
-        $client = new TextmagicRestClient('jessicaandjani', 'Z1HuSc1UIKQMgOfmGeFmtmAMMRH7GK');
-        $result = ' ';
-        try {
-            $result = $client->messages->create(
-                array(
-                    'text' => $text,
-                    'phones' => implode(', ', array($phone))
-                )
-            );
-        } catch (\Exception $e) {
-            if ($e instanceof RestException) {
-                print '[ERROR] ' . $e->getMessage() . "\n";
-                foreach ($e->getErrors() as $key => $value) {
-                    print '[' . $key . '] ' . implode(',', $value) . "\n";
-                }
-            } else {
-                print '[ERROR] ' . $e->getMessage() . "\n";
-            }
-            return;
-        }
-    }
+
 
     /**
      * Display the specified resource.
