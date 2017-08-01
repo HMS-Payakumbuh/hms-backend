@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use DB;
 use App\Antrian;
 use App\Transaksi;
 use App\Pasien;
@@ -25,7 +26,14 @@ class AntrianController extends Controller
 
     public function cleanup()
     {
-        Antrian::truncate();
+        $all_antrian = Antrian::where('status', '=', 0)
+                ->orWhere('status', '=', 1)
+                ->get();
+        foreach ($all_antrian as $antrian) {
+            $antrian->status = 2;
+            $antrian->save();
+        }
+        DB::statement('ALTER SEQUENCE antrian_no_antrian_seq RESTART WITH 1');  
         return response('', 204);
     }
 
@@ -148,7 +156,20 @@ class AntrianController extends Controller
 	        ->where('no_antrian', '=', $no_antrian)
 	        ->first();
 
-        $antrian->waktu_perubahan_antrian = Carbon::now();
+        if ($antrian->nama_layanan_poli)
+            $antrian_layanan = Antrian::
+                where('nama_layanan_poli', '=', $antrian->nama_layanan_poli)
+                ->get();
+        else if ($antrian->nama_layanan_lab)            
+            $antrian_layanan = Antrian::
+                where('nama_layanan_lab', '=', $antrian->nama_layanan_lab)
+                ->get();
+
+         if (count($antrian_layanan) >= 5)    
+            $antrian->waktu_perubahan_antrian = $antrian_layanan[5]->waktu_perubahan_antrian->addSeconds(1);
+        else
+            $antrian->waktu_perubahan_antrian = $antrian_layanan[count($antrian_layanan) - 1]->waktu_perubahan_antrian->addSeconds(1);        
+
         $antrian->kesempatan = $antrian->kesempatan - 1;
         $antrian->save();
         if ($antrian->kesempatan <= 0)
