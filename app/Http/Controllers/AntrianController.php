@@ -91,8 +91,16 @@ class AntrianController extends Controller
     public function show($nama_layanan, $status = null)
     {
       return Antrian::with(['transaksi.pasien'])
-      ->where([['status', '=', 0], ['nama_layanan_poli', '=', $nama_layanan]])
-      ->orWhere([['status', '=', 0], ['nama_layanan_lab', '=', $nama_layanan]])
+      ->where([
+        ['status', '=', 0],
+        ['nama_layanan_poli', '=', $nama_layanan],
+        ['waktu_masuk_antrian', '>=', date('Y-m-d').' 00:00:00']
+      ])
+      ->orWhere([
+        ['status', '=', 0],
+        ['nama_layanan_lab', '=', $nama_layanan],
+        ['waktu_masuk_antrian', '>=', date('Y-m-d').' 00:00:00']
+      ])
       ->with('transaksi', 'transaksi.pasien')
       ->get();
     }
