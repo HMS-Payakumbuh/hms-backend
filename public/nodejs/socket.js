@@ -3,11 +3,16 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var Redis = require('ioredis');
 var redis = new Redis();
+var TMClient = require('textmagic-rest-client');
+var c = new TMClient('jessicaandjani', 'liiRdFw7tjGYydQu82sPE7i0WG95L0');
 
 redis.subscribe('antrian', function(err, count) {
 
 });
 redis.subscribe('periksa', function(err, count) {
+
+});
+redis.subscribe('sms', function(err, count) {
 
 });
 
@@ -23,6 +28,11 @@ http.listen(80, function() {
 
       if (message.no_pegawai != null)
         io.emit(message.no_pegawai, message);
+   	  if (message.text) {
+   	  	c.Messages.send({text: message.text, phones: message.sender_phone}, function(err, res){
+		    console.log('Messages.send()', err, res);
+		});
+   	  } 
 	});
 });
 

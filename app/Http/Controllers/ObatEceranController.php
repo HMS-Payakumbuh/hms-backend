@@ -81,7 +81,7 @@ class ObatEceranController extends Controller
             $stok_obat_asal->save();
         }   
 
-        return response($request->all(), 201);
+        return response($obat_eceran, 201);
     }
 
     /**
