@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\TindakanOperasi;
 use App\Tindakan;
+use App\TindakanOperasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -16,7 +16,7 @@ class TindakanOperasiController extends Controller
      */
     public function index()
     {
-        
+
     }
 
     /**
@@ -63,7 +63,7 @@ class TindakanOperasiController extends Controller
                             ->join('tenaga_medis', 'tindakan_operasi.np_tenaga_medis', '=', 'tenaga_medis.no_pegawai')
                             ->select(DB::raw('tenaga_medis.nama, tindakan.id, tindakan_operasi.id_transaksi'))
                             ->where('pemakaian_kamar_operasi.id','=',$pemakaianKamarOperasiId)
-                            ->get();          
+                            ->get();
 
 
         return $tindakanOperasi;
@@ -81,7 +81,7 @@ class TindakanOperasiController extends Controller
      */
     public function update(Request $request, $id)
     {
-       
+
     }
 
     /**
@@ -95,6 +95,6 @@ class TindakanOperasiController extends Controller
      */
     public function destroy($id)
     {
-        
+
     }
 }
