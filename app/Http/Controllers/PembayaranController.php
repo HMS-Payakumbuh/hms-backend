@@ -56,17 +56,22 @@ class PembayaranController extends Controller
     {
         $payload = $request->input('pembayaran');
         $pembayaran = new Pembayaran;
-        $pembayaran->id_transaksi = $payload['id_transaksi'];
+        if ($payload['id_transaksi'] != 0) {
+            $pembayaran->id_transaksi = $payload['id_transaksi'];
+        }
+        else {
+            $pembayaran->id_transaksi_eksternal = $payload['id_transaksi_eksternal'];
+        }
         $pembayaran->harga_bayar = $payload['harga_bayar'];
         $pembayaran->metode_bayar = $payload['metode_bayar'];
         $pembayaran->pembayaran_tambahan = $payload['pembayaran_tambahan'];
         $pembayaran->save();
 
-        // $pembayaran = Pembayaran::findOrFail($pembayaran->id);
-        // $code_str = strtoupper(base_convert($pembayaran->id, 10, 36));
-        // $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
-        // $pembayaran->no_pembayaran = 'PMB' . $code_str;
-        // $pembayaran->save();
+        $pembayaran = Pembayaran::findOrFail($pembayaran->id);
+        $code_str = strtoupper(base_convert($pembayaran->id, 10, 36));
+        $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
+        $pembayaran->no_pembayaran = 'PMB' . $code_str;
+        $pembayaran->save();
 
         if (isset($payload['tindakan']) && count($payload['tindakan']) > 0) {
             $arrTindakan = $payload['tindakan'];
