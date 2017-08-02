@@ -183,6 +183,9 @@ Route::resource('pemeriksaan', 'PemakaianKamarRawatinapController', ['except' =>
 ]]);
 
 Route::post('pemakaiankamarrawatinap/booking/{tanggal}', 'PemakaianKamarRawatInapController@storeBooked');
+Route::post('pemakaiankamaroperasi/booking', 'PemakaianKamarOperasiController@storeBooked');
+Route::put('pemakaiankamaroperasi/booking/masuk/{id}', 'PemakaianKamarOperasiController@masuk');
+Route::put('pemakaiankamaroperasi/booking/keluar/{id}', 'PemakaianKamarOperasiController@keluar');
 
 Route::put('pemakaiankamarrawatinap/{id}/{no_kamar}/{no_tempat_tidur}', 'PemakaianKamarRawatinapController@update');
 Route::delete('pemakaiankamarrawatinap/{id}/{no_kamar}/{no_tempat_tidur}', 'PemakaianKamarRawatinapController@destroy');
@@ -210,7 +213,7 @@ Route::get('rawatinap/list/all', 'KamarRawatInapController@getAll');
 Route::get('rawatinap/{no_kamar}', 'KamarRawatInapController@show');
 Route::put('rawatinap/{no_kamar}', 'KamarRawatInapController@update');
 Route::post('rawatinap/{no_kamar}', 'PemakaianKamarRawatInapController@store');
-Route::put('rawatinap/booking/{id}', 'PemakaianKamarRawatInapController@masuk');\
+Route::put('rawatinap/booking/{id}', 'PemakaianKamarRawatInapController@masuk');
 Route::get('rawatinap/booking/{tanggal}/now', 'KamarRawatInapController@getAvailableKamarMinusNow');
 Route::get('rawatinap/booking/{tanggal}/booked', 'KamarRawatInapController@getAvailableKamarMinusBooked');
 

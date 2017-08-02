@@ -29,6 +29,7 @@ class DaftarTindakanController extends Controller
         $daftarTindakan->kode = $request->input('kode');
         $daftarTindakan->nama = $request->input('nama');
         $daftarTindakan->harga = $request->input('harga');
+        $daftarTindakan->special = $request->input('special');
         $daftarTindakan->save();
 
         return response($daftarTindakan, 201);
@@ -58,6 +59,7 @@ class DaftarTindakanController extends Controller
         $daftarTindakan->kode = $request->input('kode');
         $daftarTindakan->nama = $request->input('nama');
         $daftarTindakan->harga = $request->input('harga');
+        $daftarTindakan->special = $request->input('special');
         $daftarTindakan->save();
 
         return response($daftarTindakan, 200);

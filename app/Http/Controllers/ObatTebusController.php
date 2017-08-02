@@ -87,7 +87,7 @@ class ObatTebusController extends Controller
         $resep->tebus = true;
         $resep->save();
         
-        return response ($request->all(), 201);
+        return response ($obat_tebus, 201);
     }
 
     /**

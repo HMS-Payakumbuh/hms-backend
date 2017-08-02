@@ -31,6 +31,7 @@ class JenisObatController extends Controller
     	$jenis_obat->satuan = $request->input('satuan');
     	$jenis_obat->harga_jual_satuan = $request->input('harga_jual_satuan');
         $jenis_obat->dicover_bpjs = $request->input('dicover_bpjs');
+        $jenis_obat->special_medicine = $request->input('special_medicine');
     	$jenis_obat->save();
     	return response ($jenis_obat, 201);
     }
@@ -62,6 +63,7 @@ class JenisObatController extends Controller
     	$jenis_obat->satuan = $request->input('satuan');
     	$jenis_obat->harga_jual_satuan = $request->input('harga_jual_satuan');
         $jenis_obat->dicover_bpjs = $request->input('dicover_bpjs');
+        $jenis_obat->special_medicine = $request->input('special_medicine');
     	$jenis_obat->save();
     	return response ($jenis_obat, 200)
     		-> header('Content-Type', 'application/json');

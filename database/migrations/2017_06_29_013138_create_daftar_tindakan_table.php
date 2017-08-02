@@ -17,6 +17,7 @@ class CreateDaftarTindakanTable extends Migration
             $table->string('kode')->primary();
             $table->string('nama');
             $table->decimal('harga', 65, 2);
+            $table->boolean('special');
             $table->timestamps();
         });
     }
