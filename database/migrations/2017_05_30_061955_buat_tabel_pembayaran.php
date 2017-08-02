@@ -15,6 +15,7 @@ class BuatTabelPembayaran extends Migration
     {
         Schema::create('pembayaran', function(Blueprint $table) {
             $table->increments('id');
+            $table->string('no_pembayaran')->unique()->nullable();
             $table->integer('id_transaksi')->unsigned();
             $table->decimal('harga_bayar', 65, 2);
             $table->string('metode_bayar'); //tunai atau dengan asuransi
