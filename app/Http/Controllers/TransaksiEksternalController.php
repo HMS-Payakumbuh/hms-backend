@@ -47,7 +47,7 @@ class TransaksiEksternalController extends Controller
         $transaksi->umur = $payload['umur'];
         $transaksi->save();
 
-        $transaksi = Transaksi::findOrFail($transaksi->id);
+        $transaksi = TransaksiEksternal::findOrFail($transaksi->id);
         $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
         $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
         $transaksi->no_transaksi = 'EKS' . $code_str;
