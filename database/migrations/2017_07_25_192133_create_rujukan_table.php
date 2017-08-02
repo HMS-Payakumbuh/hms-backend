@@ -19,7 +19,7 @@ class CreateRujukanTable extends Migration
             $table->string('asal_rujukan');
             $table->string('no_rujukan');
             $table->string('diagnosis');
-            $table->string('keterangan');
+            $table->string('keterangan')->nullable();
             $table->timestamps();
 
             $table->foreign('id_transaksi')
