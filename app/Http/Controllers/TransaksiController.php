@@ -6,10 +6,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Transaksi;
+use App\Pembayaran;
 use App\Asuransi;
 use App\Pasien;
+use App\Klaim;
 use App\BpjsManager;
 use App\SettingBpjs;
+use App\PemakaianKamarRawatInap;
+use App\Tindakan;
+use App\ObatTebusItem;
 
 class TransaksiController extends Controller
 {
@@ -53,7 +58,7 @@ class TransaksiController extends Controller
                 }
 
                 if (isset($field)) {
-                    return Transaksi::with(['pasien', 'obatTebus.resep'])
+                    return Transaksi::with(['pasien', 'obatTebus.resep', 'pembayaran.klaim'])
                         ->where('status', '=', $field)
                         ->get();
                 }
@@ -208,7 +213,7 @@ class TransaksiController extends Controller
     public function update(Request $request, $id)
     {
         $payload = $request->input('transaksi');
-        $transaksi = Transaksi::with(['tindakan.daftarTindakan', 'obatTebus.obatTebusItem.jenisObat'])
+        $transaksi = Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'pembayaran', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'pemakaianKamarRawatInap.kamar_rawatinap'])
             ->findOrFail($id);
         $transaksi->update($payload);
 
@@ -217,9 +222,9 @@ class TransaksiController extends Controller
             $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
             $response = json_decode($bpjs->group(1)->getBody(), true);
             
+            $special_cmg = '';
             if ($response['metadata']['code'] == 200) {
-                if ($response['special_cmg_option'] != null) {
-                    $special_cmg = '';
+                if (isset($response['special_cmg_option'])) {
                     foreach ($response['special_cmg_option'] as $key => $value) {
                         if (substr($value['code'], 1) != 'D') {
                             $special_cmg = $special_cmg . "#" . $value['code'];
@@ -237,6 +242,59 @@ class TransaksiController extends Controller
                 $bpjs->group(2, $special_cmg);
                 $bpjs->finalizeClaim();
             }
+
+            $harga = 0;
+            $pembayaran = new Pembayaran;
+            $pembayaran->id_transaksi = $transaksi->id;    
+            $pembayaran->harga_bayar = 0;
+            $pembayaran->metode_bayar = 'bpjs';
+            $pembayaran->pembayaran_tambahan = 0;
+            $pembayaran->save();
+
+            $pembayaran = Pembayaran::findOrFail($pembayaran->id);
+            $code_str = strtoupper(base_convert($pembayaran->id, 10, 36));
+            $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
+            $pembayaran->no_pembayaran = 'PMB' . $code_str;
+            $pembayaran->save();
+
+            $asuransi = DB::table('asuransi')->select('id')->where([
+                ['nama_asuransi', '=', $pembayaran->metode_bayar],
+                ['id_pasien', '=', $transaksi->id_pasien]
+            ])->first();
+
+            $klaim = new Klaim;
+            $klaim->id_pembayaran = $pembayaran->id;
+            $klaim->id_asuransi = $asuransi->id;
+            $klaim->status = 'processed';
+            $klaim->save();
+
+            foreach ($transaksi->tindakan as $value) {
+                $tindakan = Tindakan::findOrFail($value->id);
+                $tindakan->id_pembayaran = $pembayaran->id;
+                $tindakan->save();
+                $harga += $tindakan->harga;
+            }
+
+            // foreach ($transaksi->obat_tebus as $obat) {
+            //     foreach ($obat->obat_tebus_item as $value) {
+            //         $obatTebus = ObatTebusItem::findOrFail($value->id);
+            //         $obatTebus->id_pembayaran = $pembayaran->id;
+            //         $obatTebus->save();
+            //         $harga += $obatTebus->jumlah * $obatTebus->harga_jual_realisasi;
+            //     }
+            // }
+
+            foreach ($transaksi->pemakaian_kamar_rawat_inap as $value) {
+                $kamarRawatInap = PemakaianKamarRawatInap::findOrFail($value->id);
+                $kamarRawatInap->id_pembayaran = $pembayaran->id;
+                $kamarRawatInap->save();
+                $waktuMasuk = Carbon::parse($kamarRawatInap->waktu_masuk);
+                $waktuKeluar = Carbon::parse($kamarRawatInap->waktu_keluar);
+                $harga += $waktuMasuk->diffInDays($waktuKeluar) * $kamarRawatInap->kamar_rawatinap->harga_per_hari;
+            }
+
+            $pembayaran->harga_bayar = $harga;
+            $pembayaran->save();
         }
 
         return response()->json([
@@ -275,14 +333,78 @@ class TransaksiController extends Controller
 
     public function getStatusBpjs($id)
     {
+        $pemakaianKamarRawatinap = PemakaianKamarRawatInap::where('id_transaksi', '=', $id)
+            ->where('waktu_keluar', '=', null)
+            ->first();
+
         $transaksi = Transaksi::findOrFail($id);
         $status_bpjs = null;
+        
         if ($transaksi->no_sep != null) {
-            $coder_nik = SettingBpjs::first()->coder_nik;
+            $settingBpjs = SettingBpjs::first();
+            $coder_nik = $settingBpjs->coder_nik;
             $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+            
+            if ($pemakaianKamarRawatinap != null) {
+                $kamar = $pemakaianKamarRawatinap->kamar_rawatinap;
+
+                $carbon = Carbon::parse($transaksi->waktu_masuk_pasien);
+                $waktuMasuk = Carbon::parse($pemakaianKamarRawatinap->waktu_masuk);
+                $waktuKeluar = Carbon::now('Asia/Jakarta');
+                
+                $los = 1;
+                
+                if ($waktuMasuk->diffInDays($waktuKeluar) > 0) {
+                    $los = $waktuMasuk->diffInDays($waktuKeluar);
+                }
+
+
+                if ($transaksi->status_naik_kelas == 1 && $kamar->jenis_kamar != "ICU") {                    
+                    $kelas = "kelas_";
+                    if ($kamar->kelas == "vip") {
+                        $kelas = "vip";
+                    }
+                    else {
+                        $kelas = $kelas . $kamar->kelas;
+                    }
+
+                    $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
+                    $currentUpgradeLos = $currentData['response']['data']['upgrade_class_los'];
+
+                    $requestSet = array(
+                        'upgrade_class_ind' => $transaksi->status_naik_kelas,
+                        'upgrade_class_class' => $kelas,
+                        'upgrade_class_los' => $los + $currentUpgradeLos,
+                        'add_payment_pct' => $settingBpjs->add_payment_pct
+                    );
+                    $bpjs->setClaimData($requestSet);
+                }
+                else {
+                    if ($kamar->jenis_kamar == "ICU") {
+                        $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
+                        $currentIcuLos = $currentData['response']['data']['icu_los'];
+
+                        $requestSet = array(
+                            'tgl_masuk' => $carbon->toDateTimeString(),
+                            'tgl_pulang' => $waktuKeluar->toDateTimeString(),
+                            'icu_indikator' => 1,
+                            'icu_los' => $los + $currentIcuLos
+                        );
+                        $bpjs->setClaimData($requestSet);
+                    }
+                }
+
+                $requestSet = array(
+                    'tgl_pulang' => $waktuKeluar->toDateTimeString()
+                );
+                $bpjs->setClaimData($requestSet);
+                $bpjs->group(1);
+                
+            }
             $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
             $status_bpjs = $currentData['response']['data'];
         }
+
         return response()->json([
             'status_bpjs' => $status_bpjs
         ], 200);
