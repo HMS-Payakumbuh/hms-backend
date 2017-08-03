@@ -33,7 +33,7 @@ Route::put('rekam_medis/{id_pasien}/{tanggal_waktu}', 'RekamMedisController@upda
 Route::resource('rekam_medis_eksternal', 'RekamMedisEksternalController', ['except' => [
   'edit', 'show', 'create'
 ]]);
-Route::get('rekam_medis_eksternal/import/{kode_pasien}', 'RekamMedisEksternalController@getEksternalRekamMedis');
+Route::get('rekam_medis_eksternal/import/{kode_pasien}/{no_rujukan}', 'RekamMedisEksternalController@getEksternalRekamMedis');
 Route::get('rekam_medis_eksternal/{id_pasien}', 'RekamMedisEksternalController@show');
 
 Route::post('antrian_sms/parse_message', 'AntrianSMSController@parseMessage');
