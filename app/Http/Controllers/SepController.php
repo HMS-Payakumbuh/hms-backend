@@ -57,7 +57,7 @@ class SepController extends Controller
         );
 
         $item = array(
-        	'catatan' => '',
+        	'catatan' => 'Pasien dalam kondisi sehat.',
         	'diagnosa' => array(
 	        	'kdDiag' => 'B54',
 	        	'nmDiag' => 'Unspecified malaria'
@@ -135,7 +135,7 @@ class SepController extends Controller
         $mock_status = env('SEP_MOCK_STATUS', '1');
         
         if ($mock_status == '1') {
-        	return response($mockup, 200);
+        	return response($mockup, 200)->header('Content-Type', 'application/json');
         }
         else {
 	    	$ext = env('SEP_WS_RUJUKAN_FK1', 'Rujukan');
