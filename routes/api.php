@@ -41,9 +41,10 @@ Route::post('antrian_sms/parse_message', 'AntrianSMSController@parseMessage');
 Route::resource('antrian_front_office', 'AntrianFrontOfficeController', ['except' => [
   'edit', 'show', 'cleanup', 'create', 'update', 'delete'
 ]]);
-Route::get('antrian_front_office/set_kuota', 'AntrianFrontOfficeController@setKuota');
 Route::get('antrian_front_office/cleanup', 'AntrianFrontOfficeController@cleanup');
+Route::get('antrian_front_office/update_sms', 'AntrianFrontOfficeController@updateAntrianSMS');
 Route::get('antrian_front_office/{kategori_antrian}', 'AntrianFrontOfficeController@show');
+Route::get('antrian_front_office/sms/{kategori_antrian}', 'AntrianFrontOfficeController@showAntrianSMS');
 Route::put('antrian_front_office/{nama_layanan}/{no_antrian}', 'AntrianFrontOfficeController@update');
 Route::delete('antrian_front_office/{nama_layanan}/{no_antrian}', 'AntrianFrontOfficeController@destroy');
 
