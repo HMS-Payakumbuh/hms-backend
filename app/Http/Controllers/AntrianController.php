@@ -47,6 +47,13 @@ class AntrianController extends Controller
     {
     	$antrian = new Antrian;
 
+        $all_antrian = Antrian::all();
+        if (!empty($all_antrian[0])) {
+            if ($all_antrian[0]->waktu_perubahan_antrian < Carbon::today()->toDateTimeString()) {
+                self::cleanup();
+            }
+        } 
+
     	$transaksi = Transaksi::findOrFail($request->input('id_transaksi'));
 	    if ($transaksi) {
 	    	$pasien = Pasien::findOrFail($transaksi->id_pasien);
@@ -102,12 +109,12 @@ class AntrianController extends Controller
       ->where([
         ['status', '=', 0],
         ['nama_layanan_poli', '=', $nama_layanan],
-        ['waktu_masuk_antrian', '>=', date('Y-m-d').' 00:00:00']
+        ['waktu_perubahan_antrian', '>=', date('Y-m-d').' 00:00:00']
       ])
       ->orWhere([
         ['status', '=', 0],
         ['nama_layanan_lab', '=', $nama_layanan],
-        ['waktu_masuk_antrian', '>=', date('Y-m-d').' 00:00:00']
+        ['waktu_perubahan_antrian', '>=', date('Y-m-d').' 00:00:00']
       ])
       ->with('transaksi', 'transaksi.pasien')
       ->get();
