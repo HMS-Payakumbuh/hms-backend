@@ -18,7 +18,7 @@ use App\ObatTebusItem;
 
 class TransaksiController extends Controller
 {
-    private function getTransaksi($id = null, $field = null, $kode_pasien = null)
+    private function getTransaksi($id = null, $field = null, $kode_pasien = null, $nama_pasien = null)
     {
         if (isset($id)) {
           if (isset($field)) {
@@ -41,7 +41,7 @@ class TransaksiController extends Controller
         }
         else {
             if (isset($kode_pasien) && isset($field)) {
-                return Transaksi::with(['pasien', 'obatTebus.resep'])
+                return Transaksi::with(['pasien', 'obatTebus.resep', 'pembayaran.klaim'])
                     ->whereHas('pasien', function ($query) use ($kode_pasien) {
                       $query->where('kode_pasien', '=', $kode_pasien);
                     })
@@ -49,8 +49,23 @@ class TransaksiController extends Controller
                     ->get();
             }
             else {
+                if (isset($nama_pasien) && isset($field)) {
+                    return Transaksi::with(['pasien', 'obatTebus.resep', 'pembayaran.klaim'])
+                        ->whereHas('pasien', function ($query) use ($nama_pasien) {
+                          $query->where('nama_pasien', 'like', $nama_pasien.'%');
+                        })
+                        ->where('status', '=', $field)
+                        ->get();
+                }
+                if (isset($nama_pasien)) {
+                    return Transaksi::with(['pasien', 'obatTebus.resep', 'pembayaran.klaim'])
+                        ->whereHas('pasien', function ($query) use ($nama_pasien) {
+                          $query->where('nama_pasien', 'like', $nama_pasien.'%');
+                        })
+                        ->get();
+                }
                 if (isset($kode_pasien)) {
-                    return Transaksi::with(['pasien', 'obatTebus.resep'])
+                    return Transaksi::with(['pasien', 'obatTebus.resep', 'pembayaran.klaim'])
                         ->whereHas('pasien', function ($query) use ($kode_pasien) {
                           $query->where('kode_pasien', '=', $kode_pasien);
                         })
@@ -89,8 +104,9 @@ class TransaksiController extends Controller
     {
         $status = $request->input('status');
         $kode_pasien = $request->input('kode_pasien');
+        $nama_pasien = $request->input('nama_pasien');
         return response()->json([
-            'allTransaksi' => $this->getTransaksi(null, $status, $kode_pasien)
+            'allTransaksi' => $this->getTransaksi(null, $status, $kode_pasien, $nama_pasien)
         ]);
     }
 
