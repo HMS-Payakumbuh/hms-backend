@@ -42,11 +42,14 @@ class ObatPindahController extends Controller
         $obat_pindah->jumlah = $request->input('jumlah');
         $obat_pindah->keterangan = $request->input('keterangan');
         $obat_pindah->asal = $request->input('asal');
-        $obat_pindah->tujuan = $request->input('tujuan');
-        $obat_pindah->save();
+        $obat_pindah->tujuan = $request->input('tujuan');        
 
         $stok_obat_asal = StokObat::findOrFail($obat_pindah->id_stok_obat_asal);
         $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_pindah->jumlah);
+
+        if ($stok_obat_asal->jumlah < 0) {
+            return response("less than 0 error", 401);
+        }
 
         $stok_obat_tujuan = StokObat::where('barcode','=','%'.$stok_obat_asal->barcode.'%')->first();
 

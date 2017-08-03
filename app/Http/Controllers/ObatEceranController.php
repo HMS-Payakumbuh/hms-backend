@@ -70,7 +70,11 @@ class ObatEceranController extends Controller
             $obat_eceran_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
 
             $stok_obat_asal = StokObat::findOrFail($obat_eceran_item->id_stok_obat);
-            $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_eceran_item->jumlah);    
+            $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_eceran_item->jumlah);  
+
+            if ($stok_obat_asal->jumlah < 0) {
+                return response("less than 0 error", 401);
+            }  
 
             if ($obat_eceran_item->save()) {
                 $transaksi = TransaksiEksternal::findOrFail($obat_eceran->id_transaksi);

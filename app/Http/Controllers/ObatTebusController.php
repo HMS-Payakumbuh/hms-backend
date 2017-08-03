@@ -69,6 +69,10 @@ class ObatTebusController extends Controller
             $stok_obat_asal = StokObat::findOrFail($obat_tebus_item->id_stok_obat);
             $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_tebus_item->jumlah);
 
+            if ($stok_obat_asal->jumlah < 0) {
+                return response("less than 0 error", 401);
+            }   
+
             if ($obat_tebus_item->save()) {
                 if ($obat_tebus->eksternal) {
                     $transaksi = TransaksiEksternal::findOrFail($obat_tebus->id_transaksi_eksternal);

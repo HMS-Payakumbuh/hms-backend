@@ -42,10 +42,15 @@ class ObatRusakController extends Controller
         $obat_rusak->alasan = $request->input('alasan');
         $obat_rusak->keterangan = $request->input('keterangan');
         $obat_rusak->asal = $request->input('asal');
-        $obat_rusak->save();
 
         $stok_obat_asal = StokObat::findOrFail($obat_rusak->id_stok_obat);
         $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_rusak->jumlah);
+
+        if ($stok_obat_asal->jumlah < 0) {
+            return response("less than 0 error", 401);
+        }
+
+        $obat_rusak->save();
         $stok_obat_asal->save();
 
         return response ($obat_rusak, 201);

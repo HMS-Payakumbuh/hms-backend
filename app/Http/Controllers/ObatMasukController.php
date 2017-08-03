@@ -34,7 +34,7 @@ class ObatMasukController extends Controller
         $kadaluarsa = new DateTime($request->input('kadaluarsa'));
 
         if ($today >= $kadaluarsa) {
-            return response ('error', 401);
+            return response ('kadaluarsa error', 401);
         }
 
         // TO-DO: Make into transaction?

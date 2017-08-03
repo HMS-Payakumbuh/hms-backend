@@ -45,10 +45,14 @@ class ObatTindakanController extends Controller
             $obat_tindakan->id_transaksi = $value['id_transaksi'];
             $obat_tindakan->id_tindakan = $value['id_tindakan'];
 
-            $obat_tindakan->save();
-
             $stok_obat_asal = StokObat::where('id', '=', $obat_tindakan->id_stok_obat)->first();
             $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_tindakan->jumlah);
+
+            if ($stok_obat_asal->jumlah < 0) {
+                return response("less than 0 error", 401);
+            }
+
+            $obat_tindakan->save();
             $stok_obat_asal->save();
         }
         return response ($request->all(), 201);
