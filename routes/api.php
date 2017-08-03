@@ -51,7 +51,10 @@ Route::put('antrian/{id_transaksi}/{no_antrian}', 'AntrianController@update');
 Route::put('antrian/process/{id_transaksi}/{no_antrian}', 'AntrianController@processAntrian');
 Route::delete('antrian/{id_transaksi}/{no_antrian}', 'AntrianController@destroy');
 
-Route::post('bpjs', 'BpjsController@process');
+Route::post('sep', 'SepController@insertSEP');
+Route::get('sep/rujukan/{no_rujukan}', 'SepController@getRujukan');
+Route::get('sep/peserta/{no_kartu}', 'SepController@getPeserta');
+
 Route::resource('transaksi', 'TransaksiController', ['except' => [
   'edit', 'create'
   ]]);
