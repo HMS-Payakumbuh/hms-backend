@@ -137,7 +137,7 @@ class SepController extends Controller
 
 
         $item = array(
-        	'catatan' => '',
+        	'catatan' => 'Pasien dalam kondisi sehat.',
         	'diagnosa' => array(
 	        	'kdDiag' => 'B54',
 	        	'nmDiag' => 'Unspecified malaria'
