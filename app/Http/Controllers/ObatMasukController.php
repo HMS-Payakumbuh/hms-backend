@@ -122,10 +122,27 @@ class ObatMasukController extends Controller
         return response ($id.' deleted', 200);
     }
 
-    public function getTodayObatMasukByStok($id_stok_obat)
+    /* public function getTodayObatMasukByStok($id_stok_obat)
     {
         date_default_timezone_set('Asia/Jakarta');
         $obat_masuk = ObatMasuk::whereDate('waktu_masuk', '=', date("Y-m-d"))
+                                ->where('id_stok_obat', $id_stok_obat)
+                                ->get();
+        return response ($obat_masuk, 200)
+                -> header('Content-Type', 'application/json');
+    } */
+
+    /*
+        Get Obat Masuk with same Stok Obat ID within a time range
+    */
+    public function getObatMasukByTime(Request $request)
+    {
+        $waktu_mulai = new DateTime($request->waktu_mulai);
+        $waktu_selesai = new DateTime($request->waktu_selesai);
+        $id_stok_obat = $request->id_stok_obat;
+
+        date_default_timezone_set('Asia/Jakarta');
+        $obat_masuk = ObatMasuk::whereBetween('waktu_masuk', array($waktu_mulai, $waktu_selesai))
                                 ->where('id_stok_obat', $id_stok_obat)
                                 ->get();
         return response ($obat_masuk, 200)
