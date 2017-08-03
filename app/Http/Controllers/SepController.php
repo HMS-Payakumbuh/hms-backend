@@ -121,10 +121,20 @@ class SepController extends Controller
     }
 
     private function getRujukanFK1($no_rujukan) {
-    	$metadata = array(
-            'code' => '200',
-            'message' => 'OK'
-        );
+    	$double = (double) $no_rujukan;
+    	if ($no_rujukan % 2 == 0) {
+	    	$metadata = array(
+	            'code' => '200',
+	            'message' => 'OK'
+	        );
+    	}
+    	else {
+	    	$metadata = array(
+	            'code' => '404',
+	            'message' => 'Rujukan Tidak Ditemukan'
+	        );
+    	}
+
 
         $item = array(
         	'catatan' => '',
