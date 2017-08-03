@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use App\Pembayaran;
 use App\Klaim;
 use App\Transaksi;
+use App\TransaksiEksternal;
 use App\Asuransi;
 use App\Tindakan;
 use App\ObatTebusItem;
@@ -73,39 +75,99 @@ class PembayaranController extends Controller
         $pembayaran->no_pembayaran = 'PMB' . $code_str;
         $pembayaran->save();
 
-        if (isset($payload['tindakan']) && count($payload['tindakan']) > 0) {
-            $arrTindakan = $payload['tindakan'];
-            foreach ($arrTindakan as $value) {
-                $tindakan = Tindakan::findOrFail($value);
-                $tindakan->id_pembayaran = $pembayaran->id;
-                $tindakan->save();
+        if ($pembayaran->pembayaran_tambahan == 1) {
+            if ($pembayaran->id_transaksi != null) {
+                $kamarRawatInap = PemakaianKamarRawatInap::where('id_transaksi', '=', $pembayaran->id_transaksi)
+                    ->where('waktu_keluar', '=', null)
+                    ->first();
+
+                if ($kamarRawatInap != null) {
+                    if ($kamarRawatInap->waktu_keluar == null) {
+                        date_default_timezone_set('Asia/Jakarta');
+                        $kamarRawatInap->waktu_keluar = date("Y-m-d H:i:s");
+
+                        $kamarBaru = new PemakaianKamarRawatInap;
+                        $kamarBaru->no_kamar = $kamarRawatInap->no_kamar;
+                        $kamarBaru->no_tempat_tidur = $kamarRawatInap->no_tempat_tidur;
+                        $kamarBaru->id_transaksi = $kamarRawatInap->id_transaksi;
+                        $kamarBaru->waktu_masuk = date("Y-m-d H:i:s");
+                        $kamarBaru->waktu_keluar = null;
+                        $kamarBaru->harga = $kamarRawatInap->harga; 
+                        $kamarBaru->no_pegawai = $kamarRawatInap->no_pegawai;
+                        $kamarBaru->tanggal_booking = null;
+                        $kamarBaru->save();
+
+                        $waktu_masuk = Carbon::parse($kamarRawatInap->waktu_masuk);
+                        $waktu_keluar = Carbon::parse($kamarRawatInap->waktu_keluar);
+                        $los = $waktu_masuk->diffInDays($waktu_keluar);
+
+                        $transaksi = Transaksi::findOrFail($kamarRawatInap->id_transaksi);
+                        $transaksi->harga_total += $los * $kamarRawatInap->kamar_rawatinap->harga_per_hari;
+                        $transaksi->save();
+                    }
+                    $kamarRawatInap->save();
+                }
             }
         }
-
-        if (isset($payload['obatTebus']) && count($payload['obatTebus']) > 0) {
-            $arrObatTebus = $payload['obatTebus'];
-            foreach ($arrObatTebus as $value) {
-                $obatTebus = ObatTebusItem::findOrFail($value);
-                $obatTebus->id_pembayaran = $pembayaran->id;
-                $obatTebus->save();
+        else {
+            if (isset($payload['tindakan']) && count($payload['tindakan']) > 0) {
+                $arrTindakan = $payload['tindakan'];
+                foreach ($arrTindakan as $value) {
+                    $tindakan = Tindakan::findOrFail($value);
+                    $tindakan->id_pembayaran = $pembayaran->id;
+                    $tindakan->save();
+                }
             }
-        }
 
-        if (isset($payload['obatEceran']) && count($payload['obatEceran']) > 0) {
-            $arrObatEceran = $payload['obatEceran'];
-            foreach ($arrObatEceran as $value) {
-                $obatEceran = ObatEceranItem::findOrFail($value);
-                $obatEceran->id_pembayaran = $pembayaran->id;
-                $obatEceran->save();
+            if (isset($payload['obatTebus']) && count($payload['obatTebus']) > 0) {
+                $arrObatTebus = $payload['obatTebus'];
+                foreach ($arrObatTebus as $value) {
+                    $obatTebus = ObatTebusItem::findOrFail($value);
+                    $obatTebus->id_pembayaran = $pembayaran->id;
+                    $obatTebus->save();
+                }
             }
-        }
 
-        if (isset($payload['kamarRawatInap']) && count($payload['kamarRawatInap']) > 0) {
-            $arrKamarRawatInap = $payload['kamarRawatInap'];
-            foreach ($arrKamarRawatInap as $value) {
-                $kamarRawatInap = PemakaianKamarRawatInap::findOrFail($value);
-                $kamarRawatInap->id_pembayaran = $pembayaran->id;
-                $kamarRawatInap->save();
+            if (isset($payload['obatEceran']) && count($payload['obatEceran']) > 0) {
+                $arrObatEceran = $payload['obatEceran'];
+                foreach ($arrObatEceran as $value) {
+                    $obatEceran = ObatEceranItem::findOrFail($value);
+                    $obatEceran->id_pembayaran = $pembayaran->id;
+                    $obatEceran->save();
+                }
+            }
+
+            if (isset($payload['kamarRawatInap']) && count($payload['kamarRawatInap']) > 0) {
+                $arrKamarRawatInap = $payload['kamarRawatInap'];
+                foreach ($arrKamarRawatInap as $value) {
+                    $kamarRawatInap = PemakaianKamarRawatInap::findOrFail($value);
+                    $kamarRawatInap->id_pembayaran = $pembayaran->id;
+
+                    if ($kamarRawatInap->waktu_keluar == null) {
+                        date_default_timezone_set('Asia/Jakarta');
+                        $kamarRawatInap->waktu_keluar = date("Y-m-d H:i:s");
+
+                        $kamarBaru = new PemakaianKamarRawatInap;
+                        $kamarBaru->no_kamar = $kamarRawatInap->no_kamar;
+                        $kamarBaru->no_tempat_tidur = $kamarRawatInap->no_tempat_tidur;
+                        $kamarBaru->id_transaksi = $kamarRawatInap->id_transaksi;
+                        $kamarBaru->waktu_masuk = date("Y-m-d H:i:s");
+                        $kamarBaru->waktu_keluar = null;
+                        $kamarBaru->harga = $kamarRawatInap->harga; 
+                        $kamarBaru->no_pegawai = $kamarRawatInap->no_pegawai;
+                        $kamarBaru->tanggal_booking = null;
+                        $kamarBaru->save();
+
+                        $waktu_masuk = Carbon::parse($kamarRawatInap->waktu_masuk);
+                        $waktu_keluar = Carbon::parse($kamarRawatInap->waktu_keluar);
+                        $los = $waktu_masuk->diffInDays($waktu_keluar);
+
+                        $transaksi = Transaksi::findOrFail($kamarRawatInap->id_transaksi);
+                        $transaksi->harga_total += $los * $kamarRawatInap->kamar_rawatinap->harga_per_hari;
+                        $transaksi->save();
+                    }
+                    $kamarRawatInap->save();
+                }
             }
         }
 
@@ -129,6 +191,12 @@ class PembayaranController extends Controller
             return response()->json([
                 'error' => $e->getMessage()
             ], 500);
+        }
+
+        if ($payload['id_transaksi'] == 0) {
+            $transaksiEksternal = TransaksiEksternal::findOrFail($pembayaran->id_transaksi_eksternal);
+            $transaksiEksternal->status = 'closed';
+            $transaksiEksternal->save();
         }
 
         return response()->json([
