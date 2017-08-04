@@ -61,6 +61,7 @@ class AntrianSMSController extends Controller
 
               $antrian_front_office = new AntrianFrontOffice;
               $antrian_front_office->jenis = 0;
+              $antrian_front_office->status = 0;
               $antrian_front_office->kesempatan = 5;
               $antrian_front_office->via_sms = true;
 
@@ -70,7 +71,7 @@ class AntrianSMSController extends Controller
                   $antrian_front_office->nama_pasien = $pasien->nama_pasien;    
               else {
                 $text = '[PAYAKUMBUH] Pendaftaran gagal. Kode pasien yang dimasukkan tidak terdaftar.';
-                Log::info('Mengirim SMS ke nomor '.$sender_phone);
+                Log::info('Mengirim SMS ke nomor '.$sender_phone.' dengan pesan : '.$text);
                 self::sendMessage($text, $sender_phone);
                 return response($text, 500);
               }
@@ -86,7 +87,7 @@ class AntrianSMSController extends Controller
                     $antrian_front_office->kategori_antrian = $layanan->kategori_antrian;
                     if ($layanan->sisa_pelayanan <= 0) {
                       $text = '[PAYAKUMBUH] Pendaftaran gagal. Maaf, layanan yang Anda tuju sudah habis.';
-                      Log::info('Mengirim SMS ke nomor '.$sender_phone);
+                      Log::info('Mengirim SMS ke nomor '.$sender_phone.' dengan pesan : '.$text);
                       self::sendMessage($text, $sender_phone);
                       return response($text, 500);
                     }
@@ -98,7 +99,7 @@ class AntrianSMSController extends Controller
 
               if ($layanan == null) {
                 $text = '[PAYAKUMBUH] Pendaftaran gagal. Maaf, layanan yang Anda pilih tidak terdaftar.';
-                Log::info('Mengirim SMS ke nomor '.$sender_phone);
+                Log::info('Mengirim SMS ke nomor '.$sender_phone.' dengan pesan : '.$text);
                 self::sendMessage($text, $sender_phone);
                 return response($text, 500);
               }
@@ -110,7 +111,7 @@ class AntrianSMSController extends Controller
                     $tanggal_kontrol = Carbon::parse(json_decode($rekam_medis->rencana_penatalaksanaan)->tanggal);
                     if (Carbon::parse(json_decode($rekam_medis->rencana_penatalaksanaan)->tanggal)->gt(Carbon::now())) {
                       $text = '[PAYAKUMBUH] Pendaftaran gagal. Maaf, Anda belum dapat melakukan kontrol.';
-                      Log::info('Mengirim SMS ke nomor '.$sender_phone);
+                      Log::info('Mengirim SMS ke nomor '.$sender_phone.' dengan pesan : '.$text);
                       self::sendMessage($text, $sender_phone);
                       return response($text, 500);
                     }
@@ -128,12 +129,12 @@ class AntrianSMSController extends Controller
               $antrian_front_office->no_sms = $sender_phone;
               $antrian_front_office->save();
 
-              Log::info('Mengirim SMS ke nomor '.$sender_phone);
+              Log::info('Mengirim SMS ke nomor '.$sender_phone.' dengan pesan : '.$text);
               self::sendMessage($text, $sender_phone);
               return response($text, 201);
             } else {
-              Log::info('Mengirim SMS ke nomor '.$sender_phone);
               $text = '[PAYAKUMBUH] Pendaftaran gagal. Format SMS Anda salah. Silakan kirim ulang SMS Anda dengan format yang benar.';
+              Log::info('Mengirim SMS ke nomor '.$sender_phone.' dengan pesan : '.$text);
               self::sendMessage($text, $sender_phone);
               return response($text, 500);
             }
