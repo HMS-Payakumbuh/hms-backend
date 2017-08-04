@@ -7,6 +7,7 @@ use App\AntrianFrontOffice;
 use App\Poliklinik;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Redis;
+use Log;
 
 class AntrianFrontOfficeController extends Controller
 {
@@ -144,7 +145,7 @@ class AntrianFrontOfficeController extends Controller
         if ($antrian_front_office->via_sms && $antrian_front_office->status == 0) {
             $antrian_front_office->status = 1;
             $text = '[PAYAKUMBUH] Nomor antrian Anda sudah dipanggil. Anda dapat langsung registrasi di front office tanpa mengantri.';
-            Log::info('Mengirim SMS ke nomor '.$antrian_front_office->no_sms);
+            Log::info('Mengirim SMS ke nomor '.$antrian_front_office->no_sms.' dengan pesan : '.$text);
             self::sendMessage($text, $antrian_front_office->no_sms);
         }
 
