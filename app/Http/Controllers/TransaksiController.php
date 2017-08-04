@@ -121,6 +121,7 @@ class TransaksiController extends Controller
         $payload = $request->input('transaksi');
         $transaksi = new Transaksi;
         $transaksi->id_pasien = $payload['id_pasien'];
+        $transaksi->rujukan = $payload['rujukan'];
 
         $transaksiLama = Transaksi::where('id_pasien', '=', $transaksi->id_pasien)
             ->where('status', '=', 'open')

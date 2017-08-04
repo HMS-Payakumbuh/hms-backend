@@ -19,9 +19,9 @@ class RekamMedisEksternalController extends Controller
         return RekamMedisEksternal::all();
     }
 
-    public function getEksternalRekamMedis($kode_pasien) {
+    public function getEksternalRekamMedis($kode_pasien, $no_rujukan) {
         $client = new Client();
-        $response = $client->request('GET', 'http://127.0.0.1:8001/api/rekam_medis/'.$kode_pasien)->getBody();
+        $response = $client->request('GET', 'http://127.0.0.1:8001/api/rekam_medis/'.$kode_pasien.'/'.$no_rujukan)->getBody();
         return response($response)->header('Content-Type', 'application/json');
     }
 

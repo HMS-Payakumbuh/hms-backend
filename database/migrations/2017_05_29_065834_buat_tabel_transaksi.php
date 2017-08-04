@@ -22,6 +22,7 @@ class BuatTabelTransaksi extends Migration
             $table->dateTime('waktu_perubahan_terakhir');
             $table->decimal('harga_total', 65, 2);
             $table->string('asuransi_pasien')->nullable();
+            $table->boolean('rujukan')->nullable();
             $table->integer('kode_jenis_pasien'); //1: pasien umum, 2: pasien asuransi
             $table->integer('jenis_rawat'); //1: rawat inap, 2: rawat jalan
             $table->integer('kelas_rawat'); //kelas perawatan saat pasien mendaftar

@@ -137,7 +137,7 @@ class SepController extends Controller
 
 
         $item = array(
-        	'catatan' => '',
+        	'catatan' => 'Pasien dalam kondisi sehat.',
         	'diagnosa' => array(
 	        	'kdDiag' => 'B54',
 	        	'nmDiag' => 'Unspecified malaria'
@@ -247,7 +247,7 @@ class SepController extends Controller
 		        	'kdKelas' => '3',
 		        	'nmKelas' => 'Kelas III'
 		        ),
-		        'nama' => 'RIMBAR YUNUS, IR',
+		        'nama' => 'BUDI ANTO, IR',
 		        'nik' => null,
 		        'noKartu' => '0000033420148',
 		        'noMr' => null,
