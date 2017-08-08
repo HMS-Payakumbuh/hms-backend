@@ -8,11 +8,15 @@ use App\TransaksiEksternal;
 class TransaksiEksternalController extends Controller
 {
 
-    private function getTransaksi($id = null) {
+    private function getTransaksi($id = null, $field = null) {
         if (isset($id)) {
-            return TransaksiEksternal::findOrFail($id);
+            return TransaksiEksternal::with(['obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'obatEceran.obatEceranItem.jenisObat'])->findOrFail($id);
         }
         else {
+            if (isset($field)) {
+                return TransaksiEksternal::where('status', '=', $field)
+                    ->get();
+            }
             return TransaksiEksternal::get();
         }
     }
@@ -22,10 +26,12 @@ class TransaksiEksternalController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $status = $request->input('status');
+
         return response()->json([
-            'allTransaksi' => $this->getTransaksi();
+            'allTransaksi' => $this->getTransaksi(null, $status)
         ]);
     }
 
@@ -47,14 +53,14 @@ class TransaksiEksternalController extends Controller
         $transaksi->umur = $payload['umur'];
         $transaksi->save();
 
-        $transaksi = Transaksi::findOrFail($transaksi->id);
+        $transaksi = TransaksiEksternal::findOrFail($transaksi->id);
         $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
         $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
         $transaksi->no_transaksi = 'EKS' . $code_str;
         $transaksi->save();
 
         return response()->json([
-            'transaksi' => $transaksi;
+            'transaksi' => $transaksi
         ], 201);
     }
 
@@ -67,7 +73,7 @@ class TransaksiEksternalController extends Controller
     public function show($id)
     {
         return response()->json([
-            'transaksi' => $this->getTransaksi($id);
+            'transaksi' => $this->getTransaksi($id)
         ]);
     }
 

@@ -46,6 +46,27 @@ class PemakaianKamarOperasiController extends Controller
         $pemakaianKamarOperasi->no_tindakan = $tindakan->id;
         $pemakaianKamarOperasi->id_transaksi = $request->input('id_transaksi');
         $pemakaianKamarOperasi->no_pembayaran = $request->input('no_pembayaran');
+        date_default_timezone_set('Asia/Jakarta');
+        $pemakaianKamarRawatinap->waktu_masuk = date("Y-m-d H:i:s");
+        $pemakaianKamarOperasi->waktu_masuk_real = date("Y-m-d H:i:s");
+        $pemakaianKamarOperasi->waktu_keluar =  $request->input('waktu_keluar');
+        $pemakaianKamarOperasi->save();
+
+        return response($pemakaianKamarOperasi, 201);
+    }
+
+    public function storeBooked(Request $request)
+    {
+        $tindakan = Tindakan
+                    ::select(DB::raw('tindakan.id'))
+                    ->orderBy('tindakan.id','desc')
+                    ->first();
+
+        $pemakaianKamarOperasi = new PemakaianKamarOperasi;
+        $pemakaianKamarOperasi->no_kamar = $request->input('no_kamar');
+        $pemakaianKamarOperasi->no_tindakan = $tindakan->id;
+        $pemakaianKamarOperasi->id_transaksi = $request->input('id_transaksi');
+        $pemakaianKamarOperasi->no_pembayaran = $request->input('no_pembayaran');
         $pemakaianKamarOperasi->waktu_masuk = $request->input('waktu_masuk');
         $pemakaianKamarOperasi->waktu_keluar =  $request->input('waktu_keluar');
         $pemakaianKamarOperasi->save();
@@ -53,7 +74,27 @@ class PemakaianKamarOperasiController extends Controller
         return response($pemakaianKamarOperasi, 201);
     }
 
-    
+    public function masuk(Request $request, $id)
+    {
+        $pemakaianKamarOperasi = PemakaianKamarOperasi::findOrFail($id);
+
+        date_default_timezone_set('Asia/Jakarta');
+        $pemakaianKamarOperasi->waktu_masuk_real = date("Y-m-d H:i:s");
+        $pemakaianKamarOperasi->save();
+
+        return response($pemakaianKamarOperasi, 200);
+    }
+
+    public function keluar(Request $request, $id)
+    {
+        $pemakaianKamarOperasi = PemakaianKamarOperasi::findOrFail($id);
+
+        date_default_timezone_set('Asia/Jakarta');
+        $pemakaianKamarOperasi->waktu_keluar_real = date("Y-m-d H:i:s");
+        $pemakaianKamarOperasi->save();
+
+        return response($pemakaianKamarOperasi, 200);
+    }
 
     /**
      * Display the specified resource.

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use DB;
 use App\Antrian;
 use App\Transaksi;
 use App\Pasien;
@@ -25,7 +26,14 @@ class AntrianController extends Controller
 
     public function cleanup()
     {
-        Antrian::truncate();
+        $all_antrian = Antrian::where('status', '=', 0)
+                ->orWhere('status', '=', 1)
+                ->get();
+        foreach ($all_antrian as $antrian) {
+            $antrian->status = 2;
+            $antrian->save();
+        }
+        DB::statement('ALTER SEQUENCE antrian_no_antrian_seq RESTART WITH 1');  
         return response('', 204);
     }
 
@@ -38,6 +46,13 @@ class AntrianController extends Controller
     public function store(Request $request)
     {
     	$antrian = new Antrian;
+
+        $all_antrian = Antrian::all();
+        if (!empty($all_antrian[0])) {
+            if ($all_antrian[0]->waktu_perubahan_antrian < Carbon::today()->toDateTimeString()) {
+                self::cleanup();
+            }
+        } 
 
     	$transaksi = Transaksi::findOrFail($request->input('id_transaksi'));
 	    if ($transaksi) {
@@ -91,8 +106,16 @@ class AntrianController extends Controller
     public function show($nama_layanan, $status = null)
     {
       return Antrian::with(['transaksi.pasien'])
-      ->where([['status', '=', 0], ['nama_layanan_poli', '=', $nama_layanan]])
-      ->orWhere([['status', '=', 0], ['nama_layanan_lab', '=', $nama_layanan]])
+      ->where([
+        ['status', '=', 0],
+        ['nama_layanan_poli', '=', $nama_layanan],
+        ['waktu_perubahan_antrian', '>=', date('Y-m-d').' 00:00:00']
+      ])
+      ->orWhere([
+        ['status', '=', 0],
+        ['nama_layanan_lab', '=', $nama_layanan],
+        ['waktu_perubahan_antrian', '>=', date('Y-m-d').' 00:00:00']
+      ])
       ->with('transaksi', 'transaksi.pasien')
       ->get();
     }
@@ -123,6 +146,21 @@ class AntrianController extends Controller
     /**
      * Update the specified resource in storage.
      *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function processAntrian(Request $request, $id_transaksi, $no_antrian) {
+      $antrian = Antrian::where('id_transaksi', '=', $id_transaksi)
+        ->where('no_antrian', '=', $no_antrian)
+  	    ->first();
+      $antrian->status = 2;
+      $antrian->save();
+      return response($antrian, 200);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
      * @param  integer  $id_transaksi
      * @param  string  $no_antrian
      * @return \Illuminate\Http\Response
@@ -133,7 +171,20 @@ class AntrianController extends Controller
 	        ->where('no_antrian', '=', $no_antrian)
 	        ->first();
 
-        $antrian->waktu_perubahan_antrian = Carbon::now();
+        if ($antrian->nama_layanan_poli)
+            $antrian_layanan = Antrian::
+                where('nama_layanan_poli', '=', $antrian->nama_layanan_poli)
+                ->get();
+        else if ($antrian->nama_layanan_lab)            
+            $antrian_layanan = Antrian::
+                where('nama_layanan_lab', '=', $antrian->nama_layanan_lab)
+                ->get();
+
+         if (count($antrian_layanan) >= 5)    
+            $antrian->waktu_perubahan_antrian = $antrian_layanan[5]->waktu_perubahan_antrian->addSeconds(1);
+        else
+            $antrian->waktu_perubahan_antrian = $antrian_layanan[count($antrian_layanan) - 1]->waktu_perubahan_antrian->addSeconds(1);        
+
         $antrian->kesempatan = $antrian->kesempatan - 1;
         $antrian->save();
         if ($antrian->kesempatan <= 0)

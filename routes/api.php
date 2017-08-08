@@ -30,16 +30,21 @@ Route::resource('rekam_medis', 'RekamMedisController', ['except' => [
 Route::get('rekam_medis/{id_pasien}', 'RekamMedisController@show');
 Route::put('rekam_medis/{id_pasien}/{tanggal_waktu}', 'RekamMedisController@update');
 
-Route::resource('antrian_sms', 'AntrianSMSController', ['except' => [
-  'edit', 'create', 'store'
+Route::resource('rekam_medis_eksternal', 'RekamMedisEksternalController', ['except' => [
+  'edit', 'show', 'create'
 ]]);
+Route::get('rekam_medis_eksternal/import/{kode_pasien}/{no_rujukan}', 'RekamMedisEksternalController@getEksternalRekamMedis');
+Route::get('rekam_medis_eksternal/{id_pasien}', 'RekamMedisEksternalController@show');
+
 Route::post('antrian_sms/parse_message', 'AntrianSMSController@parseMessage');
 
 Route::resource('antrian_front_office', 'AntrianFrontOfficeController', ['except' => [
   'edit', 'show', 'cleanup', 'create', 'update', 'delete'
 ]]);
 Route::get('antrian_front_office/cleanup', 'AntrianFrontOfficeController@cleanup');
+Route::get('antrian_front_office/update_sms', 'AntrianFrontOfficeController@updateAntrianSMS');
 Route::get('antrian_front_office/{kategori_antrian}', 'AntrianFrontOfficeController@show');
+Route::get('antrian_front_office/sms/{kategori_antrian}', 'AntrianFrontOfficeController@showAntrianSMS');
 Route::put('antrian_front_office/{nama_layanan}/{no_antrian}', 'AntrianFrontOfficeController@update');
 Route::delete('antrian_front_office/{nama_layanan}/{no_antrian}', 'AntrianFrontOfficeController@destroy');
 
@@ -49,10 +54,14 @@ Route::resource('antrian', 'AntrianController', ['except' => [
 Route::get('antrian/cleanup', 'AntrianController@cleanup');
 Route::get('antrian/{nama_layanan}/status/{status}', 'AntrianController@getAntrianWithStatus');
 Route::get('antrian/{nama_layanan}', 'AntrianController@show');
-Route::put('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@update');
-Route::delete('antrian/{nama_layanan}/{no_antrian}', 'AntrianController@destroy');
+Route::put('antrian/{id_transaksi}/{no_antrian}', 'AntrianController@update');
+Route::put('antrian/process/{id_transaksi}/{no_antrian}', 'AntrianController@processAntrian');
+Route::delete('antrian/{id_transaksi}/{no_antrian}', 'AntrianController@destroy');
 
-Route::post('bpjs', 'BpjsController@process');
+Route::get('sep/{no_rujukan}', 'SepController@insertSEP');
+Route::get('sep/rujukan/{no_rujukan}', 'SepController@getRujukan');
+Route::get('sep/peserta/{no_kartu}', 'SepController@getPeserta');
+
 Route::resource('transaksi', 'TransaksiController', ['except' => [
   'edit', 'create'
   ]]);
@@ -130,6 +139,7 @@ Route::resource('hasil_lab', 'HasilLabController', ['except' => [
   'edit', 'create', 'getEmptyHasilLab', 'download', 'upload'
 ]]);
 
+Route::get('ambulans/available', 'AmbulansController@getAvailable');
 Route::resource('ambulans', 'AmbulansController', ['except' => [
   'edit', 'create'
 ]]);
@@ -180,6 +190,9 @@ Route::post('jasa_dokter_rawat_inap/{idPemakaian}', 'JasaDokterRawatinapControll
 Route::get('jasa_dokter_rawat_inap/pemakaian/{idPemakaian}', 'JasaDokterRawatinapController@getJasaDokterByPemakaian');
 
 Route::post('pemakaiankamarrawatinap/booking/{tanggal}', 'PemakaianKamarRawatInapController@storeBooked');
+Route::post('pemakaiankamaroperasi/booking', 'PemakaianKamarOperasiController@storeBooked');
+Route::put('pemakaiankamaroperasi/booking/masuk/{id}', 'PemakaianKamarOperasiController@masuk');
+Route::put('pemakaiankamaroperasi/booking/keluar/{id}', 'PemakaianKamarOperasiController@keluar');
 
 Route::put('pemakaiankamarrawatinap/{id}/{no_kamar}/{no_tempat_tidur}', 'PemakaianKamarRawatinapController@update');
 Route::delete('pemakaiankamarrawatinap/{id}/{no_kamar}/{no_tempat_tidur}', 'PemakaianKamarRawatinapController@destroy');
@@ -208,7 +221,7 @@ Route::get('rawatinap/list/all', 'KamarRawatInapController@getAll');
 Route::get('rawatinap/{no_kamar}', 'KamarRawatInapController@show');
 Route::put('rawatinap/{no_kamar}', 'KamarRawatInapController@update');
 Route::post('rawatinap/{no_kamar}', 'PemakaianKamarRawatInapController@store');
-Route::put('rawatinap/booking/{id}', 'PemakaianKamarRawatInapController@masuk');\
+Route::put('rawatinap/booking/{id}', 'PemakaianKamarRawatInapController@masuk');
 Route::get('rawatinap/booking/{tanggal}/now', 'KamarRawatInapController@getAvailableKamarMinusNow');
 Route::get('rawatinap/booking/{tanggal}/booked', 'KamarRawatInapController@getAvailableKamarMinusBooked');
 
@@ -219,7 +232,7 @@ Route::get('resep/rekam_medis/{id_pasien}/{tanggal_waktu}', 'ResepController@get
 Route::get('resep/search_by_pasien', 'ResepController@searchByPasien');
 // Route::get('resep/search_by_pasien_and_tanggal', 'ResepController@searchByPasienAndTanggal');
 Route::resource('resep', 'ResepController', ['except' => [
-  'edit', 'show', 'create'
+  'edit', 'create'
 ]]);
 Route::resource('resep_item', 'ResepItemController');
 Route::resource('racikan_item', 'RacikanItemController');
@@ -230,7 +243,8 @@ Route::resource('jenis_obat', 'JenisObatController');
 Route::resource('lokasi_obat', 'LokasiObatController');
 
 Route::get('obat_masuk/export', 'ObatMasukController@export');
-Route::get('obat_masuk/today/{id_stok_obat}', 'ObatMasukController@getTodayObatMasukByStok');
+Route::get('obat_masuk/search_by_time', 'ObatMasukController@getObatMasukByTime');
+// Route::get('obat_masuk/today/{id_stok_obat}', 'ObatMasukController@getTodayObatMasukByStok');
 Route::get('obat_masuk/search', 'ObatMasukController@search');
 Route::resource('obat_masuk', 'ObatMasukController');
 
@@ -241,24 +255,30 @@ Route::get('stok_obat/search_by_location', 'StokObatController@searchByLocation'
 Route::resource('stok_obat', 'StokObatController');
 
 Route::get('obat_pindah/export', 'ObatPindahController@export');
-Route::get('obat_pindah/today/keluar/{id_stok_obat}', 'ObatPindahController@getTodayObatPindahKeluarByStok');
-Route::get('obat_pindah/today/masuk/{id_stok_obat}', 'ObatPindahController@getTodayObatPindahMasukByStok');
+Route::get('obat_pindah/search_by_time/keluar', 'ObatPindahController@getObatPindahKeluarByTime');
+Route::get('obat_pindah/search_by_time/masuk', 'ObatPindahController@getObatPindahMasukByTime');
+// Route::get('obat_pindah/today/keluar/{id_stok_obat}', 'ObatPindahController@getTodayObatPindahKeluarByStok');
+// Route::get('obat_pindah/today/masuk/{id_stok_obat}', 'ObatPindahController@getTodayObatPindahMasukByStok');
 Route::resource('obat_pindah', 'ObatPindahController');
 
 Route::get('obat_rusak/export', 'ObatRusakController@export');
-Route::get('obat_rusak/today/{id_stok_obat}', 'ObatRusakController@getTodayObatRusakByStok');
+Route::get('obat_rusak/search_by_time', 'ObatRusakController@getObatRusakByTime');
+// Route::get('obat_rusak/today/{id_stok_obat}', 'ObatRusakController@getTodayObatRusakByStok');
 Route::resource('obat_rusak', 'ObatRusakController');
 
 Route::get('obat_tebus/export', 'ObatTebusController@export');
-Route::get('obat_tebus/today/{id_stok_obat}', 'ObatTebusController@getTodayObatTebusByStok');
+Route::get('obat_tebus/search_by_time', 'ObatTebusController@getObatTebusByTime');
+// Route::get('obat_tebus/today/{id_stok_obat}', 'ObatTebusController@getTodayObatTebusByStok');
 Route::resource('obat_tebus', 'ObatTebusController');
 
 Route::get('obat_tindakan/export', 'ObatTindakanController@export');
-Route::get('obat_tindakan/today/{id_stok_obat}', 'ObatTindakanController@getTodayObatTindakanByStok');
+Route::get('obat_tindakan/search_by_time', 'ObatTindakanController@getObatTindakanByTime');
+// Route::get('obat_tindakan/today/{id_stok_obat}', 'ObatTindakanController@getTodayObatTindakanByStok');
 Route::resource('obat_tindakan', 'ObatTindakanController');
 
 Route::get('obat_eceran/export', 'ObatEceranController@export');
-Route::get('obat_eceran/today/{id_stok_obat}', 'ObatEceranController@getTodayObatEceranByStok');
+Route::get('obat_eceran/search_by_time', 'ObatEceranController@getObatEceranByTime');
+// Route::get('obat_eceran/today/{id_stok_obat}', 'ObatEceranController@getTodayObatEceranByStok');
 Route::resource('obat_eceran', 'ObatEceranController');
 
 Route::get('stock_opname/search_by_location', 'StockOpnameController@searchByLocation');

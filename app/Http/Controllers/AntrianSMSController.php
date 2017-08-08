@@ -9,7 +9,8 @@ use App\RekamMedis;
 use App\Poliklinik;
 use App\Laboratorium;
 use Carbon\Carbon;
-use Textmagic\Services\TextmagicRestClient;
+use Illuminate\Support\Facades\Redis;
+use Log;
 
 class AntrianSMSController extends Controller
 {
@@ -23,6 +24,11 @@ class AntrianSMSController extends Controller
         return AntrianFrontOffice::all();
     }
 
+    public function sendMessage($text, $phone) {
+        //send message to user
+       Redis::publish('sms', json_encode(['text' => $text, 'sender_phone' => $phone]));
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -31,51 +37,107 @@ class AntrianSMSController extends Controller
      */
     public function parseMessage(Request $request)
     {
-        $pieces = explode("_", $request->input('message'));
+        $inbound_id = $request->id;
+        $sender_phone = $request->sender;
+        $receiver_phone = $request->receiver;
+        $message_time = $request->messageTime;
+        $message = $request->text;
 
-        $antrian_front_office = new AntrianFrontOffice;
-        $antrian_front_office->jenis = 0;
-        $antrian_front_office->kesempatan = 3;
-
+        Log::info("Receive Message");
+        Log::info($sender_phone);
+        Log::info($receiver_phone);
+        Log::info($message_time);
+        Log::info($message);
         try {
-            $pasien = Pasien::where('kode_pasien', '=', $pieces[0])->first();
-            if ($pasien) 
-                $antrian_front_office->nama_pasien = $pasien->nama_pasien;    
-            else
-                $antrian_front_office->nama_pasien = $pieces[0];
+            $pieces = explode("_", $message);
 
-            if (substr($pieces[1], 0, 4) === 'Poli')
-                $antrian_front_office->nama_layanan_poli = $pieces[1];
-            else
-                $antrian_front_office->nama_layanan_lab = $pieces[1];
+            if (count($pieces) > 1) {
+              $all_antrian = AntrianFrontOffice::all();
+              if (!empty($all_antrian[0])) {
+                  if ($all_antrian[0]->waktu_perubahan_antrian < Carbon::today()->toDateTimeString()) {
+                      AntrianFrontOffice::truncate();
+                  }
+              } 
 
-            if ($antrian_front_office->nama_layanan_poli) {
-                $layanan = Poliklinik::where('nama', '=', $antrian_front_office->nama_layanan_poli)->first();
-                $antrian_front_office->kategori_antrian = $layanan->kategori_antrian;
-            } else if ($antrian_front_office->nama_layanan_lab) {
-                $layanan = Laboratorium::where('nama', '=', $antrian_front_office->nama_layanan_lab)->first();
-                $antrian_front_office->kategori_antrian = $layanan->kategori_antrian;
+              $antrian_front_office = new AntrianFrontOffice;
+              $antrian_front_office->jenis = 0;
+              $antrian_front_office->status = 0;
+              $antrian_front_office->kesempatan = 5;
+              $antrian_front_office->via_sms = true;
+
+              $pasien = Pasien::where('kode_pasien', '=', $pieces[0])->first();
+
+              if ($pasien) 
+                  $antrian_front_office->nama_pasien = $pasien->nama_pasien;    
+              else {
+                $text = '[PAYAKUMBUH] Pendaftaran gagal. Kode pasien yang dimasukkan tidak terdaftar.';
+                Log::info('Mengirim SMS ke nomor '.$sender_phone.' dengan pesan : '.$text);
+                self::sendMessage($text, $sender_phone);
+                return response($text, 500);
+              }
+
+              if (substr($pieces[1], 0, 4) === 'Poli')
+                  $antrian_front_office->nama_layanan_poli = $pieces[1];
+              else
+                  $antrian_front_office->nama_layanan_lab = $pieces[1]; 
+
+              if ($antrian_front_office->nama_layanan_poli) {
+                  $layanan = Poliklinik::where('nama', '=', $antrian_front_office->nama_layanan_poli)->first();
+                  if ($layanan) {
+                    $antrian_front_office->kategori_antrian = $layanan->kategori_antrian;
+                    if ($layanan->sisa_pelayanan <= 0) {
+                      $text = '[PAYAKUMBUH] Pendaftaran gagal. Maaf, layanan yang Anda tuju sudah habis.';
+                      Log::info('Mengirim SMS ke nomor '.$sender_phone.' dengan pesan : '.$text);
+                      self::sendMessage($text, $sender_phone);
+                      return response($text, 500);
+                    }
+                  }
+              } else if ($antrian_front_office->nama_layanan_lab) {
+                  $layanan = Laboratorium::where('nama', '=', $antrian_front_office->nama_layanan_lab)->first();
+                  $antrian_front_office->kategori_antrian = $layanan->kategori_antrian;
+              }
+
+              if ($layanan == null) {
+                $text = '[PAYAKUMBUH] Pendaftaran gagal. Maaf, layanan yang Anda pilih tidak terdaftar.';
+                Log::info('Mengirim SMS ke nomor '.$sender_phone.' dengan pesan : '.$text);
+                self::sendMessage($text, $sender_phone);
+                return response($text, 500);
+              }
+
+              if (count($pieces) > 2) {
+                  $pieces[2] = strtolower($pieces[2]);
+                  $rekam_medis = RekamMedis::where('id_pasien', '=', $pasien->id)->first();
+                  if ($rekam_medis && ($pieces[2] === 'kontrol' || $pieces[2] === 'k')) {
+                    $tanggal_kontrol = Carbon::parse(json_decode($rekam_medis->rencana_penatalaksanaan)->tanggal);
+                    if (Carbon::parse(json_decode($rekam_medis->rencana_penatalaksanaan)->tanggal)->gt(Carbon::now())) {
+                      $text = '[PAYAKUMBUH] Pendaftaran gagal. Maaf, Anda belum dapat melakukan kontrol.';
+                      Log::info('Mengirim SMS ke nomor '.$sender_phone.' dengan pesan : '.$text);
+                      self::sendMessage($text, $sender_phone);
+                      return response($text, 500);
+                    }
+                  }
+              }
+
+              $antrian_front_office->save();
+              Redis::publish('antrian', json_encode(['kategori_antrian' => $antrian_front_office->kategori_antrian]));
+
+              $panjang_antrian = count(AntrianFrontOffice::where('kategori_antrian', '=', $layanan->kategori_antrian)->get());
+              $minutes = $panjang_antrian * 3;
+              $now = Carbon::now();
+              $text = '[PAYAKUMBUH] Pendaftaran berhasil. Anda mendapat nomor antrian '.$antrian_front_office->kategori_antrian.$antrian_front_office->no_antrian.'. Datanglah antara Pukul '.$now->copy()->addMinutes($minutes - 15)->toTimeString().' - '.$now->copy()->addMinutes($minutes)->toTimeString().'.';
+              $antrian_front_office->waktu_perjanjian = $now->copy()->addMinutes($minutes)->toTimeString();
+              $antrian_front_office->no_sms = $sender_phone;
+              $antrian_front_office->save();
+
+              Log::info('Mengirim SMS ke nomor '.$sender_phone.' dengan pesan : '.$text);
+              self::sendMessage($text, $sender_phone);
+              return response($text, 201);
+            } else {
+              $text = '[PAYAKUMBUH] Pendaftaran gagal. Format SMS Anda salah. Silakan kirim ulang SMS Anda dengan format yang benar.';
+              Log::info('Mengirim SMS ke nomor '.$sender_phone.' dengan pesan : '.$text);
+              self::sendMessage($text, $sender_phone);
+              return response($text, 500);
             }
-
-            if (count($pieces) > 2) {
-                $rekam_medis = RekamMedis::where('id_pasien', '=', $pasien->id)->first();
-                $tanggal_kontrol = Carbon::parse(json_decode($rekam_medis->rencana_penatalaksanaan)->tanggal);
-                var_dump('Tanggal Kontrol : '.$tanggal_kontrol);
-                var_dump('Tanggal Sekarang : '.Carbon::now());
-                if (Carbon::parse(json_decode($rekam_medis->rencana_penatalaksanaan)->tanggal)->gt(Carbon::now()))
-                    return response('Pendaftaran gagal. Maaf Anda belum dapat melakukan kontrol.', 500);
-            }
-
-            $antrian_front_office->save();
-
-            if ($layanan) {
-                $panjang_antrian = count(AntrianFrontOffice::where('kategori_antrian', '=', $layanan->kategori_antrian)->get());
-                $minutes = $panjang_antrian * 5;
-                $now = Carbon::now();
-                $waktu_datang = 'Pendaftaran berhasil. Anda mendapat nomor antrian '.$antrian_front_office->kategori_antrian.$antrian_front_office->no_antrian.'. Datanglah sebelum Pukul '.$now->copy()->addMinutes($minutes)->toTimeString().'.';
-            }
-            
-            return response($waktu_datang, 201);
         } catch (\Exception $e) {
             if ($e instanceof RestException) {
                 print '[ERROR] ' . $e->getMessage() . "\n";
@@ -85,33 +147,12 @@ class AntrianSMSController extends Controller
             } else {
                 print '[ERROR] ' . $e->getMessage() . "\n";
             }
+            self::sendMessage('[PAYAKUMBUH] Pendaftaran gagal. Format SMS Anda salah. Silakan kirim ulang SMS Anda dengan format yang benar.', $sender_phone);
             return response($e, 500);
         } 
     }
 
-    public function sendMessage($text, $phone) {
-        //send message to user
-        $client = new TextmagicRestClient('jessicaandjani', 'Z1HuSc1UIKQMgOfmGeFmtmAMMRH7GK');
-        $result = ' ';
-        try {
-            $result = $client->messages->create(
-                array(
-                    'text' => $text,
-                    'phones' => implode(', ', array($phone))
-                )
-            );
-        } catch (\Exception $e) {
-            if ($e instanceof RestException) {
-                print '[ERROR] ' . $e->getMessage() . "\n";
-                foreach ($e->getErrors() as $key => $value) {
-                    print '[' . $key . '] ' . implode(',', $value) . "\n";
-                }
-            } else {
-                print '[ERROR] ' . $e->getMessage() . "\n";
-            }
-            return;
-        }
-    }
+
 
     /**
      * Display the specified resource.
