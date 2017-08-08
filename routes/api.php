@@ -172,9 +172,12 @@ Route::resource('pemakaiankamarrawatinap', 'PemakaianKamarRawatinapController', 
   'edit', 'create'
 ]]);
 
-Route::resource('pemeriksaan', 'PemakaianKamarRawatinapController', ['except' => [
+Route::resource('jasa_dokter_rawat_inap', 'JasaDokterRawatinapController', ['except' => [
   'edit', 'create'
 ]]);
+
+Route::post('jasa_dokter_rawat_inap/{idPemakaian}', 'JasaDokterRawatinapController@store');
+Route::get('jasa_dokter_rawat_inap/pemakaian/{idPemakaian}', 'JasaDokterRawatinapController@getJasaDokterByPemakaian');
 
 Route::post('pemakaiankamarrawatinap/booking/{tanggal}', 'PemakaianKamarRawatInapController@storeBooked');
 
@@ -189,6 +192,7 @@ Route::get('pemakaiankamarrawatinap/search/booked/{no_kamar}', 'PemakaianKamarRa
 Route::get('pemakaiankamarrawatinap/search/booked/{tanggal}/{no_kamar}', 'PemakaianKamarRawatinapController@getAllPemakaianKamarBookedWithTanggal');
 Route::get('pemakaiankamarrawatinap/search/booked', 'PemakaianKamarRawatinapController@getAllPemakaianKamarBooked');
 Route::get('pemakaiankamarrawatinap/now/{no_kamar}', 'PemakaianKamarRawatinapController@getAllPemakaianKamarByNoKamar');
+Route::get('pemakaiankamarrawatinap/now/tenaga_medis/{no_pegawai}', 'PemakaianKamarRawatinapController@getAllPemakaianKamarByNoPegawai');
 
 Route::resource('kamaroperasi', 'KamarOperasiController', ['except' => [
   'edit', 'create'

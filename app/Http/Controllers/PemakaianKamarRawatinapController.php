@@ -26,8 +26,24 @@ class PemakaianKamarRawatinapController extends Controller
                             ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
                             ->join('tenaga_medis', 'pemakaian_kamar_rawatinap.no_pegawai', '=', 'tenaga_medis.no_pegawai')
                             ->join('kamar_rawatinap', 'pemakaian_kamar_rawatinap.no_kamar', '=', 'kamar_rawatinap.no_kamar')
-                            ->select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.id_transaksi, kamar_rawatinap.jenis_kamar, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, kamar_rawatinap.kelas, pemakaian_kamar_rawatinap.harga, pasien.nama_pasien, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))
+                            ->select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.id_transaksi, kamar_rawatinap.jenis_kamar, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, kamar_rawatinap.kelas, pemakaian_kamar_rawatinap.harga, pasien.nama_pasien, pemakaian_kamar_rawatinap.no_pegawai, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))
                             ->where('pemakaian_kamar_rawatinap.waktu_masuk', '!=', null)           
+                            ->get();          
+
+        return $pemakaianKamarRawatinap;
+    }
+
+    public function getAllPemakaianKamarByNoPegawai($no_pegawai)
+    {
+        $pemakaianKamarRawatinap = PemakaianKamarRawatinap
+                            ::join('transaksi', 'pemakaian_kamar_rawatinap.id_transaksi', '=', 'transaksi.id')
+                            ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
+                            ->join('tenaga_medis', 'pemakaian_kamar_rawatinap.no_pegawai', '=', 'tenaga_medis.no_pegawai')
+                            ->select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.id_transaksi, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, pasien.nama_pasien, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))    
+                            ->where('pemakaian_kamar_rawatinap.waktu_keluar', '=', null)
+                            ->where('pemakaian_kamar_rawatinap.waktu_masuk', '!=', null)
+                            ->where('tenaga_medis.no_pegawai', '=', $no_pegawai) 
+                            ->orderBy('pemakaian_kamar_rawatinap.no_kamar', 'asc')         
                             ->get();          
 
         return $pemakaianKamarRawatinap;
@@ -38,8 +54,9 @@ class PemakaianKamarRawatinapController extends Controller
         $pemakaianKamarRawatinap = PemakaianKamarRawatinap
                             ::join('transaksi', 'pemakaian_kamar_rawatinap.id_transaksi', '=', 'transaksi.id')
                             ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
+                             ->join('kamar_rawatinap', 'pemakaian_kamar_rawatinap.no_kamar', '=', 'kamar_rawatinap.no_kamar')
                             ->join('tenaga_medis', 'pemakaian_kamar_rawatinap.no_pegawai', '=', 'tenaga_medis.no_pegawai')
-                            ->select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.id_transaksi, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, pasien.nama_pasien, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))    
+                            ->select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.id_transaksi, kamar_rawatinap.jenis_kamar, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, pasien.nama_pasien, pemakaian_kamar_rawatinap.no_pegawai, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))    
                             ->where('pemakaian_kamar_rawatinap.waktu_keluar', '=', null)
                             ->where('pemakaian_kamar_rawatinap.waktu_masuk', '!=', null)
                             ->where('pemakaian_kamar_rawatinap.no_kamar', '=', $no_kamar) 
@@ -163,7 +180,7 @@ class PemakaianKamarRawatinapController extends Controller
                             ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
                             ->join('tenaga_medis', 'pemakaian_kamar_rawatinap.no_pegawai', '=', 'tenaga_medis.no_pegawai')
                             ->join('kamar_rawatinap', 'pemakaian_kamar_rawatinap.no_kamar', '=', 'kamar_rawatinap.no_kamar')
-                            ->select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.id_transaksi, pemakaian_kamar_rawatinap.no_pegawai, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, kamar_rawatinap.kelas, pasien.nama_pasien, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))
+                            ->select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.id_transaksi, kamar_rawatinap.jenis_kamar, pemakaian_kamar_rawatinap.no_pegawai, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, kamar_rawatinap.kelas, pasien.nama_pasien, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))
                             ->where('pemakaian_kamar_rawatinap.id', '=', $id)
                             ->first();
 
