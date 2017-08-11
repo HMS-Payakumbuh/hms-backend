@@ -22,4 +22,9 @@ class RekamMedis extends Model
 	{
 		return $this->hasMany('App\Diagnosis', 'tanggal_waktu', 'tanggal_waktu');
 	}
+
+	public function tindakan()
+	{
+		return $this->hasMany('App\Tindakan', 'tanggal_waktu', 'tanggal_waktu');
+	}
 }
