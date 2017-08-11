@@ -70,7 +70,11 @@ class ObatEceranController extends Controller
             $obat_eceran_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
 
             $stok_obat_asal = StokObat::findOrFail($obat_eceran_item->id_stok_obat);
-            $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_eceran_item->jumlah);    
+            $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_eceran_item->jumlah);  
+
+            if ($stok_obat_asal->jumlah < 0) {
+                return response("less than 0 error", 401);
+            }  
 
             if ($obat_eceran_item->save()) {
                 $transaksi = TransaksiEksternal::findOrFail($obat_eceran->id_transaksi);
@@ -149,7 +153,7 @@ class ObatEceranController extends Controller
         return response ($id.' deleted', 200);
     }
 
-    public function getTodayObatEceranByStok($id_stok_obat)
+    /* public function getTodayObatEceranByStok($id_stok_obat)
     {
         date_default_timezone_set('Asia/Jakarta');
         $obat_eceran_items = ObatEceranItem::join('obat_eceran', 'obat_eceran.id', '=', 'obat_eceran_item.id_obat_eceran')
@@ -159,8 +163,27 @@ class ObatEceranController extends Controller
                                 ->get();
         return response ($obat_eceran_items, 200)
                 -> header('Content-Type', 'application/json');
-    }
+    } */
 
+    /*
+        Get Obat Eceran with same Stok Obat ID within a time range
+    */
+    public function getObatEceranByTime(Request $request)
+    {
+        $waktu_mulai = new DateTime($request->waktu_mulai);
+        $waktu_selesai = new DateTime($request->waktu_selesai);
+        $id_stok_obat = $request->id_stok_obat;
+
+        date_default_timezone_set('Asia/Jakarta');
+        $obat_eceran_items = ObatEceranItem::join('obat_eceran', 'obat_eceran.id', '=', 'obat_eceran_item.id_obat_eceran')
+                                ->whereBetween('obat_eceran.waktu_transaksi', array($waktu_mulai, $waktu_selesai))
+                                ->where('obat_eceran_item.id_stok_obat', $id_stok_obat)                                
+                                ->select('obat_eceran_item.*','obat_eceran.waktu_transaksi')
+                                ->get();
+        return response ($obat_eceran_items, 200)
+                -> header('Content-Type', 'application/json');
+    }
+    
     public function export(Request $request) 
     {
         $tanggal_mulai = new DateTime($request->tanggal_mulai);
