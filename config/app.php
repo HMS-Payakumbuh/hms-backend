@@ -178,12 +178,14 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
-		// CORS Handler - https://github.com/barryvdh/laravel-cors
-		Barryvdh\Cors\ServiceProvider::class,
+    		// CORS Handler - https://github.com/barryvdh/laravel-cors
+    		Barryvdh\Cors\ServiceProvider::class,
 
         // LaravelExcel
         Maatwebsite\Excel\ExcelServiceProvider::class,
 
+        // JWT
+        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class
     ],
 
     /*
@@ -213,7 +215,7 @@ return [
         'Eloquent' => Illuminate\Database\Eloquent\Model::class,
         'Event' => Illuminate\Support\Facades\Event::class,
         'File' => Illuminate\Support\Facades\File::class,
-        'Form'=> Collective\Html\FormFacade::class, 
+        'Form'=> Collective\Html\FormFacade::class,
         'HTML'=> Collective\Html\HtmlFacade::class,
         'Input' => Illuminate\Support\Facades\Input::class,
         'Gate' => Illuminate\Support\Facades\Gate::class,
@@ -235,8 +237,8 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'Excel' => Maatwebsite\Excel\Facades\Excel::class
-
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class
     ],
 
 ];

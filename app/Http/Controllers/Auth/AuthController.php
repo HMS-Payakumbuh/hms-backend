@@ -8,33 +8,33 @@ use App\Http\Requests;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
+use Hash;
+use JWTAuth;
+use Log;
 
 class AuthController extends Controller
 {
-  private $user;
-
-  public function __construct(User $user)
+  public function register(Request $request)
   {
-    $this->user = $user;
+    $input = $request->all();
+    $input['password'] = Hash::make($request->input('password'));
+    User::create($input);
+    return response()->json(['result'=>true]);
   }
 
-  public function register(RegisterRequest $request)
+  public function login(Request $request)
   {
-    $newUser = $this->user->create([
-      'name' => $request->get('name'),
-      'role' => $request->get('role'),
-      'email' => $request->get('email'),
-      'password' => bcrypt($request->get('password'))
-    ]);
-    if (!$newUser) {
-      return response('failed_to_create_new_user', 500);
+    $input = $request->all();
+    if (!$token = JWTAuth::attempt($input)) {
+      return response()->json(['result' => 'nomor pegawai atau password salah']);
     }
-    //TODO: implement JWT
-    return response('user_created');
+    return response()->json(['result' => $token]);
   }
 
-  public function login(LoginRequest $request)
+  public function get_user_details(Request $request)
   {
-    //TODO: authenticate JWT
+    $input = $request->all();
+    $user = JWTAuth::toUser($input['token']);
+    return response()->json(['result' => $user]);
   }
 }
