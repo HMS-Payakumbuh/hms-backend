@@ -17,8 +17,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('login', 'AuthController@login');
-Route::post('register', 'AuthController@register');
+Route::post('login', 'Auth\AuthController@login');
+Route::post('register', 'Auth\AuthController@register');
+Route::group(['middleware' => 'jwt-auth'], function () {
+  Route::post('get_user_details', 'Auth\AuthController@get_user_details');
+});
 
 Route::resource('pasien', 'PasienController', ['except' => [
   'edit', 'create'
