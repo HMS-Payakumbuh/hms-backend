@@ -33,6 +33,21 @@ class PemakaianKamarRawatinapController extends Controller
         return $pemakaianKamarRawatinap;
     }
 
+    public function indexForDokterDashboard()
+    {
+        $pemakaianKamarRawatinap = PemakaianKamarRawatinap
+                            ::join('transaksi', 'pemakaian_kamar_rawatinap.id_transaksi', '=', 'transaksi.id')
+                            ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
+                            ->join('tenaga_medis', 'pemakaian_kamar_rawatinap.no_pegawai', '=', 'tenaga_medis.no_pegawai')
+                            ->join('kamar_rawatinap', 'pemakaian_kamar_rawatinap.no_kamar', '=', 'kamar_rawatinap.no_kamar')
+                            ->select(DB::raw('pemakaian_kamar_rawatinap.no_kamar'))
+                            ->where('pemakaian_kamar_rawatinap.waktu_masuk', '!=', null) 
+                            ->groupBy('pemakaian_kamar_rawatinap.no_kamar')          
+                            ->get();          
+
+        return $pemakaianKamarRawatinap;
+    }
+
     public function getAllPemakaianKamarByNoPegawai($no_pegawai)
     {
         $pemakaianKamarRawatinap = PemakaianKamarRawatinap

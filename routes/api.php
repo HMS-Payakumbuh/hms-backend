@@ -213,6 +213,8 @@ Route::get('pemakaiankamarrawatinap/search/booked/{tanggal}/{no_kamar}', 'Pemaka
 Route::get('pemakaiankamarrawatinap/search/booked', 'PemakaianKamarRawatinapController@getAllPemakaianKamarBooked');
 Route::get('pemakaiankamarrawatinap/now/{no_kamar}', 'PemakaianKamarRawatinapController@getAllPemakaianKamarByNoKamar');
 Route::get('pemakaiankamarrawatinap/now/tenaga_medis/{no_pegawai}', 'PemakaianKamarRawatinapController@getAllPemakaianKamarByNoPegawai');
+Route::get('pemakaiankamarrawatinap/dashboard/dokter', 'PemakaianKamarRawatinapController@indexForDokterDashboard');
+
 
 Route::resource('kamaroperasi', 'KamarOperasiController', ['except' => [
   'edit', 'create'
