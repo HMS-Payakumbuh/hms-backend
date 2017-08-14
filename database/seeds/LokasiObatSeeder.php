@@ -12,8 +12,12 @@ class LokasiObatSeeder extends Seeder
     public function run()
     {
         DB::table('lokasi_obat')->insert(array(
-          array('nama'=>'Gudang Utama', 'jenis'=>0),          
-          array('nama'=>'Apotek', 'jenis'=>1)
+          array('nama'=>'Gudang Utama', 'jenis'=>0),
+          array('nama'=>'Apotek', 'jenis'=>1),
+          array('nama'=>'Poli Umum', 'jenis'=>2),
+          array('nama'=>'Poli Jantung', 'jenis'=>2),
+          array('nama'=>'Poli THT', 'jenis'=>2),
+          array('nama'=>'IGD', 'jenis'=>2)
        ));
     }
 }
