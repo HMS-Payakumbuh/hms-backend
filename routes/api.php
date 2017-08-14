@@ -19,6 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('login', 'Auth\AuthController@login');
 Route::post('register', 'Auth\AuthController@register');
+Route::post('update_user_kategori', 'Auth\AuthController@update_user_kategori');
 Route::group(['middleware' => 'jwt-auth'], function () {
   Route::post('get_user_details', 'Auth\AuthController@get_user_details');
 });
@@ -32,7 +33,7 @@ Route::resource('rekam_medis', 'RekamMedisController', ['except' => [
 ]]);
 Route::get('rekam_medis/{id_pasien}', 'RekamMedisController@show');
 Route::put('rekam_medis/{id_pasien}/{tanggal_waktu}', 'RekamMedisController@update');
-Route::get('rekam_medis/eksternal/{no_rujukan}', 'RekamMedisController@getForExternal');
+Route::get('rekam_medis/eksternal/{no_rujukan}/{asal_rujukan}', 'RekamMedisController@getForExternal');
 
 Route::resource('rekam_medis_eksternal', 'RekamMedisEksternalController', ['except' => [
   'edit', 'show', 'create'
@@ -69,11 +70,13 @@ Route::get('sep/peserta/{no_kartu}', 'SepController@getPeserta');
 Route::resource('transaksi', 'TransaksiController', ['except' => [
   'edit', 'create'
   ]]);
+
+Route::get('transaksi/latest/{id_pasien}', 'TransaksiController@getLatestOpenTransaksi');
 Route::resource('transaksi_eksternal', 'TransaksiEksternalController', ['except' => [
   'edit', 'create'
   ]]);
 Route::get('transaksi/search_by_pasien', 'TransaksiController@searchByPasien');
-Route::get('transaksi/latest/{id_pasien}', 'TransaksiController@getLatestOpenTransaksi');
+
 Route::get('transaksi/{id}/bpjs', 'TransaksiController@getStatusBpjs');
 Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTransaksi');
 Route::get('transaksi/{id}/{field?}', 'TransaksiController@show');
@@ -123,7 +126,7 @@ Route::get('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@show');
 Route::delete('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@destroy');
 
 Route::resource('tindakan_operasi', 'TindakanOperasiController', ['except' => [
-  'edit', 'create', 'show', 'update', 'destroy'
+  'edit', 'create'
 ]]);
 Route::get('tindakan_operasi/{pemakaianKamarOperasiId}', 'TindakanOperasiController@show');
 Route::post('tindakan_operasi/{id_tindakan}', 'TindakanOperasiController@store');
@@ -186,9 +189,12 @@ Route::resource('pemakaiankamarrawatinap', 'PemakaianKamarRawatinapController', 
   'edit', 'create'
 ]]);
 
-Route::resource('pemeriksaan', 'PemakaianKamarRawatinapController', ['except' => [
+Route::resource('jasa_dokter_rawat_inap', 'JasaDokterRawatinapController', ['except' => [
   'edit', 'create'
 ]]);
+
+Route::post('jasa_dokter_rawat_inap/{idPemakaian}', 'JasaDokterRawatinapController@store');
+Route::get('jasa_dokter_rawat_inap/pemakaian/{idPemakaian}', 'JasaDokterRawatinapController@getJasaDokterByPemakaian');
 
 Route::post('pemakaiankamarrawatinap/booking/{tanggal}', 'PemakaianKamarRawatInapController@storeBooked');
 Route::post('pemakaiankamaroperasi/booking', 'PemakaianKamarOperasiController@storeBooked');
@@ -206,6 +212,9 @@ Route::get('pemakaiankamarrawatinap/search/booked/{no_kamar}', 'PemakaianKamarRa
 Route::get('pemakaiankamarrawatinap/search/booked/{tanggal}/{no_kamar}', 'PemakaianKamarRawatinapController@getAllPemakaianKamarBookedWithTanggal');
 Route::get('pemakaiankamarrawatinap/search/booked', 'PemakaianKamarRawatinapController@getAllPemakaianKamarBooked');
 Route::get('pemakaiankamarrawatinap/now/{no_kamar}', 'PemakaianKamarRawatinapController@getAllPemakaianKamarByNoKamar');
+Route::get('pemakaiankamarrawatinap/now/tenaga_medis/{no_pegawai}', 'PemakaianKamarRawatinapController@getAllPemakaianKamarByNoPegawai');
+Route::get('pemakaiankamarrawatinap/dashboard/dokter', 'PemakaianKamarRawatinapController@indexForDokterDashboard');
+
 
 Route::resource('kamaroperasi', 'KamarOperasiController', ['except' => [
   'edit', 'create'
