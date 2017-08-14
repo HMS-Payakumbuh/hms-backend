@@ -24,9 +24,9 @@ class RekamMedisController extends Controller
         return RekamMedis::all();
     }
 
-    public function getForExternal($no_rujukan)
+    public function getForExternal($no_rujukan, $asal_rujukan)
     {
-        $rujukan = Rujukan::where('no_rujukan', '=', $no_rujukan)->first();
+        $rujukan = Rujukan::where('no_rujukan', '=', $no_rujukan)->where('asal_rujukan', '=', $asal_rujukan)->first();
         if ($rujukan) {
             $transaksi = Transaksi::where('id', '=', $rujukan->id_transaksi)->first();
             if ($transaksi) {
@@ -333,13 +333,18 @@ class RekamMedisController extends Controller
                             )
                         );
 
-                        $client = new Client();
+                        /*$client = new Client();
                         $response = $client->request(
                             'POST', 
                             'http://127.0.0.1:8001/api/rekam_medis/'.$pasien->nama_pasien.'/'.$pasien->kode_pasien.'/'.$no_rujukan, 
                             ['form_params' => ['body' => $document]]
-                        )->getBody();
-                        return response($response, 201);
+                        )->getBody();*/
+                        return response([
+                            'nama_pasien' => $pasien->nama_pasien,
+                            'kode_pasien' => $pasien->kode_pasien,
+                            'no_rujukan' => $no_rujukan,
+                            'body' => $document
+                        ]);
                     }                        
                 }
             }
