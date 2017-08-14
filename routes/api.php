@@ -19,6 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('login', 'Auth\AuthController@login');
 Route::post('register', 'Auth\AuthController@register');
+Route::post('update_user_kategori', 'Auth\AuthController@update_user_kategori');
 Route::group(['middleware' => 'jwt-auth'], function () {
   Route::post('get_user_details', 'Auth\AuthController@get_user_details');
 });
@@ -32,7 +33,7 @@ Route::resource('rekam_medis', 'RekamMedisController', ['except' => [
 ]]);
 Route::get('rekam_medis/{id_pasien}', 'RekamMedisController@show');
 Route::put('rekam_medis/{id_pasien}/{tanggal_waktu}', 'RekamMedisController@update');
-Route::get('rekam_medis/eksternal/{no_rujukan}', 'RekamMedisController@getForExternal');
+Route::get('rekam_medis/eksternal/{no_rujukan}/{asal_rujukan}', 'RekamMedisController@getForExternal');
 
 Route::resource('rekam_medis_eksternal', 'RekamMedisEksternalController', ['except' => [
   'edit', 'show', 'create'
