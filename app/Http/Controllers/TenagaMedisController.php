@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\TenagaMedis;
 use App\Dokter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TenagaMedisController extends Controller
 {
@@ -15,7 +16,10 @@ class TenagaMedisController extends Controller
      */
     public function index()
     {
-      return TenagaMedis::all();
+      return DB::table('tenaga_medis')
+        ->leftJoin('dokter', 'tenaga_medis.no_pegawai', '=', 'dokter.no_pegawai')
+        ->select('tenaga_medis.*', 'dokter.spesialis')
+        ->get();
     }
 
     /**
@@ -90,6 +94,12 @@ class TenagaMedisController extends Controller
         $tenagaMedis->nama = $request->input('nama');
         $tenagaMedis->jabatan = $request->input('jabatan');
         $tenagaMedis->save();
+
+        if ($request->input('spesialis') != null) {
+          $dokter = Dokter::findOrFail($request->input('no_pegawai'));
+          $dokter->spesialis = $request->input('spesialis');
+          $dokter->save();
+        }
       }
 
       return response($tenagaMedis, 200);
