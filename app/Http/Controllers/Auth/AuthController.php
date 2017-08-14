@@ -26,7 +26,7 @@ class AuthController extends Controller
   {
     $input = $request->all();
     if (!$token = JWTAuth::attempt($input)) {
-      return response()->json(['result' => 'nomor pegawai atau password salah']);
+      return response()->json(['result' => 'Nomor pegawai atau password salah']);
     }
     return response()->json(['result' => $token]);
   }
