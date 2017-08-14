@@ -65,11 +65,13 @@ Route::get('sep/peserta/{no_kartu}', 'SepController@getPeserta');
 Route::resource('transaksi', 'TransaksiController', ['except' => [
   'edit', 'create'
   ]]);
+
+Route::get('transaksi/latest/{id_pasien}', 'TransaksiController@getLatestOpenTransaksi');
 Route::resource('transaksi_eksternal', 'TransaksiEksternalController', ['except' => [
   'edit', 'create'
   ]]);
 Route::get('transaksi/search_by_pasien', 'TransaksiController@searchByPasien');
-Route::get('transaksi/latest/{id_pasien}', 'TransaksiController@getLatestOpenTransaksi');
+
 Route::get('transaksi/{id}/bpjs', 'TransaksiController@getStatusBpjs');
 Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTransaksi');
 Route::get('transaksi/{id}/{field?}', 'TransaksiController@show');
@@ -119,7 +121,7 @@ Route::get('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@show');
 Route::delete('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@destroy');
 
 Route::resource('tindakan_operasi', 'TindakanOperasiController', ['except' => [
-  'edit', 'create', 'show', 'update', 'destroy'
+  'edit', 'create'
 ]]);
 Route::get('tindakan_operasi/{pemakaianKamarOperasiId}', 'TindakanOperasiController@show');
 Route::post('tindakan_operasi/{id_tindakan}', 'TindakanOperasiController@store');
