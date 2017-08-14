@@ -339,6 +339,7 @@ class RekamMedisController extends Controller
                             'http://127.0.0.1:8001/api/rekam_medis/'.$pasien->nama_pasien.'/'.$pasien->kode_pasien.'/'.$no_rujukan, 
                             ['form_params' => ['body' => $document]]
                         )->getBody();
+                        return response($response, 201);
                     }                        
                 }
             }

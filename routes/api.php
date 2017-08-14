@@ -19,6 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('login', 'Auth\AuthController@login');
 Route::post('register', 'Auth\AuthController@register');
+Route::post('update_user_kategori', 'Auth\AuthController@update_user_kategori');
 Route::group(['middleware' => 'jwt-auth'], function () {
   Route::post('get_user_details', 'Auth\AuthController@get_user_details');
 });

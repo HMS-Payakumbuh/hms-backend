@@ -37,4 +37,13 @@ class AuthController extends Controller
     $user = JWTAuth::toUser($input['token']);
     return response()->json(['result' => $user]);
   }
+
+  public function update_user_kategori(Request $request)
+  {
+    $input = $request->all();
+    $user = User::where('no_pegawai', '=', $input['no_pegawai'])->first();
+    $user->other = '{"kategori_antrian": "'.$input['kategori_antrian'].'"}';
+    $user->save();
+    return response()->json(['result' => $user]);
+  }
 }
