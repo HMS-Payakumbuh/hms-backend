@@ -169,7 +169,7 @@ class SepController extends Controller
 		        	'kdCabang' => null,
 		        	'kdProvider' => '03010402',
 		        	'nmCabang' => null,
-		        	'nmProvider' => 'PEGAMBIRAN'
+		        	'nmProvider' => 'PUSKESMAS PAYAKUMBUH'
 		        ),
 		        'sex' => 'P',
 		        'statusPeserta' => array(
@@ -190,13 +190,13 @@ class SepController extends Controller
 				'kdCabang' => null,
 	        	'kdProvider' => '03010402',
 	        	'nmCabang' => null,
-	        	'nmProvider' => 'PEGAMBIRAN'
+	        	'nmProvider' => 'PUSKESMAS PAYAKUMBUH'
 			),
 			'provRujukan' => array(
 				'kdCabang' => null,
 	        	'kdProvider' => '0301R001',
 	        	'nmCabang' => null,
-	        	'nmProvider' => 'RSUP DR M JAMIL PADANG'
+	        	'nmProvider' => 'RSUD PAYAKUMBUH'
 			),
 			'tglKunjungan' => '2015-11-02',
 			'tktPelayanan' => array(
@@ -256,7 +256,7 @@ class SepController extends Controller
 		        	'kdCabang' => null,
 		        	'kdProvider' => '03010402',
 		        	'nmCabang' => null,
-		        	'nmProvider' => 'PEGAMBIRAN'
+		        	'nmProvider' => 'PUSKESMAS PAYAKUMBUH'
 		        ),
 		        'sex' => 'L',
 		        'statusPeserta' => array(
@@ -277,13 +277,13 @@ class SepController extends Controller
 				'kdCabang' => null,
 	        	'kdProvider' => '03010402',
 	        	'nmCabang' => null,
-	        	'nmProvider' => 'PEGAMBIRAN'
+	        	'nmProvider' => 'PUSKESMAS PAYAKUMBUH'
 			),
 			'provRujukan' => array(
 				'kdCabang' => null,
 	        	'kdProvider' => '0301R001',
 	        	'nmCabang' => null,
-	        	'nmProvider' => 'RSUP DR M JAMIL PADANG'
+	        	'nmProvider' => 'RSUD PAYAKUMBUH'
 			),
 			'tglKunjungan' => '2015-07-14',
         );

@@ -45,10 +45,14 @@ class ObatTindakanController extends Controller
             $obat_tindakan->id_transaksi = $value['id_transaksi'];
             $obat_tindakan->id_tindakan = $value['id_tindakan'];
 
-            $obat_tindakan->save();
-
             $stok_obat_asal = StokObat::where('id', '=', $obat_tindakan->id_stok_obat)->first();
             $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_tindakan->jumlah);
+
+            if ($stok_obat_asal->jumlah < 0) {
+                return response("less than 0 error", 401);
+            }
+
+            $obat_tindakan->save();
             $stok_obat_asal->save();
         }
         return response ($request->all(), 201);
@@ -109,10 +113,27 @@ class ObatTindakanController extends Controller
         return response ($id.' deleted', 200);
     }
 
-    public function getTodayObatTindakanByStok($id_stok_obat)
+    /* public function getTodayObatTindakanByStok($id_stok_obat)
     {
         date_default_timezone_set('Asia/Jakarta');
         $obat_tindakan = ObatTindakan::whereDate('waktu_keluar', '=', date("Y-m-d"))
+                                ->where('id_stok_obat', $id_stok_obat)
+                                ->get();
+        return response ($obat_tindakan, 200)
+                -> header('Content-Type', 'application/json');
+    } */
+
+    /*
+        Get Obat Tindakan with same Stok Obat ID within a time range
+    */
+    public function getObatTindakanByTime(Request $request)
+    {
+        $waktu_mulai = new DateTime($request->waktu_mulai);
+        $waktu_selesai = new DateTime($request->waktu_selesai);
+        $id_stok_obat = $request->id_stok_obat;
+
+        date_default_timezone_set('Asia/Jakarta');
+        $obat_tindakan = ObatTindakan::whereBetween('waktu_keluar', array($waktu_mulai, $waktu_selesai))
                                 ->where('id_stok_obat', $id_stok_obat)
                                 ->get();
         return response ($obat_tindakan, 200)

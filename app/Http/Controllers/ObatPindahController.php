@@ -42,11 +42,14 @@ class ObatPindahController extends Controller
         $obat_pindah->jumlah = $request->input('jumlah');
         $obat_pindah->keterangan = $request->input('keterangan');
         $obat_pindah->asal = $request->input('asal');
-        $obat_pindah->tujuan = $request->input('tujuan');
-        $obat_pindah->save();
+        $obat_pindah->tujuan = $request->input('tujuan');        
 
         $stok_obat_asal = StokObat::findOrFail($obat_pindah->id_stok_obat_asal);
         $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_pindah->jumlah);
+
+        if ($stok_obat_asal->jumlah < 0) {
+            return response("less than 0 error", 401);
+        }
 
         $stok_obat_tujuan = StokObat::where('barcode','=','%'.$stok_obat_asal->barcode.'%')->first();
 
@@ -119,7 +122,7 @@ class ObatPindahController extends Controller
         return response ($id.' deleted', 200);
     }
 
-    public function getTodayObatPindahKeluarByStok($id_stok_obat)
+    /* public function getTodayObatPindahKeluarByStok($id_stok_obat)
     {
         date_default_timezone_set('Asia/Jakarta');
         $obat_pindah = ObatPindah::with('lokasiTujuan')
@@ -128,13 +131,49 @@ class ObatPindahController extends Controller
                                 ->get();
         return response ($obat_pindah, 200)
                 -> header('Content-Type', 'application/json');
+    } *.
+
+    /*
+        Get Obat Pindah keluar with same Stok Obat ID within a time range
+    */
+    public function getObatPindahKeluarByTime(Request $request)
+    {
+        $waktu_mulai = new DateTime($request->waktu_mulai);
+        $waktu_selesai = new DateTime($request->waktu_selesai);
+        $id_stok_obat = $request->id_stok_obat;
+
+        date_default_timezone_set('Asia/Jakarta');
+        $obat_pindah = ObatPindah::with('lokasiTujuan')
+                                ->whereBetween('waktu_pindah', array($waktu_mulai, $waktu_selesai))
+                                ->where('id_stok_obat_asal', $id_stok_obat)
+                                ->get();
+        return response ($obat_pindah, 200)
+                -> header('Content-Type', 'application/json');
     }
 
-    public function getTodayObatPindahMasukByStok($id_stok_obat)
+    /* public function getTodayObatPindahMasukByStok($id_stok_obat)
     {
         date_default_timezone_set('Asia/Jakarta');
         $obat_pindah = ObatPindah::with('lokasiAsal')
                                 ->whereDate('waktu_pindah', '=', date("Y-m-d"))
+                                ->where('id_stok_obat_tujuan', $id_stok_obat)
+                                ->get();
+        return response ($obat_pindah, 200)
+                -> header('Content-Type', 'application/json');
+    } */
+
+    /*
+        Get Obat Pindah masuk with same Stok Obat ID within a time range
+    */
+    public function getObatPindahMasukByTime(Request $request)
+    {
+        $waktu_mulai = new DateTime($request->waktu_mulai);
+        $waktu_selesai = new DateTime($request->waktu_selesai);
+        $id_stok_obat = $request->id_stok_obat;
+
+        date_default_timezone_set('Asia/Jakarta');
+        $obat_pindah = ObatPindah::with('lokasiAsal')
+                                ->whereBetween('waktu_pindah', array($waktu_mulai, $waktu_selesai))
                                 ->where('id_stok_obat_tujuan', $id_stok_obat)
                                 ->get();
         return response ($obat_pindah, 200)
