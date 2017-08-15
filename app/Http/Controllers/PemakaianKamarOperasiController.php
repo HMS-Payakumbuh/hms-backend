@@ -47,7 +47,7 @@ class PemakaianKamarOperasiController extends Controller
         $pemakaianKamarOperasi->id_transaksi = $request->input('id_transaksi');
         $pemakaianKamarOperasi->no_pembayaran = $request->input('no_pembayaran');
         date_default_timezone_set('Asia/Jakarta');
-        $pemakaianKamarRawatinap->waktu_masuk = date("Y-m-d H:i:s");
+        $pemakaianKamarOperasi->waktu_masuk = date("Y-m-d H:i:s");
         $pemakaianKamarOperasi->waktu_masuk_real = date("Y-m-d H:i:s");
         $pemakaianKamarOperasi->waktu_keluar =  $request->input('waktu_keluar');
         $pemakaianKamarOperasi->save();
@@ -146,7 +146,8 @@ class PemakaianKamarOperasiController extends Controller
     {
         $pemakaianKamarOperasi = PemakaianKamarOperasi::findOrFail($id);
         $pemakaianKamarOperasi->delete();
+        $tindakan = Tindakan::findOrFail($pemakaianKamarOperasi->no_tindakan);
+        $tindakan->delete();      
         return response('', 204);
-
     }
 }

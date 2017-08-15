@@ -26,8 +26,39 @@ class PemakaianKamarRawatinapController extends Controller
                             ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
                             ->join('tenaga_medis', 'pemakaian_kamar_rawatinap.no_pegawai', '=', 'tenaga_medis.no_pegawai')
                             ->join('kamar_rawatinap', 'pemakaian_kamar_rawatinap.no_kamar', '=', 'kamar_rawatinap.no_kamar')
-                            ->select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.id_transaksi, kamar_rawatinap.jenis_kamar, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, kamar_rawatinap.kelas, pemakaian_kamar_rawatinap.harga, pasien.nama_pasien, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))
+                            ->select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.id_transaksi, kamar_rawatinap.jenis_kamar, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, kamar_rawatinap.kelas, pemakaian_kamar_rawatinap.harga, pasien.nama_pasien, pemakaian_kamar_rawatinap.no_pegawai, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))
                             ->where('pemakaian_kamar_rawatinap.waktu_masuk', '!=', null)           
+                            ->get();          
+
+        return $pemakaianKamarRawatinap;
+    }
+
+    public function indexForDokterDashboard()
+    {
+        $pemakaianKamarRawatinap = PemakaianKamarRawatinap
+                            ::join('transaksi', 'pemakaian_kamar_rawatinap.id_transaksi', '=', 'transaksi.id')
+                            ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
+                            ->join('tenaga_medis', 'pemakaian_kamar_rawatinap.no_pegawai', '=', 'tenaga_medis.no_pegawai')
+                            ->join('kamar_rawatinap', 'pemakaian_kamar_rawatinap.no_kamar', '=', 'kamar_rawatinap.no_kamar')
+                            ->select(DB::raw('pemakaian_kamar_rawatinap.no_kamar'))
+                            ->where('pemakaian_kamar_rawatinap.waktu_masuk', '!=', null) 
+                            ->groupBy('pemakaian_kamar_rawatinap.no_kamar')          
+                            ->get();          
+
+        return $pemakaianKamarRawatinap;
+    }
+
+    public function getAllPemakaianKamarByNoPegawai($no_pegawai)
+    {
+        $pemakaianKamarRawatinap = PemakaianKamarRawatinap
+                            ::join('transaksi', 'pemakaian_kamar_rawatinap.id_transaksi', '=', 'transaksi.id')
+                            ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
+                            ->join('tenaga_medis', 'pemakaian_kamar_rawatinap.no_pegawai', '=', 'tenaga_medis.no_pegawai')
+                            ->select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.id_transaksi, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, pasien.nama_pasien, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))    
+                            ->where('pemakaian_kamar_rawatinap.waktu_keluar', '=', null)
+                            ->where('pemakaian_kamar_rawatinap.waktu_masuk', '!=', null)
+                            ->where('tenaga_medis.no_pegawai', '=', $no_pegawai) 
+                            ->orderBy('pemakaian_kamar_rawatinap.no_kamar', 'asc')         
                             ->get();          
 
         return $pemakaianKamarRawatinap;
@@ -38,8 +69,9 @@ class PemakaianKamarRawatinapController extends Controller
         $pemakaianKamarRawatinap = PemakaianKamarRawatinap
                             ::join('transaksi', 'pemakaian_kamar_rawatinap.id_transaksi', '=', 'transaksi.id')
                             ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
+                             ->join('kamar_rawatinap', 'pemakaian_kamar_rawatinap.no_kamar', '=', 'kamar_rawatinap.no_kamar')
                             ->join('tenaga_medis', 'pemakaian_kamar_rawatinap.no_pegawai', '=', 'tenaga_medis.no_pegawai')
-                            ->select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.id_transaksi, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, pasien.nama_pasien, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))    
+                            ->select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.id_transaksi, kamar_rawatinap.jenis_kamar, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, pasien.nama_pasien, pemakaian_kamar_rawatinap.no_pegawai, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))    
                             ->where('pemakaian_kamar_rawatinap.waktu_keluar', '=', null)
                             ->where('pemakaian_kamar_rawatinap.waktu_masuk', '!=', null)
                             ->where('pemakaian_kamar_rawatinap.no_kamar', '=', $no_kamar) 
@@ -163,7 +195,7 @@ class PemakaianKamarRawatinapController extends Controller
                             ->join('pasien', 'transaksi.id_pasien', '=', 'pasien.id')
                             ->join('tenaga_medis', 'pemakaian_kamar_rawatinap.no_pegawai', '=', 'tenaga_medis.no_pegawai')
                             ->join('kamar_rawatinap', 'pemakaian_kamar_rawatinap.no_kamar', '=', 'kamar_rawatinap.no_kamar')
-                            ->select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.id_transaksi, pemakaian_kamar_rawatinap.no_pegawai, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, kamar_rawatinap.kelas, pasien.nama_pasien, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))
+                            ->select(DB::raw('pemakaian_kamar_rawatinap.id, pemakaian_kamar_rawatinap.id_transaksi, kamar_rawatinap.jenis_kamar, pemakaian_kamar_rawatinap.no_pegawai, pemakaian_kamar_rawatinap.no_kamar, pemakaian_kamar_rawatinap.no_tempat_tidur, kamar_rawatinap.kelas, pasien.nama_pasien, tenaga_medis.nama, pemakaian_kamar_rawatinap.waktu_masuk, pemakaian_kamar_rawatinap.waktu_keluar'))
                             ->where('pemakaian_kamar_rawatinap.id', '=', $id)
                             ->first();
 
@@ -198,11 +230,11 @@ class PemakaianKamarRawatinapController extends Controller
         $waktuMasuk = Carbon::parse($pemakaianKamarRawatinap->waktu_masuk);
         $waktuKeluar = Carbon::parse($pemakaianKamarRawatinap->waktu_keluar);
 
-        if ($waktuMasuk->diffInDays($waktuKeluar) >= 0) {
-            $pemakaianKamarRawatinap->save();        
+        if ($waktuMasuk->diffInHours($waktuKeluar) <= 2) {
+            $pemakaianKamarRawatinap->delete();
         }
         else {
-            $pemakaianKamarRawatinap->delete();
+            $pemakaianKamarRawatinap->save();
         }
 
         $tempatTidur = TempatTidur::where('no_kamar', '=', $no_kamar)
@@ -212,6 +244,43 @@ class PemakaianKamarRawatinapController extends Controller
         $tempatTidur->status = 1;
         $tempatTidur->save();
 
+        $transaksi = Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'pemakaianKamarRawatInap.kamar_rawatinap', 'pembayaran'])
+            ->findOrFail($pemakaianKamarRawatinap->id_transaksi);
+        $transaksi->status = 'closed';
+        $transaksi->save();
+
+        if ($transaksi->status == 'closed' && isset($transaksi->no_sep)) {
+            try {
+                $coder_nik = SettingBpjs::first()->coder_nik;
+                $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+                $response = json_decode($bpjs->group(1)->getBody(), true);
+                
+                $special_cmg = '';
+                if ($response['metadata']['code'] == 200) {
+                    if (isset($response['special_cmg_option'])) {
+                        foreach ($response['special_cmg_option'] as $key => $value) {
+                            if (substr($value['code'], 1) != 'D') {
+                                $special_cmg = $special_cmg . "#" . $value['code'];
+                            }
+                            else {
+                                $name = explode(" ", $value['description']);
+                                foreach ($transaksi['obat_tebus']['obat_tebus_item'] as $key_obat => $obat) {
+                                    if (strtolower($obat['jenis_obat']['nama_generik']) == strtolower($name[0])) {
+                                        $special_cmg = $special_cmg . "#" . $value['code'];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    $bpjs->group(2, $special_cmg);
+                    $bpjs->finalizeClaim();
+                }
+            }
+            catch(Exception $e) {
+                $transaksi->status = 'open';
+                $transaksi->save();
+            }
+        }
 
         return response($pemakaianKamarRawatinap, 200);
     }

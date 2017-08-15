@@ -22,8 +22,8 @@ class CreatePemakaianKamarRawatinapTable extends Migration
             $table->dateTime('waktu_masuk')->nullable();
             $table->dateTime('waktu_keluar')->nullable();
             $table->dateTime('perkiraan_waktu_keluar')->nullable();
-            $table->date('nama_booking')->nullable();
-            $table->date('kontak_booking')->nullable();
+            $table->string('nama_booking')->nullable();
+            $table->string('kontak_booking')->nullable();
             $table->date('tanggal_booking')->nullable();
             $table->integer('harga');
             $table->string('no_pegawai')->nullable();

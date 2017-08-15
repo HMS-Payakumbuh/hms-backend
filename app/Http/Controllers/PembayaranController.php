@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\BpjsManager;
+use App\SettingBpjs;
 use App\Pembayaran;
 use App\Klaim;
 use App\Transaksi;
@@ -184,6 +186,17 @@ class PembayaranController extends Controller
                 $klaim->id_asuransi = $asuransi->id;
                 $klaim->status = 'processed';
                 $klaim->save();
+
+                if ($pembayaran->metode_bayar == 'bpjs') {
+                    $settingBpjs = SettingBpjs::first();
+                    $coder_nik = $settingBpjs->coder_nik;
+                    $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+
+                    $dataKlaim = json_decode($bpjs->getClaimData()->getBody(), true);
+                    $tarif = $dataKlaim['grouper']['response']['cbg']['tariff'];
+                    $klaim->tarif = $tarif;
+                    $klaim->save();
+                }
             }
         }
         catch(\Exception $e) {
