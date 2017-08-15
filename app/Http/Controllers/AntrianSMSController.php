@@ -62,7 +62,7 @@ class AntrianSMSController extends Controller
               $antrian_front_office = new AntrianFrontOffice;
               $antrian_front_office->jenis = 0;
               $antrian_front_office->status = 0;
-              $antrian_front_office->kesempatan = 4;
+              $antrian_front_office->kesempatan = 5;
               $antrian_front_office->via_sms = true;
 
               $pasien = Pasien::where('kode_pasien', '=', $pieces[0])->first();
@@ -133,9 +133,8 @@ class AntrianSMSController extends Controller
 
               $panjang_antrian = count(AntrianFrontOffice::where('kategori_antrian', '=', $layanan->kategori_antrian)->get());
               $minutes = $panjang_antrian * 5;
-              $now = Carbon::now();
-              $text = '[PAYAKUMBUH] Pendaftaran berhasil. Anda mendapat nomor antrian '.$antrian_front_office->kategori_antrian.$antrian_front_office->no_antrian.'. Datanglah antara Pukul '.$now->copy()->format('H:m')->addMinutes($minutes - 15)->toTimeString().' - '.$now->copy()->format('H:m')->addMinutes($minutes)->toTimeString().'.';
-              $antrian_front_office->waktu_perjanjian = $now->copy()->format('H:m')->addMinutes($minutes - 15)->toTimeString();
+              $text = '[PAYAKUMBUH] Pendaftaran berhasil. Anda mendapat nomor antrian '.$antrian_front_office->kategori_antrian.$antrian_front_office->no_antrian.'. Datanglah antara Pukul '.Carbon::parse($antrian_front_office->waktu_masuk_antrian->addMinutes($minutes - 15)->toTimeString())->format('H:i').' - '.Carbon::parse($antrian_front_office->waktu_masuk_antrian->addMinutes($minutes)->toTimeString())->format('H:i').'.';
+              $antrian_front_office->waktu_perjanjian = $antrian_front_office->waktu_masuk_antrian->addMinutes($minutes - 15)->toTimeString();
               $antrian_front_office->save();
 
               Log::info('Mengirim SMS ke nomor '.$sender_phone.' dengan pesan : '.$text);

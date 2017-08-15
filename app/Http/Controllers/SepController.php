@@ -139,8 +139,8 @@ class SepController extends Controller
         $item = array(
         	'catatan' => 'Pasien dalam kondisi sehat.',
         	'diagnosa' => array(
-	        	'kdDiag' => 'B54',
-	        	'nmDiag' => 'Unspecified malaria'
+	        	'kdDiag' => 'I50.9',
+	        	'nmDiag' => 'Heart failure, unspecified'
 	        ),
         	'keluhan' => '',
         	'noKunjungan' => '030104021115Y000002',
@@ -232,8 +232,8 @@ class SepController extends Controller
         $item = array(
         	'catatan' => '',
         	'diagnosa' => array(
-	        	'kdDiag' => 'B54',
-	        	'nmDiag' => 'Unspecified malaria'
+	        	'kdDiag' => 'I50.9',
+	        	'nmDiag' => 'Heart failure, unspecified'
 	        ),
         	'keluhan' => '',
         	'noKunjungan' => '0312R0010715A000058',
