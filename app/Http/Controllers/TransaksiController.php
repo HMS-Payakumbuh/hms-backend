@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\Transaksi;
 use App\Pembayaran;
@@ -230,88 +231,103 @@ class TransaksiController extends Controller
     public function update(Request $request, $id)
     {
         $payload = $request->input('transaksi');
-        $transaksi = Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'pembayaran', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'pemakaianKamarRawatInap.kamar_rawatinap'])
-            ->findOrFail($id);
+        $transaksi = Transaksi::findOrFail($id);
         $transaksi->update($payload);
 
         if ($transaksi->status == 'closed' && isset($transaksi->no_sep)) {
-            $coder_nik = SettingBpjs::first()->coder_nik;
-            $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-            $response = json_decode($bpjs->group(1)->getBody(), true);
+            $transaksi = Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'pemakaianKamarRawatInap.kamar_rawatinap', 'pembayaran'])
+                ->findOrFail($id);
+            try {
+                $coder_nik = SettingBpjs::first()->coder_nik;
+                $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+                $response = json_decode($bpjs->group(1)->getBody(), true);
 
-            $special_cmg = '';
-            if ($response['metadata']['code'] == 200) {
-                if (isset($response['special_cmg_option'])) {
-                    foreach ($response['special_cmg_option'] as $key => $value) {
-                        if (substr($value['code'], 1) != 'D') {
-                            $special_cmg = $special_cmg . "#" . $value['code'];
-                        }
-                        else {
-                            $name = explode(" ", $value['description']);
-                            foreach ($transaksi['obat_tebus']['obat_tebus_item'] as $key_obat => $obat) {
-                                if (strtolower($obat['jenis_obat']['nama_generik']) == strtolower($name[0])) {
-                                    $special_cmg = $special_cmg . "#" . $value['code'];
+                $special_cmg = '';
+                if ($response['metadata']['code'] == 200) {
+                    if (isset($response['special_cmg_option'])) {
+                        foreach ($response['special_cmg_option'] as $key => $value) {
+                            if (substr($value['code'], 1) != 'D') {
+                                $special_cmg = $special_cmg . "#" . $value['code'];
+                            }
+                            else {
+                                $name = explode(" ", $value['description']);
+                                foreach ($transaksi['obat_tebus']['obat_tebus_item'] as $key_obat => $obat) {
+                                    if (strtolower($obat['jenis_obat']['nama_generik']) == strtolower($name[0])) {
+                                        $special_cmg = $special_cmg . "#" . $value['code'];
+                                    }
                                 }
                             }
                         }
                     }
+                    $bpjs->group(2, $special_cmg);
+                    $bpjs->finalizeClaim();
                 }
-                $bpjs->group(2, $special_cmg);
-                $bpjs->finalizeClaim();
+
+                // $harga = 0;
+                // $pembayaran = new Pembayaran;
+                // $pembayaran->id_transaksi = $transaksi->id;
+                // $pembayaran->harga_bayar = 0;
+                // $pembayaran->metode_bayar = 'bpjs';
+                // $pembayaran->pembayaran_tambahan = 0;
+                // $pembayaran->save();
+
+                // $pembayaran = Pembayaran::findOrFail($pembayaran->id);
+                // $code_str = strtoupper(base_convert($pembayaran->id, 10, 36));
+                // $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
+                // $pembayaran->no_pembayaran = 'PMB' . $code_str;
+                // $pembayaran->save();
+
+                // $asuransi = DB::table('asuransi')->select('id')->where([
+                //     ['nama_asuransi', '=', $pembayaran->metode_bayar],
+                //     ['id_pasien', '=', $transaksi->id_pasien]
+                // ])->first();
+
+                // $klaim = new Klaim;
+                // $klaim->id_pembayaran = $pembayaran->id;
+                // $klaim->id_asuransi = $asuransi->id;
+                // $klaim->status = 'processed';
+                // $klaim->save();
+
+                // if (!$transaksi->tindakan->isEmpty()) {
+                //     foreach ($transaksi->tindakan as $value) {
+                //         $tindakan = Tindakan::findOrFail($value->id);
+                //         $tindakan->id_pembayaran = $pembayaran->id;
+                //         $tindakan->save();
+                //         $harga += $tindakan->harga;
+                //     }
+                // }
+
+                // if (!$transaksi->obat_tebus->isEmpty()) {
+                //     foreach ($transaksi->obat_tebus as $obat) {
+                //         if (!$obat->obat_tebus_item->isEmpty()) {
+                //             foreach ($obat->obat_tebus_item as $value) {
+                //                 $obatTebus = ObatTebusItem::findOrFail($value->id);
+                //                 $obatTebus->id_pembayaran = $pembayaran->id;
+                //                 $obatTebus->save();
+                //                 $harga += $obatTebus->jumlah * $obatTebus->harga_jual_realisasi;
+                //             }
+                //         }
+                //     }
+                // }
+
+                // if (!$transaksi->pemakaian_kamar_rawat_inap->isEmpty()) {
+                //     foreach ($transaksi->pemakaian_kamar_rawat_inap as $value) {
+                //         $kamarRawatInap = PemakaianKamarRawatInap::findOrFail($value->id);
+                //         $kamarRawatInap->id_pembayaran = $pembayaran->id;
+                //         $kamarRawatInap->save();
+                //         $waktuMasuk = Carbon::parse($kamarRawatInap->waktu_masuk);
+                //         $waktuKeluar = Carbon::parse($kamarRawatInap->waktu_keluar);
+                //         $harga += $waktuMasuk->diffInDays($waktuKeluar) * $kamarRawatInap->kamar_rawatinap->harga_per_hari;
+                //     }
+                // }
+
+                // $pembayaran->harga_bayar = $harga;
+                // $pembayaran->save();
             }
-
-            $harga = 0;
-            $pembayaran = new Pembayaran;
-            $pembayaran->id_transaksi = $transaksi->id;
-            $pembayaran->harga_bayar = 0;
-            $pembayaran->metode_bayar = 'bpjs';
-            $pembayaran->pembayaran_tambahan = 0;
-            $pembayaran->save();
-
-            $pembayaran = Pembayaran::findOrFail($pembayaran->id);
-            $code_str = strtoupper(base_convert($pembayaran->id, 10, 36));
-            $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
-            $pembayaran->no_pembayaran = 'PMB' . $code_str;
-            $pembayaran->save();
-
-            $asuransi = DB::table('asuransi')->select('id')->where([
-                ['nama_asuransi', '=', $pembayaran->metode_bayar],
-                ['id_pasien', '=', $transaksi->id_pasien]
-            ])->first();
-
-            $klaim = new Klaim;
-            $klaim->id_pembayaran = $pembayaran->id;
-            $klaim->id_asuransi = $asuransi->id;
-            $klaim->status = 'processed';
-            $klaim->save();
-
-            foreach ($transaksi->tindakan as $value) {
-                $tindakan = Tindakan::findOrFail($value->id);
-                $tindakan->id_pembayaran = $pembayaran->id;
-                $tindakan->save();
-                $harga += $tindakan->harga;
+            catch(Exception $e) {
+                $transaksi->status = 'open';
+                $transaksi->save();
             }
-
-            // foreach ($transaksi->obat_tebus as $obat) {
-            //     foreach ($obat->obat_tebus_item as $value) {
-            //         $obatTebus = ObatTebusItem::findOrFail($value->id);
-            //         $obatTebus->id_pembayaran = $pembayaran->id;
-            //         $obatTebus->save();
-            //         $harga += $obatTebus->jumlah * $obatTebus->harga_jual_realisasi;
-            //     }
-            // }
-
-            foreach ($transaksi->pemakaian_kamar_rawat_inap as $value) {
-                $kamarRawatInap = PemakaianKamarRawatInap::findOrFail($value->id);
-                $kamarRawatInap->id_pembayaran = $pembayaran->id;
-                $kamarRawatInap->save();
-                $waktuMasuk = Carbon::parse($kamarRawatInap->waktu_masuk);
-                $waktuKeluar = Carbon::parse($kamarRawatInap->waktu_keluar);
-                $harga += $waktuMasuk->diffInDays($waktuKeluar) * $kamarRawatInap->kamar_rawatinap->harga_per_hari;
-            }
-
-            $pembayaran->harga_bayar = $harga;
-            $pembayaran->save();
         }
 
         return response()->json([
