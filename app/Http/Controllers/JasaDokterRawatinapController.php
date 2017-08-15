@@ -16,12 +16,12 @@ class JasaDokterRawatinapController extends Controller
     public function index()
     {
          $jasaDokterRawatinap = JasaDokterRawatinap
-                            ::join('pemakaian_kamar_rawatinap', 'jasa_dokter_rawat_inap.id_pemakaian_kamar_rawatinap', '=', 'pemakaian_kamar_rawatinap.id')
+                            ::join('pemakaian_kamar_rawatinap', 'jasa_dokter_rawatinap.id_pemakaian_kamar_rawatinap', '=', 'pemakaian_kamar_rawatinap.id')
                             ->join('kamar_rawatinap', 'pemakaian_kamar_rawatinap.no_kamar', '=', 'kamar_rawatinap.no_kamar')
-                            ->select(DB::raw('jasa_dokter_rawat_inap.*'))
+                            ->select(DB::raw('jasa_dokter_rawatinap.*'))
                             ->where('pemakaian_kamar_rawatinap.waktu_masuk', '!=', null)
-                            ->where('pemakaian_kamar_rawatinap.waktu_keluar', '=', null)          
-                            ->get();          
+                            ->where('pemakaian_kamar_rawatinap.waktu_keluar', '=', null)
+                            ->get();
 
         return $jasaDokterRawatinap;
     }
@@ -52,13 +52,13 @@ class JasaDokterRawatinapController extends Controller
     public function show($no_pegawai)
     {
         $jasaDokterRawatinap = JasaDokterRawatinap
-                            ::join('pemakaian_kamar_rawatinap', 'jasa_dokter_rawat_inap.id_pemakaian_kamar_rawatinap', '=', 'pemakaian_kamar_rawatinap.id')
+                            ::join('pemakaian_kamar_rawatinap', 'jasa_dokter_rawatinap.id_pemakaian_kamar_rawatinap', '=', 'pemakaian_kamar_rawatinap.id')
                             ->join('kamar_rawatinap', 'pemakaian_kamar_rawatinap.no_kamar', '=', 'kamar_rawatinap.no_kamar')
-                            ->select(DB::raw('jasa_dokter_rawat_inap.*'))
+                            ->select(DB::raw('jasa_dokter_rawatinap.*'))
                             ->where('pemakaian_kamar_rawatinap.waktu_masuk', '!=', null)
-                            ->where('pemakaian_kamar_rawatinap.waktu_keluar', '=', null) 
-                            ->where('jasa_dokter_rawat_inap.np_tenaga_medis', '=', $no_pegawai)         
-                            ->get();          
+                            ->where('pemakaian_kamar_rawatinap.waktu_keluar', '=', null)
+                            ->where('jasa_dokter_rawatinap.np_tenaga_medis', '=', $no_pegawai)
+                            ->get();
 
         return $jasaDokterRawatinap;
     }
@@ -66,14 +66,14 @@ class JasaDokterRawatinapController extends Controller
     public function getJasaDokterByPemakaian($idPemakaian)
     {
         $jasaDokterRawatinap = JasaDokterRawatinap
-                            ::join('pemakaian_kamar_rawatinap', 'jasa_dokter_rawat_inap.id_pemakaian_kamar_rawatinap', '=', 'pemakaian_kamar_rawatinap.id')
-                            ->join('tenaga_medis', 'jasa_dokter_rawat_inap.np_tenaga_medis', '=', 'tenaga_medis.no_pegawai')
+                            ::join('pemakaian_kamar_rawatinap', 'jasa_dokter_rawatinap.id_pemakaian_kamar_rawatinap', '=', 'pemakaian_kamar_rawatinap.id')
+                            ->join('tenaga_medis', 'jasa_dokter_rawatinap.np_tenaga_medis', '=', 'tenaga_medis.no_pegawai')
                             ->join('dokter', 'tenaga_medis.no_pegawai', '=', 'dokter.no_pegawai')
                             ->join('kamar_rawatinap', 'pemakaian_kamar_rawatinap.no_kamar', '=', 'kamar_rawatinap.no_kamar')
-                            ->select(DB::raw('jasa_dokter_rawat_inap.*, dokter.*, tenaga_medis.nama'))
-                            ->where('pemakaian_kamar_rawatinap.id', '=', $idPemakaian)    
-                            ->orderBy('tenaga_medis.no_pegawai')    
-                            ->get();          
+                            ->select(DB::raw('jasa_dokter_rawatinap.*, dokter.*, tenaga_medis.nama'))
+                            ->where('pemakaian_kamar_rawatinap.id', '=', $idPemakaian)
+                            ->orderBy('tenaga_medis.no_pegawai')
+                            ->get();
 
         return $jasaDokterRawatinap;
     }
