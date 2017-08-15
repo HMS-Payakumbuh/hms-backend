@@ -51,7 +51,9 @@ class ObatPindahController extends Controller
             return response("less than 0 error", 401);
         }
 
-        $stok_obat_tujuan = StokObat::where('barcode','=','%'.$stok_obat_asal->barcode.'%')->first();
+        $stok_obat_tujuan = StokObat::where('barcode','LIKE','%'.$stok_obat_asal->barcode.'%')
+                                    ->where('lokasi', '=', $obat_pindah->tujuan)
+                                    ->first();
 
         if (is_null($stok_obat_tujuan)) {
             $stok_obat_tujuan = new StokObat;

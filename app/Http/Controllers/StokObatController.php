@@ -87,6 +87,7 @@ class StokObatController extends Controller
 
         $stok_obat = StokObat::where('id_jenis_obat', $request->input('id_jenis_obat'))
                                 ->where('nomor_batch', '=', $request->input('nomor_batch'))
+                                ->where('jumlah','>',0)
                                 ->where('lokasi', $lokasi_obat->id)
                                 ->firstOrFail();
         return response ($stok_obat, 200)
@@ -96,6 +97,7 @@ class StokObatController extends Controller
     public function searchByLocation(Request $request)
     {        
         $stok_obat = StokObat::with('jenisObat')
+                                ->where('jumlah','>',0)
                                 ->where('lokasi', $request->input('lokasi'))
                                 ->get();
         return response ($stok_obat, 200)
@@ -107,6 +109,7 @@ class StokObatController extends Controller
         $lokasi_obat = LokasiObat::where('jenis','=', $request->input('jenis_lokasi'))->first();  
 
         $stok_obat = StokObat::with('jenisObat')
+                                ->where('jumlah','>',0)
                                 ->where('lokasi', $lokasi_obat->id)
                                 ->get();
 
@@ -119,6 +122,7 @@ class StokObatController extends Controller
         $all_stok_obat = StokObat::when($lokasi > 0, function ($query) use ($lokasi) {
                                  return $query->where('stok_obat.lokasi', '=', $lokasi);
                             })
+                            ->where('jumlah','>',0)
                             ->join('jenis_obat', 'jenis_obat.id', '=', 'stok_obat.id_jenis_obat')
                             ->join('lokasi_obat', 'lokasi_obat.id', '=', 'stok_obat.lokasi')
                             ->select('jenis_obat.merek_obat',
