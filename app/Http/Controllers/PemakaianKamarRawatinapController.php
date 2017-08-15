@@ -230,11 +230,11 @@ class PemakaianKamarRawatinapController extends Controller
         $waktuMasuk = Carbon::parse($pemakaianKamarRawatinap->waktu_masuk);
         $waktuKeluar = Carbon::parse($pemakaianKamarRawatinap->waktu_keluar);
 
-        if ($waktuMasuk->diffInDays($waktuKeluar) >= 0) {
-            $pemakaianKamarRawatinap->save();        
+        if ($waktuMasuk->diffInHours($waktuKeluar) <= 2) {
+            $pemakaianKamarRawatinap->delete();
         }
         else {
-            $pemakaianKamarRawatinap->delete();
+            $pemakaianKamarRawatinap->save();
         }
 
         $tempatTidur = TempatTidur::where('no_kamar', '=', $no_kamar)
@@ -244,6 +244,43 @@ class PemakaianKamarRawatinapController extends Controller
         $tempatTidur->status = 1;
         $tempatTidur->save();
 
+        $transaksi = Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'pemakaianKamarRawatInap.kamar_rawatinap', 'pembayaran'])
+            ->findOrFail($pemakaianKamarRawatinap->id_transaksi);
+        $transaksi->status = 'closed';
+        $transaksi->save();
+
+        if ($transaksi->status == 'closed' && isset($transaksi->no_sep)) {
+            try {
+                $coder_nik = SettingBpjs::first()->coder_nik;
+                $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+                $response = json_decode($bpjs->group(1)->getBody(), true);
+                
+                $special_cmg = '';
+                if ($response['metadata']['code'] == 200) {
+                    if (isset($response['special_cmg_option'])) {
+                        foreach ($response['special_cmg_option'] as $key => $value) {
+                            if (substr($value['code'], 1) != 'D') {
+                                $special_cmg = $special_cmg . "#" . $value['code'];
+                            }
+                            else {
+                                $name = explode(" ", $value['description']);
+                                foreach ($transaksi['obat_tebus']['obat_tebus_item'] as $key_obat => $obat) {
+                                    if (strtolower($obat['jenis_obat']['nama_generik']) == strtolower($name[0])) {
+                                        $special_cmg = $special_cmg . "#" . $value['code'];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    $bpjs->group(2, $special_cmg);
+                    $bpjs->finalizeClaim();
+                }
+            }
+            catch(Exception $e) {
+                $transaksi->status = 'open';
+                $transaksi->save();
+            }
+        }
 
         return response($pemakaianKamarRawatinap, 200);
     }
