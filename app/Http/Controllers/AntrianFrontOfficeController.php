@@ -108,7 +108,7 @@ class AntrianFrontOfficeController extends Controller
         $antrian_front_office = AntrianFrontOffice::where('via_sms', '=', true)
                                                 ->where('status', '=', 1)
                                                 ->get();
-        $now = Carbon::now()->toDateTimeString();                                        
+        $now = Carbon::now()->toTimeString();                                        
         foreach ($antrian_front_office as $antrian) {
             if ($antrian->waktu_perjanjian <= $now) {
                 if ($antrian->nama_layanan_poli)
@@ -117,7 +117,7 @@ class AntrianFrontOfficeController extends Controller
                     self::update($antrian->nama_layanan_lab, $antrian->no_antrian, true);
             }
         }
-        return response('', 200);
+        return response($antrian_front_office, 200);
     }
 
     /**
@@ -151,7 +151,7 @@ class AntrianFrontOfficeController extends Controller
         }
 
         if ($antrian_front_office->via_sms && $is_late) {
-            //$antrian_front_office->via_sms = false;
+            $antrian_front_office->via_sms = false;
             $antrian_front_office->status = 0;
         }
 
