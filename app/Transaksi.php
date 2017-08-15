@@ -17,6 +17,11 @@ class Transaksi extends Model
 		return $this->belongsTo('App\Pasien', 'id_pasien');
 	}
 
+  public function rujukan_pasien()
+	{
+		return $this->hasOne('App\Rujukan', 'id_transaksi');
+	}
+
 	public function tindakan()
 	{
 		return $this->hasMany('App\Tindakan', 'id_transaksi');

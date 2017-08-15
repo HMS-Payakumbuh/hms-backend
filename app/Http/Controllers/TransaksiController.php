@@ -36,7 +36,7 @@ class TransaksiController extends Controller
             }
           }
           else {
-            return Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'pembayaran', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'pemakaianKamarRawatInap.kamar_rawatinap'])->findOrFail($id);
+            return Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'rujukan_pasien', 'pembayaran', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'pemakaianKamarRawatInap.kamar_rawatinap'])->findOrFail($id);
           }
         }
         else {
@@ -238,7 +238,7 @@ class TransaksiController extends Controller
             $coder_nik = SettingBpjs::first()->coder_nik;
             $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
             $response = json_decode($bpjs->group(1)->getBody(), true);
-            
+
             $special_cmg = '';
             if ($response['metadata']['code'] == 200) {
                 if (isset($response['special_cmg_option'])) {
@@ -262,7 +262,7 @@ class TransaksiController extends Controller
 
             $harga = 0;
             $pembayaran = new Pembayaran;
-            $pembayaran->id_transaksi = $transaksi->id;    
+            $pembayaran->id_transaksi = $transaksi->id;
             $pembayaran->harga_bayar = 0;
             $pembayaran->metode_bayar = 'bpjs';
             $pembayaran->pembayaran_tambahan = 0;
@@ -356,27 +356,27 @@ class TransaksiController extends Controller
 
         $transaksi = Transaksi::findOrFail($id);
         $status_bpjs = null;
-        
+
         if ($transaksi->no_sep != null) {
             $settingBpjs = SettingBpjs::first();
             $coder_nik = $settingBpjs->coder_nik;
             $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-            
+
             if ($pemakaianKamarRawatinap != null) {
                 $kamar = $pemakaianKamarRawatinap->kamar_rawatinap;
 
                 $carbon = Carbon::parse($transaksi->waktu_masuk_pasien);
                 $waktuMasuk = Carbon::parse($pemakaianKamarRawatinap->waktu_masuk);
                 $waktuKeluar = Carbon::now('Asia/Jakarta');
-                
+
                 $los = 1;
-                
+
                 if ($waktuMasuk->diffInDays($waktuKeluar) > 0) {
                     $los = $waktuMasuk->diffInDays($waktuKeluar);
                 }
 
 
-                if ($transaksi->status_naik_kelas == 1 && $kamar->jenis_kamar != "ICU") {                    
+                if ($transaksi->status_naik_kelas == 1 && $kamar->jenis_kamar != "ICU") {
                     $kelas = "kelas_";
                     if ($kamar->kelas == "vip") {
                         $kelas = "vip";
@@ -416,7 +416,7 @@ class TransaksiController extends Controller
                 );
                 $bpjs->setClaimData($requestSet);
                 $bpjs->group(1);
-                
+
             }
             $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
             $status_bpjs = $currentData['response']['data'];
