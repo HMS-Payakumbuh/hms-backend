@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PoliklinikTableSeeder::class);
         $this->call(LaboratoriumTableSeeder::class);
         $this->call(AmbulansTableSeeder::class);
+        $this->call(SettingsSeeder::class);
         $this->call(KamarRawatInapSeeder::class);
         $this->call(KamarOperasiSeeder::class);
         $this->call(KamarJenazahSeeder::class);
