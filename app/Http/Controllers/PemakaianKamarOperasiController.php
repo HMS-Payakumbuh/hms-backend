@@ -146,7 +146,8 @@ class PemakaianKamarOperasiController extends Controller
     {
         $pemakaianKamarOperasi = PemakaianKamarOperasi::findOrFail($id);
         $pemakaianKamarOperasi->delete();
+        $tindakan = Tindakan::findOrFail($pemakaianKamarOperasi->no_tindakan);
+        $tindakan->delete();      
         return response('', 204);
-
     }
 }
