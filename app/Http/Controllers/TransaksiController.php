@@ -37,7 +37,7 @@ class TransaksiController extends Controller
             }
           }
           else {
-            return Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'pembayaran', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'pemakaianKamarRawatInap.kamar_rawatinap', 'pemakaianKamarJenazah'])->findOrFail($id);
+            return Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'rujukan_pasien', 'pembayaran', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'pemakaianKamarRawatInap.kamar_rawatinap', 'pemakaianKamarJenazah'])->findOrFail($id);
           }
         }
         else {
@@ -178,10 +178,10 @@ class TransaksiController extends Controller
 
             $newClaimResponse = $bpjs->newClaim($requestNew);
 
-            $carbon = Carbon::instance($transaksi->waktu_masuk_pasien);
+            $carbon = Carbon::instance($transaksi->waktu_masuk_pasien)->format('Y-m-d H:i:s');
             $requestSet = array(
                 'nomor_kartu' => $asuransi->no_kartu,
-                'tgl_masuk' => $carbon->toDateTimeString(),
+                'tgl_masuk' => $carbon,
                 'jenis_rawat' => $transaksi->jenis_rawat,
                 'kelas_rawat' => $transaksi->kelas_rawat,
                 'upgrade_class_ind' => $transaksi->status_naik_kelas,
@@ -191,6 +191,7 @@ class TransaksiController extends Controller
                 'payor_id' => 3,
                 'payor_cd' => 'JKN'
             );
+            \Log::info($requestSet);
             $setClaimResponse = $bpjs->setClaimData($requestSet);
             $setClaimResponse = "Set Claim";
         }
