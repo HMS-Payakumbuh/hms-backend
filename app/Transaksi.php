@@ -46,4 +46,9 @@ class Transaksi extends Model
 	{
 		return $this->hasMany('App\PemakaianKamarRawatInap', 'id_transaksi');
 	}
+
+	public function pemakaianKamarJenazah()
+	{
+		return $this->hasMany('App\PemakaianKamarJenazah', 'id_transaksi');
+	}
 }
