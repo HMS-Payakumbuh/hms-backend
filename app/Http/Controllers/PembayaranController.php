@@ -16,6 +16,7 @@ use App\Tindakan;
 use App\ObatTebusItem;
 use App\ObatEceranItem;
 use App\PemakaianKamarRawatInap;
+use App\PemakaianKamarJenazah;
 
 class PembayaranController extends Controller
 {
@@ -136,6 +137,15 @@ class PembayaranController extends Controller
                     $obatEceran = ObatEceranItem::findOrFail($value);
                     $obatEceran->id_pembayaran = $pembayaran->id;
                     $obatEceran->save();
+                }
+            }
+
+            if (isset($payload['kamarJenazah']) && count($payload['kamarJenazah']) > 0) {
+                $arrKamarJenazah = $payload['kamarJenazah'];
+                foreach ($arrKamarJenazah as $value) {
+                    $kamarJenazah = PemakaianKamarJenazah::findOrFail($value);
+                    $kamarJenazah->no_pembayaran = $pembayaran->id;
+                    $kamarJenazah->save();
                 }
             }
 
