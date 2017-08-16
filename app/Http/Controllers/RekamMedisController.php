@@ -11,6 +11,7 @@ use App\Resep;
 use App\Rujukan;
 use App\Transaksi;
 use Carbon\Carbon;
+use Log;
 
 class RekamMedisController extends Controller
 {
@@ -26,6 +27,7 @@ class RekamMedisController extends Controller
 
     public function getForExternal($no_rujukan, $asal_rujukan)
     {
+      Log::info($no_rujukan);
         $rujukan = Rujukan::where('no_rujukan', '=', $no_rujukan)->where('asal_rujukan', '=', $asal_rujukan)->first();
         if ($rujukan) {
             $transaksi = Transaksi::where('id', '=', $rujukan->id_transaksi)->first();
@@ -49,7 +51,7 @@ class RekamMedisController extends Controller
                                 );
                             array_push($alergi , $arr);
                         }
-                        
+
                         //diagnosis
                         $all_diagnosis = $rekam_medis->diagnosis;
                         $diagnosis = array();
@@ -70,11 +72,11 @@ class RekamMedisController extends Controller
                                             )
                                         ),
                                         $rekam_medis->tanggal_waktu
-                                    ) 
+                                    )
                                 );
                             array_push($tindakan , $arr);
                         }
-                        
+
                         //resep
                         $all_resep = Resep::with('resepItem', 'resepItem.racikanItem', 'resepItem.racikanItem.jenisObat')
                                         ->where('id_transaksi', '=', $transaksi->id)
@@ -84,7 +86,7 @@ class RekamMedisController extends Controller
                             foreach ($all_resep_item->resepItem as $resep_item) {
                                 $racikan = array();
                                 foreach ($resep_item->racikanItem as $racikan_item) {
-                                    array_push($racikan , 
+                                    array_push($racikan ,
                                         $racikan_item->jenisObat->nama_generik.' '.
                                         $racikan_item->jumlah.' '.
                                         $racikan_item->jenisObat->satuan
@@ -99,7 +101,7 @@ class RekamMedisController extends Controller
                                             $rekam_medis->tanggal_waktu,
                                             'Aktif',
                                             $resep_item->petunjuk_peracikan
-                                        ) 
+                                        )
                                     );
                                 array_push($resep , $arr);
                             }
@@ -130,7 +132,7 @@ class RekamMedisController extends Controller
                                             ),
                                             '@value' => 'Date / Time:'
                                         ),
-                                    $rekam_medis->tanggal_waktu    
+                                    $rekam_medis->tanggal_waktu
                             )
                         );
 
@@ -189,7 +191,7 @@ class RekamMedisController extends Controller
                                         '@attributes' => array(
                                             'value' => $pasien->tanggal_lahir
                                         )
-                                    ) 
+                                    )
                                 ),
                                 'providerOrganization' => array(
                                     'name' => 'Rumah Sakit Umum Payakumbuh',
@@ -335,8 +337,8 @@ class RekamMedisController extends Controller
 
                         /*$client = new Client();
                         $response = $client->request(
-                            'POST', 
-                            'http://127.0.0.1:8001/api/rekam_medis/'.$pasien->nama_pasien.'/'.$pasien->kode_pasien.'/'.$no_rujukan, 
+                            'POST',
+                            'http://127.0.0.1:8001/api/rekam_medis/'.$pasien->nama_pasien.'/'.$pasien->kode_pasien.'/'.$no_rujukan,
                             ['form_params' => ['body' => $document]]
                         )->getBody();*/
                         return response([
@@ -345,7 +347,7 @@ class RekamMedisController extends Controller
                             'no_rujukan' => $no_rujukan,
                             'body' => $document
                         ]);
-                    }                        
+                    }
                 }
             }
         }

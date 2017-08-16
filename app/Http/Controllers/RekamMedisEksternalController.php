@@ -53,7 +53,7 @@ class RekamMedisEksternalController extends Controller
             $rekam_medis->komponen = $request->input('komponen');
             $rekam_medis->save();
             return response($rekam_medis, 201);
-        }                                       
+        }
     }
 
     /**

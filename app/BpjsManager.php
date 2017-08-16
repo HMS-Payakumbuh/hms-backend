@@ -168,10 +168,10 @@ class BpjsManager
     private function sendKlaim($payload) {
     	$client = new Client();
 
-		$response = $client->request('POST', env('BPJS_EKLAIM_URL'), [
-			'json' => $payload
-		]);
-        sleep(1);
+			$response = $client->request('POST', env('BPJS_EKLAIM_URL'), [
+				'json' => $payload
+			]);
+      sleep(1);
 
     	return $response;
     }

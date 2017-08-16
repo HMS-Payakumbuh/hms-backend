@@ -75,18 +75,18 @@ class SepController extends Controller
 
         $rand2 = rand(1, 9999);
         $rand2 = str_pad($rand2, 4, '0', STR_PAD_LEFT);
-        
+
         $rand3 = rand(1, 9999);
         $rand3 = str_pad($rand3, 4, '0', STR_PAD_LEFT);
-        
+
         $rand4 = rand(1, 9999);
         $rand4 = str_pad($rand4, 4, '0', STR_PAD_LEFT);
 
         $rand5 = rand(1, 99);
         $rand5 = str_pad($rand5, 2, '0', STR_PAD_LEFT);
-        
+
         $no_sep = $rand1.$no_sep.$rand2.$rand3.$rand4.$rand5;
-        
+
         $mockup = array(
         	'metadata' => array(
         		'code' => $code,
@@ -99,7 +99,7 @@ class SepController extends Controller
         	$mockup['data_rujukan'] = $rujukan;
         }
         $mock_status = env('SEP_MOCK_STATUS', '1');
-        
+
         if ($mock_status == '1') {
         	return response($mockup, 200);
         }
@@ -160,7 +160,7 @@ class SepController extends Controller
 		        	'kdKelas' => '3',
 		        	'nmKelas' => 'Kelas III'
 		        ),
-		        'nama' => 'SITI AMINAH',
+		        'nama' => 'JONO KARSO',
 		        'nik' => null,
 		        'noKartu' => '0000099799751',
 		        'noMr' => null,
@@ -213,7 +213,7 @@ class SepController extends Controller
         );
 
         $mock_status = env('SEP_MOCK_STATUS', '1');
-        
+
         if ($mock_status == '1') {
         	return $mockup;
         }
@@ -296,7 +296,7 @@ class SepController extends Controller
         );
 
         $mock_status = env('SEP_MOCK_STATUS', '1');
-        
+
         if ($mock_status == '1') {
         	return $mockup;
         }
