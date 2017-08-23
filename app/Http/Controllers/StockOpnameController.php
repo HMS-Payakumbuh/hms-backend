@@ -139,4 +139,15 @@ class StockOpnameController extends Controller
         return response ($stock_opname, 200)
                 -> header('Content-Type', 'application/json');
     }
+
+    // Get latest Stock Opname by location
+    public function getLatestByLocation(Request $request)
+    {
+        $stock_opname = StockOpname::with('lokasiData')
+                        ->orderBy('stock_opname.created_at', 'desc')
+                        ->where('lokasi', $request->input('lokasi'))
+                        ->first();
+        return response ($stock_opname, 200)
+                -> header('Content-Type', 'application/json');
+    }
 }

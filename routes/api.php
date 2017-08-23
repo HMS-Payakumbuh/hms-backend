@@ -291,4 +291,5 @@ Route::get('obat_eceran/search_by_time', 'ObatEceranController@getObatEceranByTi
 Route::resource('obat_eceran', 'ObatEceranController');
 
 Route::get('stock_opname/search_by_location', 'StockOpnameController@searchByLocation');
+Route::get('stock_opname/latest_by_location', 'StockOpnameController@getLatestByLocation');
 Route::resource('stock_opname', 'StockOpnameController');
