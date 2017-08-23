@@ -20,8 +20,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('login', 'Auth\AuthController@login');
 Route::post('register', 'Auth\AuthController@register');
 Route::post('update_user_kategori', 'Auth\AuthController@update_user_kategori');
-Route::group(['middleware' => 'jwt-auth'], function () {
-  Route::post('get_user_details', 'Auth\AuthController@get_user_details');
+Route::group(['middleware' => 'jwt.auth'], function () {
+  Route::get('get_user_details', 'Auth\AuthController@get_user_details');
+
+  Route::resource('poliklinik', 'PoliklinikController', ['except' => [
+    'edit', 'create'
+  ]]);
 });
 
 Route::resource('pasien', 'PasienController', ['except' => [
@@ -130,10 +134,6 @@ Route::resource('tindakan_operasi', 'TindakanOperasiController', ['except' => [
 ]]);
 Route::get('tindakan_operasi/{pemakaianKamarOperasiId}', 'TindakanOperasiController@show');
 Route::post('tindakan_operasi/{id_tindakan}', 'TindakanOperasiController@store');
-
-Route::resource('poliklinik', 'PoliklinikController', ['except' => [
-  'edit', 'create'
-]]);
 
 Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
   'edit', 'create'

@@ -34,7 +34,7 @@ class AuthController extends Controller
   public function get_user_details(Request $request)
   {
     $input = $request->all();
-    $user = JWTAuth::toUser($input['token']);
+    $user = JWTAuth::parseToken()->authenticate();
     return response()->json(['result' => $user]);
   }
 
