@@ -14,8 +14,8 @@ class CreateAntrianTable extends Migration
     public function up()
     {
         Schema::create('antrian', function (Blueprint $table) {
-            $table->increments('no_antrian');
-            $table->dropPrimary('no_antrian');
+            $table->increments('id');
+            $table->integer('no_antrian')->nullable();
             $table->integer('id_transaksi')->unsigned();
             $table->string('nama_layanan_poli')->nullable();
             $table->string('nama_layanan_lab')->nullable();

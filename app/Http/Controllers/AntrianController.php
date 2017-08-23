@@ -66,6 +66,19 @@ class AntrianController extends Controller
 	    	}
 	    }
 
+        $all_antrian = [];
+        if ($request->input('nama_layanan_poli')) {
+            $all_antrian = Antrian::where('nama_layanan_poli', '=', $request->input('nama_layanan_poli'))->get();
+        } else if ($request->input('nama_layanan_lab')) {
+            $all_antrian = Antrian::where('nama_layanan_lab', '=', $request->input('nama_layanan_lab'))->get();
+        }
+
+        if (!empty($all_antrian[0])) {
+            $antrian->no_antrian = $all_antrian[count($all_antrian) - 1]->no_antrian + 1;
+        } else {
+            $antrian->no_antrian = 1;
+        }
+
         $antrian->id_transaksi = $request->input('id_transaksi');
         $antrian->nama_layanan_poli = $request->input('nama_layanan_poli');
         $antrian->nama_layanan_lab = $request->input('nama_layanan_lab');
