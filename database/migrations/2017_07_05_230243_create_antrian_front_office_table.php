@@ -14,7 +14,8 @@ class CreateAntrianFrontOfficeTable extends Migration
     public function up()
     {
         Schema::create('antrian_front_office', function (Blueprint $table) {
-            $table->increments('no_antrian');
+            $table->increments('id');
+            $table->integer('no_antrian')->nullable();
             $table->string('nama_layanan_poli')->nullable();
             $table->string('nama_layanan_lab')->nullable();
             $table->string('nama_pasien')->nullable();
