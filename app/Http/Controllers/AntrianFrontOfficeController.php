@@ -187,8 +187,8 @@ class AntrianFrontOfficeController extends Controller
             ->orWhere([['no_antrian', '=', $no_antrian], ['nama_layanan_lab', '=', $nama_layanan]])
               ->first();
               
-        Redis::publish('antrian', json_encode(['kategori_antrian' => $deletedRows->kategori_antrian]));
         $deletedRows->delete();
+        Redis::publish('antrian', json_encode(['kategori_antrian' => $deletedRows->kategori_antrian]));
         return response('', 204);
     }
 }

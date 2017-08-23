@@ -26,24 +26,25 @@ Route::group(['middleware' => 'jwt.auth'], function () {
   Route::resource('poliklinik', 'PoliklinikController', ['except' => [
     'edit', 'create'
   ]]);
+
+  Route::resource('pasien', 'PasienController', ['except' => [
+    'edit', 'create'
+  ]]);
+
+  Route::resource('rekam_medis', 'RekamMedisController', ['except' => [
+    'edit', 'update', 'show', 'create'
+  ]]);
+  Route::get('rekam_medis/{id_pasien}', 'RekamMedisController@show');
+  Route::put('rekam_medis/{id_pasien}/{tanggal_waktu}', 'RekamMedisController@update');
+
+  Route::resource('rekam_medis_eksternal', 'RekamMedisEksternalController', ['except' => [
+    'edit', 'show', 'create'
+  ]]);
+  Route::get('rekam_medis_eksternal/import/{kode_pasien}/{no_rujukan}', 'RekamMedisEksternalController@getEksternalRekamMedis');
+  Route::get('rekam_medis_eksternal/{id_pasien}', 'RekamMedisEksternalController@show');
 });
 
-Route::resource('pasien', 'PasienController', ['except' => [
-  'edit', 'create'
-]]);
-
-Route::resource('rekam_medis', 'RekamMedisController', ['except' => [
-  'edit', 'update', 'show', 'create'
-]]);
-Route::get('rekam_medis/{id_pasien}', 'RekamMedisController@show');
-Route::put('rekam_medis/{id_pasien}/{tanggal_waktu}', 'RekamMedisController@update');
 Route::get('rekam_medis/eksternal/{no_rujukan}/{asal_rujukan}', 'RekamMedisController@getForExternal');
-
-Route::resource('rekam_medis_eksternal', 'RekamMedisEksternalController', ['except' => [
-  'edit', 'show', 'create'
-]]);
-Route::get('rekam_medis_eksternal/import/{kode_pasien}/{no_rujukan}', 'RekamMedisEksternalController@getEksternalRekamMedis');
-Route::get('rekam_medis_eksternal/{id_pasien}', 'RekamMedisEksternalController@show');
 
 Route::post('antrian_sms/parse_message', 'AntrianSMSController@parseMessage');
 
