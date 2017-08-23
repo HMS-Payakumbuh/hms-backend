@@ -42,9 +42,10 @@ class PasienController extends Controller
         $pasien->save();
 
         //generate kode
-        $year = Carbon::now()->year;
-        $month = Carbon::now()->month;
-        $day = Carbon::now()->day;
+        $now = Carbon::now();
+        $year = $now->year;
+        $month = $now->month;
+        $day = $now->day;
         if (strlen($month) == 1)
             $month = '0'.$month;
         if (strlen($day) == 1)
