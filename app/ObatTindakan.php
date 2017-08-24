@@ -31,4 +31,21 @@ class ObatTindakan extends Model
     {
         return $this->belongsTo('App\LokasiObat', 'asal');
     }
+
+    /**
+    *   Get the Tindakan of the ObatTindakan.
+    */
+    public function tindakan()
+    {
+        return $this->belongsTo('App\Tindakan', 'id_tindakan');
+    }
+
+    /**
+    *   Get the Transaksi of the ObatTindakan.
+    */
+    public function transaksi()
+    {
+        return $this->belongsTo('App\Transaksi', 'id_transaksi');
+    }
+}
 }

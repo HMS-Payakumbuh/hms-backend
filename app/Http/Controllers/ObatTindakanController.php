@@ -18,7 +18,7 @@ class ObatTindakanController extends Controller
      */
     public function index()
     {
-        return ObatTindakan::with('obatMasuk','jenisObat','lokasiAsal')->get();
+        return ObatTindakan::with('obatMasuk','jenisObat','lokasiAsal','tindakan','tindakan.pasien')->get();
     }
 
     /**
@@ -66,7 +66,7 @@ class ObatTindakanController extends Controller
      */
     public function show($id)
     {
-        return ObatTindakan::with('stokObat','jenisObat','lokasiAsal')->findOrFail($id);
+        return ObatTindakan::with('stokObat','jenisObat','lokasiAsal','tindakan','tindakan.pasien')->findOrFail($id);
     }
 
     /**
