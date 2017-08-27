@@ -16,7 +16,8 @@ class PasienController extends Controller
      */
     public function index()
     {
-        return Pasien::all();
+        return Pasien::with('catatan_kematian')
+                    ->get();
     }
 
     /**
