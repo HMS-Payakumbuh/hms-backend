@@ -72,6 +72,7 @@ Route::get('sep/{no_rujukan}', 'SepController@insertSEP');
 Route::get('sep/rujukan/{no_rujukan}', 'SepController@getRujukan');
 Route::get('sep/peserta/{no_kartu}', 'SepController@getPeserta');
 
+Route::get('transaksi/export', 'TransaksiController@export');
 Route::resource('transaksi', 'TransaksiController', ['except' => [
   'edit', 'create'
   ]]);
@@ -90,7 +91,9 @@ Route::resource('rujukan', 'RujukanController', ['except' => [
   'edit', 'create'
 ]]);
 
+Route::get('klaim/export', 'KlaimController@export');
 Route::resource('klaim', 'KlaimController');
+Route::get('pembayaran/export', 'PembayaranController@export');
 Route::resource('pembayaran', 'PembayaranController');
 Route::resource('asuransi', 'AsuransiController');
 Route::get('asuransi/search/{id_pasien}', 'AsuransiController@getAsuransiByIdPasien');
