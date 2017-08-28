@@ -16,6 +16,9 @@ use App\SettingBpjs;
 use App\PemakaianKamarRawatInap;
 use App\Tindakan;
 use App\ObatTebusItem;
+use Excel;
+use DateTime;
+use DateInterval;
 
 class TransaksiController extends Controller
 {
@@ -83,6 +86,85 @@ class TransaksiController extends Controller
                     ->get();
             }
         }
+    }
+
+    public function export(Request $request)
+    {
+        if ($request->input('tanggal_awal') !== null && $request->input('tanggal_akhir') !== null) {
+            $tanggal_awal = new DateTime($request->input('tanggal_awal'));
+            $tanggal_akhir = new DateTime($request->input('tanggal_akhir'));
+            $tanggal_akhir->add(new DateInterval("P1D")); // Plus 1 day
+
+            $all_transaksi = Transaksi::with(['pasien', 'pembayaran.klaim'])
+                ->where('status', '=', 'closed')
+                ->whereBetween('waktu_perubahan_terakhir', array($tanggal_awal, $tanggal_akhir))
+                ->get();
+
+            $data = array(
+                array('Waktu Transaksi', 'Nama Pasien', 'Nomor Transaksi', 'Total Pembayaran Non-BPJS', 'Pembayaran BPJS', 'Tarif Klaim', 'Surplus Klaim')
+            );
+
+            $total_pembayaran_non_BPJS = 0;
+            $total_pembayaran_BPJS = 0;
+            $total_tarif_klaim = 0;
+            $total_surplus_klaim = 0;
+
+            foreach ($all_transaksi as $transaksi) {
+                $pembayaran_non_BPJS = 0;
+                $pembayaran_BPJS = 0;
+                $tarif_klaim = 0;
+                $surplus_klaim = 0;
+                foreach ($transaksi->pembayaran as $pembayaran) {
+                    if ($pembayaran->metode_bayar == 'bpjs') {
+                        $pembayaran_BPJS += $pembayaran->harga_bayar;
+                        $total_pembayaran_BPJS += $pembayaran->harga_bayar;
+
+                        if ($pembayaran->klaim != null && $pembayaran->klaim->tarif != null) {
+                            $tarif_klaim = $pembayaran->klaim->tarif;
+                            $total_tarif_klaim += $pembayaran->klaim->tarif;
+
+                            $surplus_klaim = $tarif_klaim - $pembayaran_BPJS;
+                            $total_surplus_klaim += $surplus_klaim;
+                        }
+                    }
+                    else {
+                        $pembayaran_non_BPJS += $pembayaran->harga_bayar;
+                        $total_pembayaran_non_BPJS += $pembayaran->harga_bayar;
+                    }
+                }
+                $transaksi_array = array(
+                    $transaksi->waktu_perubahan_terakhir,
+                    $transaksi->pasien->nama_pasien,
+                    $transaksi->no_transaksi,
+                    $pembayaran_non_BPJS,
+                    $pembayaran_BPJS,
+                    $tarif_klaim,
+                    $surplus_klaim
+                );
+                array_push($data, $transaksi_array);
+            }
+
+            $total_array = array('Total', '', '', $total_pembayaran_non_BPJS, $total_pembayaran_BPJS, $total_tarif_klaim, $total_surplus_klaim);
+            array_push($data, $total_array);
+
+            $tanggal_awal = $tanggal_awal->format('Y/m/d');
+            $tanggal_akhir = $tanggal_akhir->format('Y/m/d');
+            $title = "Rekap Transaksi ".$tanggal_awal." - ".$tanggal_akhir;
+            return Excel::create($title, function($excel) use ($data) {
+                $excel->setTitle('Rekap Transaksi')
+                        ->setCreator('user')
+                        ->setCompany('RSUD Payakumbuh')
+                        ->setDescription('Rekapitulasi Transaksi');
+                $excel->sheet('Sheet1', function($sheet) use ($data) {
+                    $sheet->fromArray($data);
+                });
+            })->download('xls');
+        }
+
+        return response()->json([
+            'code' => '500',
+            'message' => 'Malformed Request'
+        ], 500);
     }
 
     public function getRecentTransaksi($nama_pasien)

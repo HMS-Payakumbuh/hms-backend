@@ -17,6 +17,9 @@ use App\ObatTebusItem;
 use App\ObatEceranItem;
 use App\PemakaianKamarRawatInap;
 use App\PemakaianKamarJenazah;
+use Excel;
+use DateTime;
+use DateInterval;
 
 class PembayaranController extends Controller
 {
@@ -27,6 +30,58 @@ class PembayaranController extends Controller
         } else {
             return Pembayaran::with(['transaksi.pasien', 'transaksi.obatTebus.resep', 'transaksi.obatEceran'])->get();
         }
+    }
+
+    public function export(Request $request)
+    {
+        if ($request->input('tanggal_awal') !== null && $request->input('tanggal_akhir') !== null) {
+            $tanggal_awal = new DateTime($request->input('tanggal_awal'));
+            $tanggal_akhir = new DateTime($request->input('tanggal_akhir'));
+            $tanggal_akhir->add(new DateInterval("P1D")); // Plus 1 day
+
+            $all_pembayaran = Pembayaran::with(['transaksi.pasien'])
+                ->whereBetween('created_at', array($tanggal_awal, $tanggal_akhir))
+                ->get();
+
+            $data = array(
+                array('Waktu Pembayaran', 'Nama Pasien', 'Nomor Pembayaran', 'Total Pembayaran')
+            );
+
+            $total_pembayaran = 0;
+            foreach ($all_pembayaran as $pembayaran) {
+                $total_pembayaran += $pembayaran->harga_bayar;
+
+                $pembayaran_array = array(
+                    $pembayaran->created_at,
+                    $pembayaran->transaksi->pasien->nama_pasien,
+                    $pembayaran->no_pembayaran,
+                    $pembayaran->harga_bayar
+                );
+
+                array_push($data, $pembayaran_array);
+            }
+
+            $total_array = array('Total', '', '', $total_pembayaran);
+            array_push($data, $total_array);
+
+            $tanggal_awal = $tanggal_awal->format('Y/m/d');
+            $tanggal_akhir = $tanggal_akhir->format('Y/m/d');
+            $title = "Data Pembayaran ".$tanggal_awal." - ".$tanggal_akhir;
+            return Excel::create($title, function($excel) use ($data) {
+                $excel->setTitle('Data Pembayaran')
+                        ->setCreator('user')
+                        ->setCompany('RSUD Payakumbuh')
+                        ->setDescription('Data Pembayaran');
+                $excel->sheet('Sheet1', function($sheet) use ($data) {
+                    $sheet->fromArray($data);
+                });
+            })->download('xls');
+        }
+
+        return response()->json([
+            'code' => '500',
+            'message' => 'Malformed Request'
+        ], 500);
     }
 
     /**
