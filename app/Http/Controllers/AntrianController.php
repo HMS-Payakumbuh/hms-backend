@@ -33,7 +33,7 @@ class AntrianController extends Controller
             $antrian->status = 2;
             $antrian->save();
         }
-        DB::statement('ALTER SEQUENCE antrian_no_antrian_seq RESTART WITH 1');  
+        DB::statement('ALTER SEQUENCE antrian_id_seq RESTART WITH 1');  
         return response('', 204);
     }
 
@@ -58,13 +58,21 @@ class AntrianController extends Controller
 	    if ($transaksi) {
 	    	$pasien = Pasien::findOrFail($transaksi->id_pasien);
 	    	if ($pasien) {
-	    		$age = $pasien->age();
+	    		/*$age = $pasien->age();
 		    	if ($age >= 65)
 		    		$antrian->jenis = 1;
 		    	else
-		    		$antrian->jenis = 0;
+		    		$antrian->jenis = 0;*/
+                if ($pasien->catatan_kematian) {
+                    Transaksi::destroy($request->input('id_transaksi'));
+                    return response()->json([
+                        'error' => "Pasien sudah meninggal."
+                    ], 200);
+                }    
 	    	}
 	    }
+
+        $antrian->jenis = 0;
 
         $all_antrian = [];
         if ($request->input('nama_layanan_poli')) {
@@ -94,12 +102,9 @@ class AntrianController extends Controller
             } else {
                 Antrian::destroy($antrian->id_transaksi, $antrian->no_antrian);
                 Transaksi::destroy($antrian->id_transaksi);
-                Pasien::destroy($request->input('id_pasien'));
-                if ($request->input('id_asuransi'))
-                    Asuransi::destroy($request->input('id_asuransi'));
                 return response()->json([
-                    'error' => "Pembuatan Antrian Gagal"
-                ], 500);
+                    'error' => "Kuota layanan yang dituju sudah habis."
+                ], 200);
             }
         }
         if ($request->input('nama_layanan_poli'))
