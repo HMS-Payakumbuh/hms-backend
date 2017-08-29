@@ -33,7 +33,7 @@ class AntrianController extends Controller
             $antrian->status = 2;
             $antrian->save();
         }
-        DB::statement('ALTER SEQUENCE antrian_id_seq RESTART WITH 1');  
+        //DB::statement('ALTER SEQUENCE antrian_id_seq RESTART WITH 1');  
         return response('', 204);
     }
 
@@ -49,7 +49,7 @@ class AntrianController extends Controller
 
         $all_antrian = Antrian::all();
         if (!empty($all_antrian[0])) {
-            if ($all_antrian[0]->waktu_perubahan_antrian < Carbon::today()->toDateTimeString()) {
+            if ($all_antrian[count($all_antrian) - 1]->waktu_perubahan_antrian < Carbon::today()->toDateTimeString()) {
                 self::cleanup();
             }
         } 
@@ -67,7 +67,7 @@ class AntrianController extends Controller
                     Transaksi::destroy($request->input('id_transaksi'));
                     return response()->json([
                         'error' => "Pasien sudah meninggal."
-                    ], 200);
+                    ], 202);
                 }    
 	    	}
 	    }
@@ -82,7 +82,10 @@ class AntrianController extends Controller
         }
 
         if (!empty($all_antrian[0])) {
-            $antrian->no_antrian = $all_antrian[count($all_antrian) - 1]->no_antrian + 1;
+            if ($all_antrian[count($all_antrian) - 1]->waktu_perubahan_antrian < Carbon::today()->toDateTimeString())
+                $antrian->no_antrian = 1;
+            else
+                $antrian->no_antrian = $all_antrian[count($all_antrian) - 1]->no_antrian + 1;
         } else {
             $antrian->no_antrian = 1;
         }
@@ -104,7 +107,7 @@ class AntrianController extends Controller
                 Transaksi::destroy($antrian->id_transaksi);
                 return response()->json([
                     'error' => "Kuota layanan yang dituju sudah habis."
-                ], 200);
+                ], 202);
             }
         }
         if ($request->input('nama_layanan_poli'))
