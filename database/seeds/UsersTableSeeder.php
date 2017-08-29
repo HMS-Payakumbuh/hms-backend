@@ -18,6 +18,7 @@ class UsersTableSeeder extends Seeder
           array('no_pegawai'=>'P001', 'name'=>'Perawat', 'role'=>'perawat', 'password'=>Hash::make('perawat'), 'other'=>''),
           array('no_pegawai'=>'L001', 'name'=>'Petugas Administrasi Lab', 'role'=>'petugasLab', 'password'=>Hash::make('petugaslab'), 'other'=>''),
           array('no_pegawai'=>'L002', 'name'=>'Petugas Lab', 'role'=>'petugasLab', 'password'=>Hash::make('petugaslab'), 'other'=>''),
+          array('no_pegawai'=>'AB001', 'name'=>'Petugas Ambulans', 'role'=>'petugasAmbulans', 'password'=>Hash::make('petugasambulans'), 'other'=>''),
           array('no_pegawai'=>'A001', 'name'=>'Admin', 'role'=>'admin', 'password'=>Hash::make('admin'), 'other'=>''),
           array('no_pegawai'=>'F001', 'name'=>'Front Office A', 'role'=>'frontOffice', 'password'=>Hash::make('frontOffice'), 'other'=>'{"kategori_antrian": "A"}'),
           array('no_pegawai'=>'F002', 'name'=>'Front Office B', 'role'=>'frontOffice', 'password'=>Hash::make('frontOffice'), 'other'=>'{"kategori_antrian": "C"}'),

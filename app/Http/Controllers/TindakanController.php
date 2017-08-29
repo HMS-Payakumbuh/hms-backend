@@ -93,16 +93,12 @@ class TindakanController extends Controller
      * Display the specified resource.
      *
      * @param  string $nama_lab
-     * @param  string $kode_pasien
      * @return \Illuminate\Http\Response
      */
-    public function getTindakanWithoutHasilLab ($nama_lab, $kode_pasien)
+    public function getTindakanWithoutHasilLab ($nama_lab)
     {
       return Tindakan::doesntHave('hasilLab')
         ->with('daftarTindakan', 'transaksi', 'pasien')
-        ->whereHas('pasien', function ($query) use ($kode_pasien) {
-          $query->where('kode_pasien', '=', $kode_pasien);
-        })
         ->where('nama_lab', '=', $nama_lab)
         ->get();
     }

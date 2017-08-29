@@ -33,7 +33,6 @@ Route::group(['middleware' => 'jwt.auth'], function () {
   Route::resource('hasil_lab', 'HasilLabController', ['except' => [
     'edit', 'create', 'getEmptyHasilLab', 'download', 'upload'
   ]]);
-});
 
   Route::resource('pasien', 'PasienController', ['except' => [
     'edit', 'create'
@@ -133,7 +132,7 @@ Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
 ]]);
 
 Route::get('tindakan/rekam_medis/{id_pasien}/{tanggal_waktu}', 'TindakanController@getTindakanOfRekamMedis');
-Route::get('tindakan/hasil_lab/{nama_lab}/{kode_pasien}', 'TindakanController@getTindakanWithoutHasilLab');
+Route::get('tindakan/hasil_lab/{nama_lab}', 'TindakanController@getTindakanWithoutHasilLab');
 
 Route::resource('tindakan', 'TindakanController', ['except' => [
   'edit', 'create', 'show', 'destroy'
