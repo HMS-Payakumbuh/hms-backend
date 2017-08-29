@@ -13,9 +13,9 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 Route::post('login', 'Auth\AuthController@login');
 Route::post('register', 'Auth\AuthController@register');
@@ -25,6 +25,13 @@ Route::group(['middleware' => 'jwt.auth'], function () {
 
   Route::resource('poliklinik', 'PoliklinikController', ['except' => [
     'edit', 'create'
+  ]]);
+
+  Route::get('hasil_lab/empty/{no_pegawai}', 'HasilLabController@getEmptyHasilLab');
+  Route::get('hasil_lab/download/{path}', 'HasilLabController@download');
+  Route::post('hasil_lab/upload/{id}', 'HasilLabController@upload');
+  Route::resource('hasil_lab', 'HasilLabController', ['except' => [
+    'edit', 'create', 'getEmptyHasilLab', 'download', 'upload'
   ]]);
 
   Route::resource('pasien', 'PasienController', ['except' => [
@@ -125,7 +132,7 @@ Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
 ]]);
 
 Route::get('tindakan/rekam_medis/{id_pasien}/{tanggal_waktu}', 'TindakanController@getTindakanOfRekamMedis');
-Route::get('tindakan/hasil_lab/{nama_lab}/{kode_pasien}', 'TindakanController@getTindakanWithoutHasilLab');
+Route::get('tindakan/hasil_lab/{nama_lab}', 'TindakanController@getTindakanWithoutHasilLab');
 
 Route::resource('tindakan', 'TindakanController', ['except' => [
   'edit', 'create', 'show', 'destroy'
@@ -141,13 +148,6 @@ Route::post('tindakan_operasi/{id_tindakan}', 'TindakanOperasiController@store')
 
 Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
   'edit', 'create'
-]]);
-
-Route::get('hasil_lab/download/{path}', 'HasilLabController@download');
-Route::get('hasil_lab/empty/{no_pegawai}', 'HasilLabController@getEmptyHasilLab');
-Route::post('hasil_lab/upload/{id}', 'HasilLabController@upload');
-Route::resource('hasil_lab', 'HasilLabController', ['except' => [
-  'edit', 'create', 'getEmptyHasilLab', 'download', 'upload'
 ]]);
 
 Route::get('ambulans/available', 'AmbulansController@getAvailable');
