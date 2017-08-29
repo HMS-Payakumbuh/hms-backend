@@ -42,7 +42,7 @@ class AntrianFrontOfficeController extends Controller
     {
         $all_antrian = AntrianFrontOffice::all();
         if (!empty($all_antrian[0])) {
-            if ($all_antrian[0]->waktu_perubahan_antrian < Carbon::today()->toDateTimeString()) {
+            if ($all_antrian[count($all_antrian) - 1]->waktu_perubahan_antrian < Carbon::today()->toDateTimeString()) {
                 self::cleanup();
             }
         } 
@@ -72,8 +72,8 @@ class AntrianFrontOfficeController extends Controller
             if ($poli && $poli->sisa_pelayanan <= 0) {
                 AntrianFrontOffice::destroy($antrian_front_office->nama_layanan_poli, $antrian_front_office->no_antrian);
                 return response()->json([
-                    'error' => 'Pembuatan Antrian Gagal'
-                ], 500);
+                    'error' => 'Kuota layanan yang dituju sudah habis.'
+                ], 202);
             }
         }
         Redis::publish('antrian', json_encode(['kategori_antrian' => $request->input('kategori_antrian')]));
