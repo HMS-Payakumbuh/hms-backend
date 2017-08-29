@@ -35,22 +35,24 @@ Route::group(['middleware' => 'jwt.auth'], function () {
   ]]);
 });
 
-Route::resource('pasien', 'PasienController', ['except' => [
-  'edit', 'create'
-]]);
+  Route::resource('pasien', 'PasienController', ['except' => [
+    'edit', 'create'
+  ]]);
 
-Route::resource('rekam_medis', 'RekamMedisController', ['except' => [
-  'edit', 'update', 'show', 'create'
-]]);
-Route::get('rekam_medis/{id_pasien}', 'RekamMedisController@show');
-Route::put('rekam_medis/{id_pasien}/{tanggal_waktu}', 'RekamMedisController@update');
+  Route::resource('rekam_medis', 'RekamMedisController', ['except' => [
+    'edit', 'update', 'show', 'create'
+  ]]);
+  Route::get('rekam_medis/{id_pasien}', 'RekamMedisController@show');
+  Route::put('rekam_medis/{id_pasien}/{tanggal_waktu}', 'RekamMedisController@update');
+
+  Route::resource('rekam_medis_eksternal', 'RekamMedisEksternalController', ['except' => [
+    'edit', 'show', 'create'
+  ]]);
+  Route::get('rekam_medis_eksternal/import/{kode_pasien}/{no_rujukan}', 'RekamMedisEksternalController@getEksternalRekamMedis');
+  Route::get('rekam_medis_eksternal/{id_pasien}', 'RekamMedisEksternalController@show');
+});
+
 Route::get('rekam_medis/eksternal/{no_rujukan}/{asal_rujukan}', 'RekamMedisController@getForExternal');
-
-Route::resource('rekam_medis_eksternal', 'RekamMedisEksternalController', ['except' => [
-  'edit', 'show', 'create'
-]]);
-Route::get('rekam_medis_eksternal/import/{kode_pasien}/{no_rujukan}', 'RekamMedisEksternalController@getEksternalRekamMedis');
-Route::get('rekam_medis_eksternal/{id_pasien}', 'RekamMedisEksternalController@show');
 
 Route::post('antrian_sms/parse_message', 'AntrianSMSController@parseMessage');
 
@@ -78,6 +80,7 @@ Route::get('sep/{no_rujukan}', 'SepController@insertSEP');
 Route::get('sep/rujukan/{no_rujukan}', 'SepController@getRujukan');
 Route::get('sep/peserta/{no_kartu}', 'SepController@getPeserta');
 
+Route::get('transaksi/export', 'TransaksiController@export');
 Route::resource('transaksi', 'TransaksiController', ['except' => [
   'edit', 'create'
   ]]);
@@ -96,7 +99,9 @@ Route::resource('rujukan', 'RujukanController', ['except' => [
   'edit', 'create'
 ]]);
 
+Route::get('klaim/export', 'KlaimController@export');
 Route::resource('klaim', 'KlaimController');
+Route::get('pembayaran/export', 'PembayaranController@export');
 Route::resource('pembayaran', 'PembayaranController');
 Route::resource('asuransi', 'AsuransiController');
 Route::get('asuransi/search/{id_pasien}', 'AsuransiController@getAsuransiByIdPasien');
@@ -291,4 +296,5 @@ Route::get('obat_eceran/search_by_time', 'ObatEceranController@getObatEceranByTi
 Route::resource('obat_eceran', 'ObatEceranController');
 
 Route::get('stock_opname/search_by_location', 'StockOpnameController@searchByLocation');
+Route::get('stock_opname/latest_by_location', 'StockOpnameController@getLatestByLocation');
 Route::resource('stock_opname', 'StockOpnameController');

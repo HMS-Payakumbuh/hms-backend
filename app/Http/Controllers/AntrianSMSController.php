@@ -8,6 +8,7 @@ use App\Pasien;
 use App\RekamMedis;
 use App\Poliklinik;
 use App\Laboratorium;
+use App\Transaksi;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Redis;
 use Log;
@@ -65,8 +66,15 @@ class AntrianSMSController extends Controller
               $antrian_front_office->kesempatan = 5;
               $antrian_front_office->via_sms = true;
 
-              $pasien = Pasien::where('kode_pasien', '=', $pieces[0])->first();
+              $pasien = Pasien::with('catatan_kematian')->where('kode_pasien', '=', $pieces[0])->first();
               if ($pasien) {
+                if ($pasien->catatan_kematian) {
+                  $text = '[PAYAKUMBUH] Pendaftaran gagal. Pasien yang didaftarkan sudah meninggal.';
+                  Log::info('Mengirim SMS ke nomor '.$sender_phone.' dengan pesan : '.$text);
+                  self::sendMessage($text, $sender_phone);
+                  return response($text, 500);
+                }
+
                 $antrian_front_office->nama_pasien = $pasien->nama_pasien;
                 $antrian_front_office->kode_pasien = $pieces[0];
                 $antrian_exist = AntrianFrontOffice::where('kode_pasien', '=', $pieces[0])
@@ -77,6 +85,16 @@ class AntrianSMSController extends Controller
                   self::sendMessage($text, $sender_phone);
                   return response($text, 500);
                 }
+
+                $transaksi_exist = Transaksi::where('id_pasien', '=', $pasien->id)
+                                            ->where('status', '=', 'open')
+                                            ->first();
+                if ($transaksi_exist) {
+                  $text = '[PAYAKUMBUH] Pendaftaran gagal. Anda masih memiliki transaksi yang belum selesai. Tuntaskan pembayaran sebelum Anda dapat mendaftar.';
+                  Log::info('Mengirim SMS ke nomor '.$sender_phone.' dengan pesan : '.$text);
+                  self::sendMessage($text, $sender_phone);
+                  return response($text, 500);
+                }                            
               }
               else {
                 $text = '[PAYAKUMBUH] Pendaftaran gagal. Kode pasien yang dimasukkan tidak terdaftar.';

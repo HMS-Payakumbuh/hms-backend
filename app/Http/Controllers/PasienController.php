@@ -16,7 +16,8 @@ class PasienController extends Controller
      */
     public function index()
     {
-        return Pasien::all();
+        return Pasien::with('catatan_kematian')
+                    ->get();
     }
 
     /**
@@ -28,23 +29,34 @@ class PasienController extends Controller
     public function store(Request $request)
     {
         $pasien = new Pasien;
+        $now = Carbon::now();
         if ($request->input('id')) {
             $pasien = Pasien::findOrFail($request->input('id'));
             return response($pasien, 200);
         }
         $pasien->nama_pasien = $request->input('nama_pasien');
         $pasien->tanggal_lahir = Carbon::parse($request->input('tanggal_lahir'));
+        if ($pasien->tanggal_lahir > $now) {
+            return response()->json([
+                'error' => "Tanggal lahir yang dimasukkan salah."
+            ], 202);
+        }
         $pasien->jender = $request->input('jender');
         $pasien->agama = $request->input('agama');
         $pasien->alamat = $request->input('alamat');
         $pasien->kontak = $request->input('kontak');
+        if (preg_match('/\d+/', $pasien->kontak)) {
+            return response()->json([
+                'error' => "Kontak yang dimasukkan salah."
+            ], 202);
+        }
         $pasien->gol_darah = $request->input('gol_darah');
         $pasien->save();
 
         //generate kode
-        $year = Carbon::now()->year;
-        $month = Carbon::now()->month;
-        $day = Carbon::now()->day;
+        $year = $now->year;
+        $month = $now->month;
+        $day = $now->day;
         if (strlen($month) == 1)
             $month = '0'.$month;
         if (strlen($day) == 1)
@@ -77,12 +89,23 @@ class PasienController extends Controller
     public function update(Request $request, $id)
     {
         $pasien = Pasien::findOrFail($id);
+        $now = Carbon::now();
         $pasien->nama_pasien = $request->input('nama_pasien');
         $pasien->tanggal_lahir = Carbon::parse($request->input('tanggal_lahir'));
+        if ($pasien->tanggal_lahir > $now) {
+            return response()->json([
+                'error' => "Tanggal lahir yang dimasukkan salah."
+            ], 202);
+        }
         $pasien->jender = $request->input('jender');
         $pasien->agama = $request->input('agama');
         $pasien->alamat = $request->input('alamat');
         $pasien->kontak = $request->input('kontak');
+        if (preg_match('/\d+/', $pasien->kontak)) {
+            return response()->json([
+                'error' => "Kontak yang dimasukkan salah."
+            ], 202);
+        }
         $pasien->gol_darah = $request->input('gol_darah');
         $pasien->save();
 

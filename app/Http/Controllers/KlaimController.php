@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Klaim;
+use Excel;
+use DateTime;
+use DateInterval;
 
 class KlaimController extends Controller
 {
@@ -14,6 +17,66 @@ class KlaimController extends Controller
         } else {
             return Klaim::with(['pembayaran', 'asuransi.pasien'])->get();
         }
+    }
+
+    public function export(Request $request)
+    {
+        if ($request->input('tanggal_awal') !== null && $request->input('tanggal_akhir') !== null) {
+            $tanggal_awal = new DateTime($request->input('tanggal_awal'));
+            $tanggal_akhir = new DateTime($request->input('tanggal_akhir'));
+            $tanggal_akhir->add(new DateInterval("P1D")); // Plus 1 day
+
+            $all_klaim = Klaim::with(['pembayaran', 'asuransi.pasien'])
+                ->whereBetween('created_at', array($tanggal_awal, $tanggal_akhir))
+                ->get();
+
+            $data = array(
+                array('Waktu Klaim', 'Nama Pasien', 'Nomor Pembayaran', 'Total Pembayaran', 'Tarif Klaim', 'Surplus Klaim')
+            );
+
+            $total_pembayaran = 0;
+            $total_tarif = 0;
+            $total_surplus = 0;
+
+            foreach ($all_klaim as $klaim) {
+                $surplus = 0;
+                $surplus = $klaim->tarif - $klaim->pembayaran->harga_bayar;
+                $total_pembayaran += $klaim->pembayaran->harga_bayar;
+                $total_tarif += $klaim->tarif;
+                $total_surplus += $surplus;
+
+                $klaim_array = array(
+                    $klaim->created_at,
+                    $klaim->asuransi->pasien->nama_pasien,
+                    $klaim->pembayaran->no_pembayaran,
+                    $klaim->pembayaran->harga_bayar,
+                    $klaim->tarif,
+                    $surplus
+                );
+                array_push($data, $klaim_array);
+            }
+
+            $total_array = array('Total', '', '', $total_pembayaran, $total_tarif, $total_surplus);
+            array_push($data, $total_array);
+
+            $tanggal_awal = $tanggal_awal->format('Y/m/d');
+            $tanggal_akhir = $tanggal_akhir->format('Y/m/d');
+            $title = "Data Klaim ".$tanggal_awal." - ".$tanggal_akhir;
+            return Excel::create($title, function($excel) use ($data) {
+                $excel->setTitle('Data Klaim')
+                        ->setCreator('user')
+                        ->setCompany('RSUD Payakumbuh')
+                        ->setDescription('Data Klaim');
+                $excel->sheet('Sheet1', function($sheet) use ($data) {
+                    $sheet->fromArray($data);
+                });
+            })->download('xls');
+        }
+
+        return response()->json([
+            'code' => '500',
+            'message' => 'Malformed Request'
+        ], 500);
     }
 
     /**

@@ -188,11 +188,17 @@ class ObatPindahController extends Controller
         $tanggal_selesai = new DateTime($request->tanggal_selesai);
         $tanggal_selesai->add(new DateInterval("P1D")); // Plus 1 day
 
-        $all_obat_pindah = ObatPindah::whereBetween('waktu_pindah', array($tanggal_mulai, $tanggal_selesai))
+        $all_obat_pindah = ObatPindah::when($request->asal > 0, function ($query) use ($request) {
+                                 return $query->where('asal', '=', $request->asal);
+                            })
+                            ->when($request->tujuan > 0, function ($query) use ($request) {
+                                 return $query->where('tujuan', '=', $request->tujuan);
+                            })
+                            ->whereBetween('waktu_pindah', array($tanggal_mulai, $tanggal_selesai))
                             ->join('jenis_obat', 'jenis_obat.id', '=', 'obat_pindah.id_jenis_obat')
                             ->join('stok_obat', 'stok_obat.id', '=', 'obat_pindah.id_stok_obat_asal')
                             ->join('lokasi_obat as lokasi_asal', 'lokasi_asal.id', '=', 'obat_pindah.asal')
-                            ->join('lokasi_obat as lokasi_tujuan', 'lokasi_tujuan.id', '=', 'obat_pindah.tujuan') // Error: Lokasi tujuan not displayed yet
+                            ->join('lokasi_obat as lokasi_tujuan', 'lokasi_tujuan.id', '=', 'obat_pindah.tujuan')
                             ->select('jenis_obat.merek_obat',
                                     'jenis_obat.nama_generik',
                                     'jenis_obat.pembuat',
@@ -203,8 +209,8 @@ class ObatPindahController extends Controller
                                     'obat_pindah.waktu_pindah', 
                                     'obat_pindah.jumlah',
                                     'jenis_obat.satuan', 
-                                    'lokasi_asal.nama',
-                                    'lokasi_tujuan.nama',
+                                    'lokasi_asal.nama as nama_lokasi_asal',
+                                    'lokasi_tujuan.nama as nama_lokasi_tujuan',
                                     'obat_pindah.keterangan')
                             ->get();
 

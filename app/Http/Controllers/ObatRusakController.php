@@ -136,6 +136,9 @@ class ObatRusakController extends Controller
         $tanggal_selesai->add(new DateInterval("P1D")); // Plus 1 day
 
         $all_obat_rusak = ObatRusak::whereBetween('waktu_keluar', array($tanggal_mulai, $tanggal_selesai))
+                            ->when($request->alasan != "Semua", function ($query) use ($request) {
+                                 return $query->where('alasan', 'LIKE', $request->alasan);
+                            })
                             ->join('jenis_obat', 'jenis_obat.id', '=', 'obat_rusak.id_jenis_obat')
                             ->join('stok_obat', 'stok_obat.id', '=', 'obat_rusak.id_stok_obat')
                             ->join('lokasi_obat', 'lokasi_obat.id', '=', 'obat_rusak.asal')

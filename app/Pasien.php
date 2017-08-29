@@ -22,5 +22,10 @@ class Pasien extends Eloquent
 	{
 		return $this->hasMany('App\Asuransi', 'id_pasien');
 	}
+
+	public function catatan_kematian()
+	{
+		return $this->hasOne('App\CatatanKematian', 'id_pasien');
+	}
 }
 

@@ -26,6 +26,14 @@ class LokasiObatController extends Controller
     	$lokasi_obat = new LokasiObat;    	
     	$lokasi_obat->nama = $request->input('nama');
         $lokasi_obat->jenis = $request->input('jenis');
+
+        if ($lokasi_obat->jenis == 0 || $lokasi_obat->jenis == 1) {
+            $lokasi_obat_temp = LokasiObat::where('jenis', $lokasi_obat->jenis)->first();
+            if (!is_null($lokasi_obat_temp)) {
+                return response ('Duplicate jenis', 401);
+            }   
+        }
+
     	$lokasi_obat->save();
     	return response ($lokasi_obat, 201);
     }
@@ -52,6 +60,14 @@ class LokasiObatController extends Controller
     	$lokasi_obat = LokasiObat::findOrFail($id);
     	$lokasi_obat->nama = $request->input('nama');
         $lokasi_obat->jenis = $request->input('jenis');
+
+        if ($lokasi_obat->jenis == 0 || $lokasi_obat->jenis == 1) {
+            $lokasi_obat_temp = LokasiObat::where('jenis', $lokasi_obat->jenis)->first();
+            if (!is_null($lokasi_obat_temp)) {
+                return response ('Duplicate jenis', 401);
+            }   
+        }
+
     	$lokasi_obat->save();
     	return response ($lokasi_obat, 200)
     		-> header('Content-Type', 'application/json');
