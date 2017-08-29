@@ -230,13 +230,6 @@ class PemakaianKamarRawatinapController extends Controller
         $waktuMasuk = Carbon::parse($pemakaianKamarRawatinap->waktu_masuk);
         $waktuKeluar = Carbon::parse($pemakaianKamarRawatinap->waktu_keluar);
 
-        if ($waktuMasuk->diffInHours($waktuKeluar) <= 2) {
-            $pemakaianKamarRawatinap->delete();
-        }
-        else {
-            $pemakaianKamarRawatinap->save();
-        }
-
         $tempatTidur = TempatTidur::where('no_kamar', '=', $no_kamar)
         ->where('no_tempat_tidur', '=', $no_tempat_tidur)
         ->first();
@@ -280,6 +273,13 @@ class PemakaianKamarRawatinapController extends Controller
                 $transaksi->status = 'open';
                 $transaksi->save();
             }
+        }
+
+        if ($waktuMasuk->diffInHours($waktuKeluar) <= 2) {
+            $pemakaianKamarRawatinap->delete();
+        }
+        else {
+            $pemakaianKamarRawatinap->save();
         }
 
         return response($pemakaianKamarRawatinap, 200);
