@@ -24,7 +24,8 @@ class UsersTableSeeder extends Seeder
           array('no_pegawai'=>'F002', 'name'=>'Front Office B', 'role'=>'frontOffice', 'password'=>Hash::make('frontOffice'), 'other'=>'{"kategori_antrian": "C"}'),
           array('no_pegawai'=>'AP001', 'name'=>'Staf Apotek', 'role'=>'stafApotek', 'password'=>Hash::make('stafapotek'), 'other'=>''),
           array('no_pegawai'=>'GU001', 'name'=>'Gudang Utama', 'role'=>'gudangUtama', 'password'=>Hash::make('gudangutama'), 'other'=>''),
-          array('no_pegawai'=>'K001', 'name'=>'Kasir', 'role'=>'kasir', 'password'=>Hash::make('kasir'), 'other'=>'')
+          array('no_pegawai'=>'K001', 'name'=>'Kasir', 'role'=>'kasir', 'password'=>Hash::make('kasir'), 'other'=>''),
+          array('no_pegawai'=>'U001', 'name'=>'Petugas Keuangan', 'role'=>'petugasKeuangan', 'password'=>Hash::make('petugasKeuangan'), 'other'=>'')
        ));
     }
 }

@@ -211,8 +211,10 @@ class TransaksiController extends Controller
             ->first();
 
         if ($transaksiLama != null) {
-            $transaksiLama->status = 'closed';
-            $transaksiLama->save();
+            return response()->json([
+                'code' => 500,
+                'message' => 'Pasien Memiliki Transaksi Yang Belum Diselesaikan'
+            ], 500);
         }
 
         $transaksi->kode_jenis_pasien = $payload['kode_jenis_pasien']; //1: pasien umum, 2: pasien asuransi
@@ -449,7 +451,8 @@ class TransaksiController extends Controller
 
     public function getStatusBpjs($id)
     {
-        $pemakaianKamarRawatinap = PemakaianKamarRawatInap::where('id_transaksi', '=', $id)
+        $pemakaianKamarRawatinap = PemakaianKamarRawatInap::with('pemakaianKamarRawatInap.kamar_rawatinap')
+            ->where('id_transaksi', '=', $id)
             ->where('waktu_keluar', '=', null)
             ->first();
 
@@ -462,16 +465,36 @@ class TransaksiController extends Controller
             $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
 
             if ($pemakaianKamarRawatinap != null) {
+                $kelas_sekarang = $pemakaianKamarRawatinap->kamar_rawatinap->kelas;
+                $kamar_sekarang = $pemakaianKamarRawatinap->kamar_rawatinap->jenis_kamar;
+                $pemakaian_array = PemakaianKamarRawatInap::with('pemakaianKamarRawatInap.kamar_rawatinap')
+                    ->where('id_transaksi', '=', $id)
+                    ->whereHas('pemakaianKamarRawatInap.kamar_rawatinap', function ($query) use ($kamar_sekarang) {
+                        $query->where('jenis_kamar', '=', $kamar_sekarang);
+                    })
+                    ->whereHas('pemakaianKamarRawatInap.kamar_rawatinap', function ($query) use ($kelas_sekarang) {
+                        $query->where('kelas', '=', $kelas_sekarang);
+                    })
+                    ->get();
+                
                 $kamar = $pemakaianKamarRawatinap->kamar_rawatinap;
 
                 $carbon = Carbon::parse($transaksi->waktu_masuk_pasien);
                 $waktuMasuk = Carbon::parse($pemakaianKamarRawatinap->waktu_masuk);
                 $waktuKeluar = Carbon::now('Asia/Jakarta');
 
-                $los = 1;
+                $los = 0;
 
-                if ($waktuMasuk->diffInDays($waktuKeluar) > 0) {
+                if ($waktuMasuk->diffInHours($waktuKeluar) > 2) {
                     $los = $waktuMasuk->diffInDays($waktuKeluar);
+                }
+
+                foreach ($pemakaian_array as $pemakaian) {
+                    if ($pemakaian->waktu_keluar != null) {
+                        $waktuPemakaianMasuk = Carbon::parse($pemakaian->waktu_masuk);
+                        $waktuPemakaianKeluar = Carbon::parse($pemakaian->waktu_keluar);
+                        $los += $waktuPemakaianMasuk->diffInDays($waktuPemakaianKeluar);
+                    }
                 }
 
 
@@ -484,13 +507,10 @@ class TransaksiController extends Controller
                         $kelas = $kelas . $kamar->kelas;
                     }
 
-                    $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
-                    $currentUpgradeLos = $currentData['response']['data']['upgrade_class_los'];
-
                     $requestSet = array(
                         'upgrade_class_ind' => $transaksi->status_naik_kelas,
                         'upgrade_class_class' => $kelas,
-                        'upgrade_class_los' => $los + $currentUpgradeLos,
+                        'upgrade_class_los' => $los,
                         'add_payment_pct' => $settingBpjs->add_payment_pct
                     );
                     $bpjs->setClaimData($requestSet);
@@ -504,7 +524,7 @@ class TransaksiController extends Controller
                             'tgl_masuk' => $carbon->toDateTimeString(),
                             'tgl_pulang' => $waktuKeluar->toDateTimeString(),
                             'icu_indikator' => 1,
-                            'icu_los' => $los + $currentIcuLos
+                            'icu_los' => $los
                         );
                         $bpjs->setClaimData($requestSet);
                     }
