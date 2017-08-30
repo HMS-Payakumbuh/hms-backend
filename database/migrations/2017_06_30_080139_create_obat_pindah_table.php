@@ -31,7 +31,7 @@ class CreateObatPindahTable extends Migration
             ->references('id')->on('stok_obat')
             ->onDelete('restrict');    
 	  
-			$table->dateTime('waktu_pindah');	// Atau pakai timestamp?	
+			$table->dateTime('waktu_pindah');
 			$table->integer('jumlah');	
 			$table->string('keterangan')->nullable();	
 

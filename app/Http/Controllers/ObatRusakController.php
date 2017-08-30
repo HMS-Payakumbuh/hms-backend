@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\ObatRusak;
 use App\StokObat;
 use Excel;
@@ -29,30 +30,41 @@ class ObatRusakController extends Controller
      */
     public function store(Request $request)
     {        
-        // TO-DO: Make into transaction?
-        // TO-DO: Restriction checking (jumlah > 0 etc.)
         $obat_rusak = new ObatRusak;
         $obat_rusak->id_jenis_obat = $request->input('id_jenis_obat');
         $obat_rusak->id_stok_obat = $request->input('id_stok_obat');
 
         date_default_timezone_set('Asia/Jakarta');
-        $obat_rusak->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
+        $obat_rusak->waktu_keluar = date("Y-m-d H:i:s");
         
         $obat_rusak->jumlah = $request->input('jumlah');        
         $obat_rusak->alasan = $request->input('alasan');
         $obat_rusak->keterangan = $request->input('keterangan');
         $obat_rusak->asal = $request->input('asal');
 
-        $stok_obat_asal = StokObat::findOrFail($obat_rusak->id_stok_obat);
-        $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_rusak->jumlah);
+        try {
+            DB::beginTransaction();
 
-        if ($stok_obat_asal->jumlah < 0) {
-            return response("less than 0 error", 401);
+            $stok_obat_asal = StokObat::findOrFail($obat_rusak->id_stok_obat);
+            $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_rusak->jumlah);
+
+            /* if ($stok_obat_asal->jumlah < 0) {
+                return response("less than 0 error", 401);
+            } */        
+
+            $obat_rusak->save();
+            $stok_obat_asal->save();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'code' => '500',
+                'message' => $e->getMessage()
+            ], 500);
         }
 
-        $obat_rusak->save();
-        $stok_obat_asal->save();
-
+        DB::commit();
         return response ($obat_rusak, 201);
     }
 

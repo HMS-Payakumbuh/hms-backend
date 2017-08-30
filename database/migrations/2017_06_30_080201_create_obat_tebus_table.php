@@ -37,7 +37,7 @@ class CreateObatTebusTable extends Migration
                   ->references('id')->on('resep')
                   ->onDelete('restrict');
 
-            $table->dateTime('waktu_keluar');   // Atau pakai timestamp?  
+            $table->dateTime('waktu_keluar'); 
                   
             $table->timestamps();               
         });

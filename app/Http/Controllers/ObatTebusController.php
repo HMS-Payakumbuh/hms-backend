@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Transaksi;
 use App\TransaksiEksternal;
 use App\ObatTebus;
@@ -33,64 +34,73 @@ class ObatTebusController extends Controller
      */
     public function store(Request $request)
     {
-        // TO-DO: Make into transaction?
-        // TO-DO: Restriction checking (jumlah > 0 etc.)
+        try {
+            DB::beginTransaction();
 
-        $obat_tebus = new ObatTebus;
-        $obat_tebus->id_resep = $request->input('id_resep');        
+            $obat_tebus = new ObatTebus;
+            $obat_tebus->id_resep = $request->input('id_resep');        
 
-        $resep = Resep::findOrFail($obat_tebus->id_resep);
+            $resep = Resep::findOrFail($obat_tebus->id_resep);
 
-        $obat_tebus->eksternal = $resep->eksternal;
+            $obat_tebus->eksternal = $resep->eksternal;
 
-        if ($obat_tebus->eksternal) {
-            $obat_tebus->id_transaksi_eksternal = $resep->id_transaksi_eksternal; 
-        } else {
-            $obat_tebus->id_transaksi = $resep->id_transaksi;    
-        }
-
-        date_default_timezone_set('Asia/Jakarta');
-        $obat_tebus->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
-        $obat_tebus->save();
-
-        foreach ($request->input('obat_tebus_item') as $key => $value) {
-            $obat_tebus_item = new ObatTebusItem;
-
-            $obat_tebus_item->id_obat_tebus = $obat_tebus->id;
-            $obat_tebus_item->id_jenis_obat = $value['id_jenis_obat'];
-            $obat_tebus_item->id_stok_obat = $value['id_stok_obat'];
-            $obat_tebus_item->jumlah = $value['jumlah'];
-            $obat_tebus_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
-            $obat_tebus_item->keterangan = $value['keterangan'];
-            $obat_tebus_item->asal = $value['asal'];
-            $obat_tebus_item->id_resep_item = $value['id_resep_item'];
-            $obat_tebus_item->id_racikan_item = $value['id_racikan_item'];         
-
-            $stok_obat_asal = StokObat::findOrFail($obat_tebus_item->id_stok_obat);
-            $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_tebus_item->jumlah);
-
-            if ($stok_obat_asal->jumlah < 0) {
-                return response("less than 0 error", 401);
-            }   
-
-            if ($obat_tebus_item->save()) {
-                if ($obat_tebus->eksternal) {
-                    $transaksi = TransaksiEksternal::findOrFail($obat_tebus->id_transaksi_eksternal);
-                    $transaksi->harga_total += $obat_tebus_item->harga_jual_realisasi * $obat_tebus_item->jumlah;
-                    $transaksi->save();
-                } else {
-                    $transaksi = Transaksi::findOrFail($obat_tebus->id_transaksi);
-                    $transaksi->harga_total += $obat_tebus_item->harga_jual_realisasi * $obat_tebus_item->jumlah;
-                    $transaksi->save();
-                }
+            if ($obat_tebus->eksternal) {
+                $obat_tebus->id_transaksi_eksternal = $resep->id_transaksi_eksternal; 
+            } else {
+                $obat_tebus->id_transaksi = $resep->id_transaksi;    
             }
 
-            $stok_obat_asal->save();
-        }           
+            date_default_timezone_set('Asia/Jakarta');
+            $obat_tebus->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
+            $obat_tebus->save();
 
-        $resep->tebus = true;
-        $resep->save();
-        
+            foreach ($request->input('obat_tebus_item') as $key => $value) {
+                $obat_tebus_item = new ObatTebusItem;
+
+                $obat_tebus_item->id_obat_tebus = $obat_tebus->id;
+                $obat_tebus_item->id_jenis_obat = $value['id_jenis_obat'];
+                $obat_tebus_item->id_stok_obat = $value['id_stok_obat'];
+                $obat_tebus_item->jumlah = $value['jumlah'];
+                $obat_tebus_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
+                $obat_tebus_item->keterangan = $value['keterangan'];
+                $obat_tebus_item->asal = $value['asal'];
+                $obat_tebus_item->id_resep_item = $value['id_resep_item'];
+                $obat_tebus_item->id_racikan_item = $value['id_racikan_item'];         
+
+                $stok_obat_asal = StokObat::findOrFail($obat_tebus_item->id_stok_obat);
+                $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_tebus_item->jumlah);
+
+                if ($stok_obat_asal->jumlah < 0) {
+                    return response("less than 0 error", 401);
+                }   
+
+                if ($obat_tebus_item->save()) {
+                    if ($obat_tebus->eksternal) {
+                        $transaksi = TransaksiEksternal::findOrFail($obat_tebus->id_transaksi_eksternal);
+                        $transaksi->harga_total += $obat_tebus_item->harga_jual_realisasi * $obat_tebus_item->jumlah;
+                        $transaksi->save();
+                    } else {
+                        $transaksi = Transaksi::findOrFail($obat_tebus->id_transaksi);
+                        $transaksi->harga_total += $obat_tebus_item->harga_jual_realisasi * $obat_tebus_item->jumlah;
+                        $transaksi->save();
+                    }
+                }
+
+                $stok_obat_asal->save();
+            }           
+
+            $resep->tebus = true;
+            $resep->save();
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'code' => '500',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+
+        DB::commit();        
         return response ($obat_tebus, 201);
     }
 
