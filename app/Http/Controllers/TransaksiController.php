@@ -214,7 +214,7 @@ class TransaksiController extends Controller
             return response()->json([
                 'code' => 500,
                 'message' => 'Pasien Memiliki Transaksi Yang Belum Diselesaikan'
-            ], 500);
+            ], 202);
         }
 
         $transaksi->kode_jenis_pasien = $payload['kode_jenis_pasien']; //1: pasien umum, 2: pasien asuransi

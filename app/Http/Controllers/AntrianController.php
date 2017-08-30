@@ -49,7 +49,7 @@ class AntrianController extends Controller
 
         $all_antrian = Antrian::all();
         if (!empty($all_antrian[0])) {
-            if ($all_antrian[count($all_antrian) - 1]->waktu_perubahan_antrian < Carbon::today()->toDateTimeString()) {
+            if ($all_antrian[count($all_antrian) - 1]->waktu_masuk_antrian < Carbon::today()->toDateTimeString()) {
                 self::cleanup();
             }
         } 
@@ -82,7 +82,7 @@ class AntrianController extends Controller
         }
 
         if (!empty($all_antrian[0])) {
-            if ($all_antrian[count($all_antrian) - 1]->waktu_perubahan_antrian < Carbon::today()->toDateTimeString())
+            if ($all_antrian[count($all_antrian) - 1]->waktu_masuk_antrian < Carbon::today()->toDateTimeString())
                 $antrian->no_antrian = 1;
             else
                 $antrian->no_antrian = $all_antrian[count($all_antrian) - 1]->no_antrian + 1;

@@ -55,7 +55,7 @@ class AntrianSMSController extends Controller
             if (count($pieces) > 1) {
               $all_antrian = AntrianFrontOffice::all();
               if (!empty($all_antrian[0])) {
-                  if ($all_antrian[0]->waktu_perubahan_antrian < Carbon::today()->toDateTimeString()) {
+                  if ($all_antrian[0]->waktu_masuk_antrian < Carbon::today()->toDateTimeString()) {
                       AntrianFrontOffice::truncate();
                   }
               }
@@ -101,6 +101,14 @@ class AntrianSMSController extends Controller
                 Log::info('Mengirim SMS ke nomor '.$sender_phone.' dengan pesan : '.$text);
                 self::sendMessage($text, $sender_phone);
                 return response($text, 500);
+              }
+
+              $all_antrian = AntrianFrontOffice::where('kategori_antrian', '=', $request->input('kategori_antrian'))
+                                                ->get();
+              if (!empty($all_antrian[0])) {
+                  $antrian_front_office->no_antrian = $all_antrian[count($all_antrian) - 1]->no_antrian + 1;
+              } else {
+                  $antrian_front_office->no_antrian = 1;
               }
 
               if (substr($pieces[1], 0, 4) === 'Poli')
