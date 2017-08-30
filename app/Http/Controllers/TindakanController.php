@@ -103,6 +103,18 @@ class TindakanController extends Controller
         ->get();
     }
 
+        /**
+     * Display the specified resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+     public function getTindakanWithoutAmbulans ()
+     {
+       return Tindakan::with('daftarTindakan', 'transaksi', 'pasien')
+         ->where('nama_ambulans', '=', 'Ambulans belum dipilih')
+         ->get();
+     }
+
     /**
      * Display the specified resource.
      *
