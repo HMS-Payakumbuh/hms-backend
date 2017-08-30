@@ -27,6 +27,26 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     'edit', 'create'
   ]]);
 
+  Route::get('ambulans/available', 'AmbulansController@getAvailable');
+  Route::resource('ambulans', 'AmbulansController', ['except' => [
+    'edit', 'create'
+  ]]);
+
+  Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
+    'edit', 'create'
+  ]]);
+  
+  Route::get('tindakan/rekam_medis/{id_pasien}/{tanggal_waktu}', 'TindakanController@getTindakanOfRekamMedis');
+  Route::get('tindakan/hasil_lab/{nama_lab}', 'TindakanController@getTindakanWithoutHasilLab');
+  Route::get('tindakan/no_ambulans', 'TindakanController@getTindakanWithoutAmbulans');
+
+  Route::get('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@show');
+  Route::delete('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@destroy');
+  
+  Route::resource('tindakan', 'TindakanController', ['except' => [
+    'edit', 'create', 'show', 'destroy'
+  ]]);
+
   Route::get('hasil_lab/empty/{no_pegawai}', 'HasilLabController@getEmptyHasilLab');
   Route::get('hasil_lab/download/{path}', 'HasilLabController@download');
   Route::post('hasil_lab/upload/{id}', 'HasilLabController@upload');
@@ -127,19 +147,6 @@ Route::resource('diagnosis', 'DiagnosisController', ['except' => [
 Route::get('diagnosis/{id_pasien}', 'DiagnosisController@getDiagnosisOfPasien');
 Route::get('diagnosis/rekam_medis/{id_pasien}/{tanggal_waktu}', 'DiagnosisController@getDiagnosisOfRekamMedis');
 
-Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
-  'edit', 'create'
-]]);
-
-Route::get('tindakan/rekam_medis/{id_pasien}/{tanggal_waktu}', 'TindakanController@getTindakanOfRekamMedis');
-Route::get('tindakan/hasil_lab/{nama_lab}', 'TindakanController@getTindakanWithoutHasilLab');
-
-Route::resource('tindakan', 'TindakanController', ['except' => [
-  'edit', 'create', 'show', 'destroy'
-]]);
-Route::get('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@show');
-Route::delete('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@destroy');
-
 Route::resource('tindakan_operasi', 'TindakanOperasiController', ['except' => [
   'edit', 'create'
 ]]);
@@ -147,11 +154,6 @@ Route::get('tindakan_operasi/{pemakaianKamarOperasiId}', 'TindakanOperasiControl
 Route::post('tindakan_operasi/{id_tindakan}', 'TindakanOperasiController@store');
 
 Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
-  'edit', 'create'
-]]);
-
-Route::get('ambulans/available', 'AmbulansController@getAvailable');
-Route::resource('ambulans', 'AmbulansController', ['except' => [
   'edit', 'create'
 ]]);
 
