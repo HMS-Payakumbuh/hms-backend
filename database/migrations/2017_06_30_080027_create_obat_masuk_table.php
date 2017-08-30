@@ -26,7 +26,7 @@ class CreateObatMasukTable extends Migration
                   ->references('id')->on('stok_obat')
                   ->onDelete('restrict');
 				  
-			$table->dateTime('waktu_masuk');	// Atau pake timestampnya?					
+			$table->dateTime('waktu_masuk');			
 			$table->integer('jumlah');	
 			$table->decimal('harga_beli_satuan', 12, 2);
             

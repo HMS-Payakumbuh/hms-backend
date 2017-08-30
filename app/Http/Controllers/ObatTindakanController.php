@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\ObatTindakan;
 use App\StokObat;
 use Excel;
@@ -29,32 +30,45 @@ class ObatTindakanController extends Controller
      */
     public function store(Request $request)
     {
-        foreach ($request->all() as $key => $value) {
-            $obat_tindakan = new ObatTindakan;
+        try {
+            DB::beginTransaction();
 
-            $obat_tindakan->id_jenis_obat = $value['id_jenis_obat'];
-            $obat_tindakan->id_stok_obat = $value['id_stok_obat'];
+            foreach ($request->all() as $key => $value) {
+                $obat_tindakan = new ObatTindakan;
 
-            date_default_timezone_set('Asia/Jakarta');
-            $obat_tindakan->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
+                $obat_tindakan->id_jenis_obat = $value['id_jenis_obat'];
+                $obat_tindakan->id_stok_obat = $value['id_stok_obat'];
 
-            $obat_tindakan->jumlah = $value['jumlah'];
-            $obat_tindakan->keterangan = $value['keterangan'];
-            $obat_tindakan->asal = $value['asal'];
-            $obat_tindakan->harga_jual_realisasi = $value['harga_jual_realisasi'];
-            $obat_tindakan->id_transaksi = $value['id_transaksi'];
-            $obat_tindakan->id_tindakan = $value['id_tindakan'];
+                date_default_timezone_set('Asia/Jakarta');
+                $obat_tindakan->waktu_keluar = date("Y-m-d H:i:s"); // Use default in DB instead?
 
-            $stok_obat_asal = StokObat::where('id', '=', $obat_tindakan->id_stok_obat)->first();
-            $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_tindakan->jumlah);
+                $obat_tindakan->jumlah = $value['jumlah'];
+                $obat_tindakan->keterangan = $value['keterangan'];
+                $obat_tindakan->asal = $value['asal'];
+                $obat_tindakan->harga_jual_realisasi = $value['harga_jual_realisasi'];
+                $obat_tindakan->id_transaksi = $value['id_transaksi'];
+                $obat_tindakan->id_tindakan = $value['id_tindakan'];
 
-            if ($stok_obat_asal->jumlah < 0) {
-                return response("less than 0 error", 401);
+                $stok_obat_asal = StokObat::where('id', '=', $obat_tindakan->id_stok_obat)->first();
+                $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_tindakan->jumlah);
+
+                if ($stok_obat_asal->jumlah < 0) {
+                    return response("less than 0 error", 401);
+                }
+
+                $obat_tindakan->save();
+                $stok_obat_asal->save();
             }
+        } catch (\Exception $e) {
+            DB::rollBack();
 
-            $obat_tindakan->save();
-            $stok_obat_asal->save();
+            return response()->json([
+                'code' => '500',
+                'message' => $e->getMessage()
+            ], 500);
         }
+
+        DB::commit();
         return response ($request->all(), 201);
     }
 
