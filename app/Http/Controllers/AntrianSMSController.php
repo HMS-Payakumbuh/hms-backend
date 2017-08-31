@@ -163,7 +163,7 @@ class AntrianSMSController extends Controller
               $antrian_front_office->save();
 
               Log::info('Mengirim SMS ke nomor '.$sender_phone.' dengan pesan : '.$text);
-              //self::sendMessage($text, $sender_phone);
+              self::sendMessage($text, $sender_phone);
               return response($text, 201);
             } else {
               $text = '[PAYAKUMBUH] Pendaftaran gagal. Format SMS Anda salah. Silakan kirim ulang SMS Anda dengan format yang benar.';
