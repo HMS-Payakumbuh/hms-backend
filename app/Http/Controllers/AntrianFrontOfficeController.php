@@ -117,7 +117,7 @@ class AntrianFrontOfficeController extends Controller
         $antrian_front_office = AntrianFrontOffice::where('via_sms', '=', true)
                                                 ->where('status', '=', 1)
                                                 ->get();
-        $now = Carbon::now()->toTimeString();                                        
+        $now = Carbon::now()->toDateTimeString();                                        
         foreach ($antrian_front_office as $antrian) {
             if ($antrian->waktu_perjanjian <= $now) {
                 if ($antrian->nama_layanan_poli)

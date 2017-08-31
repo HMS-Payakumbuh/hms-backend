@@ -23,9 +23,6 @@ Route::post('update_user_kategori', 'Auth\AuthController@update_user_kategori');
 Route::group(['middleware' => 'jwt.auth'], function () {
   Route::get('get_user_details', 'Auth\AuthController@get_user_details');
 
-  Route::resource('poliklinik', 'PoliklinikController', ['except' => [
-    'edit', 'create'
-  ]]);
 
   Route::get('ambulans/available', 'AmbulansController@getAvailable');
   Route::resource('ambulans', 'AmbulansController', ['except' => [
@@ -153,6 +150,10 @@ Route::resource('tindakan_operasi', 'TindakanOperasiController', ['except' => [
 Route::get('tindakan_operasi/{pemakaianKamarOperasiId}', 'TindakanOperasiController@show');
 Route::post('tindakan_operasi/{id_tindakan}', 'TindakanOperasiController@store');
 
+Route::resource('poliklinik', 'PoliklinikController', ['except' => [
+    'edit', 'create'
+  ]]);
+
 Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
   'edit', 'create'
 ]]);
@@ -245,6 +246,7 @@ Route::put('tempattidur/{no_kamar}/{no_tempat_tidur}', 'TempatTidurController@up
 // Route::get('resep/search_by_transaksi', 'ResepController@searchByTransaksi');
 Route::get('resep/rekam_medis/{id_pasien}/{tanggal_waktu}', 'ResepController@getResepOfRekamMedis');
 Route::get('resep/search_by_pasien', 'ResepController@searchByPasien');
+  
 // Route::get('resep/search_by_pasien_and_tanggal', 'ResepController@searchByPasienAndTanggal');
 Route::resource('resep', 'ResepController', ['except' => [
   'edit', 'create'
