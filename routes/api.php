@@ -66,6 +66,25 @@ Route::group(['middleware' => 'jwt.auth'], function () {
   ]]);
   Route::get('rekam_medis_eksternal/import/{kode_pasien}/{no_rujukan}', 'RekamMedisEksternalController@getEksternalRekamMedis');
   Route::get('rekam_medis_eksternal/{id_pasien}', 'RekamMedisEksternalController@show');
+
+  Route::get('transaksi/export', 'TransaksiController@export');
+  Route::resource('transaksi', 'TransaksiController', ['except' => [
+    'edit', 'create'
+    ]]);
+
+  Route::get('transaksi/latest/{id_pasien}', 'TransaksiController@getLatestOpenTransaksi');
+  Route::resource('transaksi_eksternal', 'TransaksiEksternalController', ['except' => [
+    'edit', 'create'
+    ]]);
+  Route::get('transaksi/search_by_pasien', 'TransaksiController@searchByPasien');
+
+  Route::get('transaksi/{id}/bpjs', 'TransaksiController@getStatusBpjs');
+  Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTransaksi');
+  Route::get('transaksi/{id}/{field?}', 'TransaksiController@show');
+  Route::get('klaim/export', 'KlaimController@export');
+  Route::resource('klaim', 'KlaimController');
+  Route::get('pembayaran/export', 'PembayaranController@export');
+  Route::resource('pembayaran', 'PembayaranController');
 });
 
 Route::get('rekam_medis/eksternal/{no_rujukan}/{asal_rujukan}', 'RekamMedisController@getForExternal');
@@ -95,21 +114,6 @@ Route::delete('antrian/{id_transaksi}/{no_antrian}', 'AntrianController@destroy'
 Route::get('sep/{no_rujukan}', 'SepController@insertSEP');
 Route::get('sep/rujukan/{no_rujukan}', 'SepController@getRujukan');
 Route::get('sep/peserta/{no_kartu}', 'SepController@getPeserta');
-
-Route::get('transaksi/export', 'TransaksiController@export');
-Route::resource('transaksi', 'TransaksiController', ['except' => [
-  'edit', 'create'
-  ]]);
-
-Route::get('transaksi/latest/{id_pasien}', 'TransaksiController@getLatestOpenTransaksi');
-Route::resource('transaksi_eksternal', 'TransaksiEksternalController', ['except' => [
-  'edit', 'create'
-  ]]);
-Route::get('transaksi/search_by_pasien', 'TransaksiController@searchByPasien');
-
-Route::get('transaksi/{id}/bpjs', 'TransaksiController@getStatusBpjs');
-Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTransaksi');
-Route::get('transaksi/{id}/{field?}', 'TransaksiController@show');
 
 Route::resource('rujukan', 'RujukanController', ['except' => [
   'edit', 'create'

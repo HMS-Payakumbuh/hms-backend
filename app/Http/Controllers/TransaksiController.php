@@ -13,7 +13,7 @@ use App\Pasien;
 use App\Klaim;
 use App\BpjsManager;
 use App\SettingBpjs;
-use App\PemakaianKamarRawatInap;
+use App\PemakaianKamarRawatinap;
 use App\Tindakan;
 use App\ObatTebusItem;
 use Excel;
@@ -95,28 +95,83 @@ class TransaksiController extends Controller
             $tanggal_akhir = new DateTime($request->input('tanggal_akhir'));
             $tanggal_akhir->add(new DateInterval("P1D")); // Plus 1 day
 
-            $all_transaksi = Transaksi::with(['pasien', 'pembayaran.klaim'])
+            $all_transaksi = Transaksi::with(['pembayaran', 'pasien', 'tindakan.daftarTindakan', 'tindakan.pembayaran.klaim', 'rujukan_pasien', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'obatTebus.obatTebusItem.pembayaran.klaim', 'pemakaianKamarRawatInap.kamar_rawatinap', 'pemakaianKamarRawatInap.pembayaran.klaim', 'pemakaianKamarJenazah'])
                 ->where('status', '=', 'closed')
                 ->whereBetween('waktu_perubahan_terakhir', array($tanggal_awal, $tanggal_akhir))
                 ->get();
-
-            $data = array(
-                array('Waktu Transaksi', 'Nama Pasien', 'Nomor Transaksi', 'Total Pembayaran Non-BPJS', 'Pembayaran BPJS', 'Tarif Klaim', 'Surplus Klaim')
-            );
 
             $total_pembayaran_non_BPJS = 0;
             $total_pembayaran_BPJS = 0;
             $total_tarif_klaim = 0;
             $total_surplus_klaim = 0;
 
+            $data = array(
+                array()
+            );
+
             foreach ($all_transaksi as $transaksi) {
                 $pembayaran_non_BPJS = 0;
                 $pembayaran_BPJS = 0;
                 $tarif_klaim = 0;
                 $surplus_klaim = 0;
+
+                if (!empty($transaksi->tindakan)) {
+                    array_push($data, array('Tindakan'));
+                    array_push($data, array('Nama', '', '', 'Harga Tindakan', 'Metode Bayar'));
+                    foreach ($transaksi->tindakan as $tindakan) {
+                        $array = array(
+                            $tindakan->daftarTindakan->nama,
+                            '',
+                            '',
+                            $tindakan->harga,
+                            $tindakan->pembayaran->metode_bayar
+                        );
+                        array_push($data, $array);
+                    }
+                }
+                array_push($data, array());
+
+                if (!empty($transaksi->obatTebus)) {
+                    array_push($data, array('Obat'));
+                    array_push($data, array('Nama', '', '', 'Harga Total', 'Metode Bayar'));
+                    foreach ($transaksi->obatTebus as $obatTebus) {
+                        foreach ($obatTebus->obatTebusItem as $obat) {
+                            $array = array(
+                                $obat->jenis_obat->merek_obat,
+                                '',
+                                '',
+                                $obat->jumlah * $obat->harga_jual_realisasi,
+                                $obat->pembayaran->metode_bayar
+                            );
+                            array_push($data, $array);
+                        }
+                    }
+                }
+                array_push($data, array());
+
+                if (!empty($transaksi->pemakaianKamarRawatInap)) {
+                    array_push($data, array('Kamar Rawat Inap'));
+                    array_push($data, array('Kelas Kamar', '', '', 'Harga Total', 'Metode Bayar'));
+                    foreach ($transaksi->pemakaianKamarRawatInap as $pemakaianKamar) {
+                        $waktuMasuk = Carbon::parse($pemakaianKamar->waktu_masuk);
+                        $waktuKeluar = Carbon::parse($pemakaianKamar->waktu_keluar);
+                        $los = $waktuMasuk->diffInDays($waktuKeluar);
+                        $harga = $los * $pemakaianKamar->kamar_rawatinap->harga_per_hari;
+                        $array = array(
+                            $pemakaianKamar->kamar_rawatinap->jenis_kamar.' Kelas '.$pemakaianKamar->kamar_rawatinap->kelas,
+                            '',
+                            '',
+                            $harga,
+                            $pemakaianKamar->pembayaran->metode_bayar
+                        );
+                        array_push($data, $array);
+                    }
+                }
+                array_push($data, array());
+
                 foreach ($transaksi->pembayaran as $pembayaran) {
                     if ($pembayaran->metode_bayar == 'bpjs') {
-                        $pembayaran_BPJS += $pembayaran->harga_bayar;
+                        $pembayaran_BPJS = $pembayaran->harga_bayar;
                         $total_pembayaran_BPJS += $pembayaran->harga_bayar;
 
                         if ($pembayaran->klaim != null && $pembayaran->klaim->tarif != null) {
@@ -128,23 +183,25 @@ class TransaksiController extends Controller
                         }
                     }
                     else {
-                        $pembayaran_non_BPJS += $pembayaran->harga_bayar;
+                        $pembayaran_non_BPJS = $pembayaran->harga_bayar;
                         $total_pembayaran_non_BPJS += $pembayaran->harga_bayar;
+                        if ($pembayaran->pembayaran_tambahan == 1) {
+                            array_push($data, array('Biaya Naik Kelas', '', '', $pembayaran_non_BPJS));
+                        }
                     }
                 }
-                $transaksi_array = array(
-                    $transaksi->waktu_perubahan_terakhir,
-                    $transaksi->pasien->nama_pasien,
-                    $transaksi->no_transaksi,
-                    $pembayaran_non_BPJS,
-                    $pembayaran_BPJS,
-                    $tarif_klaim,
-                    $surplus_klaim
-                );
-                array_push($data, $transaksi_array);
             }
 
-            $total_array = array('Total', '', '', $total_pembayaran_non_BPJS, $total_pembayaran_BPJS, $total_tarif_klaim, $total_surplus_klaim);
+            $total_array = array('Total Pembayaran Non-BPJS', '', '', $total_pembayaran_non_BPJS);
+            array_push($data, $total_array);
+
+            $total_array = array('Total Pembayaran BPJS', '', '', $total_pembayaran_BPJS);
+            array_push($data, $total_array);
+
+            $total_array = array('Total Tarif Klaim', '', '', $total_tarif_klaim);
+            array_push($data, $total_array);
+
+            $total_array = array('Total Surplus Klaim', '', '', $total_surplus_klaim);
             array_push($data, $total_array);
 
             $tanggal_awal = $tanggal_awal->format('Y/m/d');
@@ -162,9 +219,9 @@ class TransaksiController extends Controller
         }
 
         return response()->json([
-            'code' => '500',
+            'code' => '400',
             'message' => 'Malformed Request'
-        ], 500);
+        ], 400);
     }
 
     public function getRecentTransaksi($nama_pasien)
@@ -206,15 +263,77 @@ class TransaksiController extends Controller
         $transaksi->id_pasien = $payload['id_pasien'];
         $transaksi->rujukan = $payload['rujukan'];
 
-        $transaksiLama = Transaksi::where('id_pasien', '=', $transaksi->id_pasien)
+        $transaksiLama = Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'rujukan_pasien', 'pembayaran', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'pemakaianKamarRawatInap.kamar_rawatinap', 'pemakaianKamarJenazah'])
+            ->where('id_pasien', '=', $transaksi->id_pasien)
             ->where('status', '=', 'open')
             ->first();
 
         if ($transaksiLama != null) {
-            return response()->json([
-                'code' => 500,
-                'message' => 'Pasien Memiliki Transaksi Yang Belum Diselesaikan'
-            ], 202);
+            $tutup = true;
+            if (!isset($transaksiLama->no_sep)) {
+                foreach ($transaksiLama->tindakan as $tindakan) {
+                    if ($tindakan->id_pembayaran === null) {
+                        $tutup = false;
+                    }
+                }
+
+                foreach ($transaksiLama->pemakaianKamarRawatInap as $pemakaian) {
+                    if ($pemakaian->id_pembayaran === null) {
+                        $tutup = false;
+                    }
+                }
+
+                foreach ($transaksiLama->obatTebus as $obatTebus) {
+                    foreach ($obatTebus->obatTebusItem as $obatItem) {
+                        if ($obatItem->id_pembayaran === null) {
+                            $tutup = false;
+                        }
+                    }
+                }
+            }
+
+            if ($tutup) {
+                $transaksiLama->status = 'closed';
+                $transaksiLama->save();
+                if ($transaksiLama->status == 'closed' && isset($transaksiLama->no_sep)) {
+                    try {
+                        $coder_nik = SettingBpjs::first()->coder_nik;
+                        $bpjs =  new BpjsManager($transaksiLama->no_sep, $coder_nik);
+                        $response = json_decode($bpjs->group(1)->getBody(), true);
+
+                        $special_cmg = '';
+                        if ($response['metadata']['code'] == 200) {
+                            if (isset($response['special_cmg_option'])) {
+                                foreach ($response['special_cmg_option'] as $key => $value) {
+                                    if (substr($value['code'], 1) != 'D') {
+                                        $special_cmg = $special_cmg . "#" . $value['code'];
+                                    }
+                                    else {
+                                        $name = explode(" ", $value['description']);
+                                        foreach ($transaksiLama['obat_tebus']['obat_tebus_item'] as $key_obat => $obat) {
+                                            if (strtolower($obat['jenis_obat']['nama_generik']) == strtolower($name[0])) {
+                                                $special_cmg = $special_cmg . "#" . $value['code'];
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            $bpjs->group(2, $special_cmg);
+                            $bpjs->finalizeClaim();
+                        }
+                    }
+                    catch(Exception $e) {
+                        $transaksiLama->status = 'open';
+                        $transaksiLama->save();
+                    }
+                }
+            }
+            else {
+                return response()->json([
+                    'code' => 500,
+                    'message' => 'Pasien Memiliki Transaksi Yang Belum Diselesaikan'
+                ], 202);
+            }
         }
 
         $transaksi->kode_jenis_pasien = $payload['kode_jenis_pasien']; //1: pasien umum, 2: pasien asuransi
@@ -347,67 +466,6 @@ class TransaksiController extends Controller
                     $bpjs->group(2, $special_cmg);
                     $bpjs->finalizeClaim();
                 }
-
-                // $harga = 0;
-                // $pembayaran = new Pembayaran;
-                // $pembayaran->id_transaksi = $transaksi->id;
-                // $pembayaran->harga_bayar = 0;
-                // $pembayaran->metode_bayar = 'bpjs';
-                // $pembayaran->pembayaran_tambahan = 0;
-                // $pembayaran->save();
-
-                // $pembayaran = Pembayaran::findOrFail($pembayaran->id);
-                // $code_str = strtoupper(base_convert($pembayaran->id, 10, 36));
-                // $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
-                // $pembayaran->no_pembayaran = 'PMB' . $code_str;
-                // $pembayaran->save();
-
-                // $asuransi = DB::table('asuransi')->select('id')->where([
-                //     ['nama_asuransi', '=', $pembayaran->metode_bayar],
-                //     ['id_pasien', '=', $transaksi->id_pasien]
-                // ])->first();
-
-                // $klaim = new Klaim;
-                // $klaim->id_pembayaran = $pembayaran->id;
-                // $klaim->id_asuransi = $asuransi->id;
-                // $klaim->status = 'processed';
-                // $klaim->save();
-
-                // if (!$transaksi->tindakan->isEmpty()) {
-                //     foreach ($transaksi->tindakan as $value) {
-                //         $tindakan = Tindakan::findOrFail($value->id);
-                //         $tindakan->id_pembayaran = $pembayaran->id;
-                //         $tindakan->save();
-                //         $harga += $tindakan->harga;
-                //     }
-                // }
-
-                // if (!$transaksi->obat_tebus->isEmpty()) {
-                //     foreach ($transaksi->obat_tebus as $obat) {
-                //         if (!$obat->obat_tebus_item->isEmpty()) {
-                //             foreach ($obat->obat_tebus_item as $value) {
-                //                 $obatTebus = ObatTebusItem::findOrFail($value->id);
-                //                 $obatTebus->id_pembayaran = $pembayaran->id;
-                //                 $obatTebus->save();
-                //                 $harga += $obatTebus->jumlah * $obatTebus->harga_jual_realisasi;
-                //             }
-                //         }
-                //     }
-                // }
-
-                // if (!$transaksi->pemakaian_kamar_rawat_inap->isEmpty()) {
-                //     foreach ($transaksi->pemakaian_kamar_rawat_inap as $value) {
-                //         $kamarRawatInap = PemakaianKamarRawatInap::findOrFail($value->id);
-                //         $kamarRawatInap->id_pembayaran = $pembayaran->id;
-                //         $kamarRawatInap->save();
-                //         $waktuMasuk = Carbon::parse($kamarRawatInap->waktu_masuk);
-                //         $waktuKeluar = Carbon::parse($kamarRawatInap->waktu_keluar);
-                //         $harga += $waktuMasuk->diffInDays($waktuKeluar) * $kamarRawatInap->kamar_rawatinap->harga_per_hari;
-                //     }
-                // }
-
-                // $pembayaran->harga_bayar = $harga;
-                // $pembayaran->save();
             }
             catch(Exception $e) {
                 $transaksi->status = 'open';
@@ -451,7 +509,7 @@ class TransaksiController extends Controller
 
     public function getStatusBpjs($id)
     {
-        $pemakaianKamarRawatinap = PemakaianKamarRawatInap::with('pemakaianKamarRawatInap.kamar_rawatinap')
+        $pemakaianKamarRawatinap = PemakaianKamarRawatinap::with('kamar_rawatinap')
             ->where('id_transaksi', '=', $id)
             ->where('waktu_keluar', '=', null)
             ->first();
@@ -464,15 +522,15 @@ class TransaksiController extends Controller
             $coder_nik = $settingBpjs->coder_nik;
             $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
 
-            if ($pemakaianKamarRawatinap != null) {
+            if ($pemakaianKamarRawatinap != null && $transaksi->status != 'closed') {
                 $kelas_sekarang = $pemakaianKamarRawatinap->kamar_rawatinap->kelas;
                 $kamar_sekarang = $pemakaianKamarRawatinap->kamar_rawatinap->jenis_kamar;
-                $pemakaian_array = PemakaianKamarRawatInap::with('pemakaianKamarRawatInap.kamar_rawatinap')
+                $pemakaian_array = PemakaianKamarRawatinap::with('kamar_rawatinap')
                     ->where('id_transaksi', '=', $id)
-                    ->whereHas('pemakaianKamarRawatInap.kamar_rawatinap', function ($query) use ($kamar_sekarang) {
+                    ->whereHas('kamar_rawatinap', function ($query) use ($kamar_sekarang) {
                         $query->where('jenis_kamar', '=', $kamar_sekarang);
                     })
-                    ->whereHas('pemakaianKamarRawatInap.kamar_rawatinap', function ($query) use ($kelas_sekarang) {
+                    ->whereHas('kamar_rawatinap', function ($query) use ($kelas_sekarang) {
                         $query->where('kelas', '=', $kelas_sekarang);
                     })
                     ->get();
