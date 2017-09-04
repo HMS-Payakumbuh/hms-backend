@@ -44,11 +44,21 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     'edit', 'create', 'show', 'destroy'
   ]]);
 
+  Route::resource('poliklinik', 'PoliklinikController', ['except' => [
+    'edit', 'create'
+  ]]);
+
   Route::get('hasil_lab/empty/{no_pegawai}', 'HasilLabController@getEmptyHasilLab');
   Route::get('hasil_lab/download/{path}', 'HasilLabController@download');
   Route::post('hasil_lab/upload/{id}', 'HasilLabController@upload');
   Route::resource('hasil_lab', 'HasilLabController', ['except' => [
     'edit', 'create', 'getEmptyHasilLab', 'download', 'upload'
+  ]]);
+
+  Route::get('dokter/{spesialis}', 'DokterController@getAllDokterOfSpesialis');
+  Route::post('dokter/periksa', 'DokterController@periksa');  
+  Route::resource('dokter', 'DokterController', ['except' => [
+    'edit', 'create', 'periksa', 'getAllDokterOfSpesialis'
   ]]);
 
   Route::resource('pasien', 'PasienController', ['except' => [
@@ -150,10 +160,6 @@ Route::resource('tindakan_operasi', 'TindakanOperasiController', ['except' => [
 Route::get('tindakan_operasi/{pemakaianKamarOperasiId}', 'TindakanOperasiController@show');
 Route::post('tindakan_operasi/{id_tindakan}', 'TindakanOperasiController@store');
 
-Route::resource('poliklinik', 'PoliklinikController', ['except' => [
-    'edit', 'create'
-  ]]);
-
 Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
   'edit', 'create'
 ]]);
@@ -161,11 +167,6 @@ Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
 Route::resource('tenaga_medis', 'TenagaMedisController', ['except' => [
   'edit', 'create'
 ]]);
-
-Route::resource('dokter', 'DokterController', ['except' => [
-  'edit', 'create', 'periksa'
-]]);
-Route::post('dokter/periksa', 'DokterController@periksa');
 
 Route::get('jadwal_dokter/{nama_poli}/{np_dokter}/{tanggal}', 'JadwalDokterController@show');
 Route::get('jadwal_dokter/{nama_poli}', 'JadwalDokterController@showAvailable');
