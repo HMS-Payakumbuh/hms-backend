@@ -6,6 +6,7 @@ use App\Resep;
 use App\ResepItem;
 use App\RacikanItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\TransaksiEksternal;
 use App\Transaksi;
 
@@ -29,76 +30,91 @@ class ResepController extends Controller
      */
     public function store(Request $request)
     {
-      $resep = [];
-      $i = 0;
-      foreach ($request->all() as $key => $value) {
-        $resep[$i] = new Resep;
-        $resep[$i]->eksternal = $value['eksternal'];
-        
-        if ($value['id_transaksi']) {      
-            $resep[$i]->id_transaksi = $value['id_transaksi'];   
-        } else {
-            if ($resep[$i]->eksternal) {
-                $transaksi = new TransaksiEksternal;             
-                $transaksi->harga_total = 0;
-                $transaksi->status = 'open';
-                $transaksi->nama = $value['nama'];
-                $transaksi->alamat = $value['alamat'];
-                $transaksi->no_telepon = $value['no_telepon'];
-                $transaksi->umur = $value['umur'];
-                $transaksi->save();
+        $resep = [];
+        $i = 0;
 
-                $transaksi = TransaksiEksternal::findOrFail($transaksi->id);
-                $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
-                $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
-                $transaksi->no_transaksi = 'EKS' . $code_str;
-                $transaksi->save();
+        try {
+            DB::beginTransaction();
 
-                $resep[$i]->id_transaksi_eksternal = $transaksi->id;
-            } else {
-                $transaksi = new Transaksi;        
-                $transaksi->kode_jenis_pasien = 1;
-                $transaksi->asuransi_pasien = 'tunai';        
-                $transaksi->harga_total = 0;
-                $transaksi->jenis_rawat = 2;
-                $transaksi->kelas_rawat = 3;
-                $transaksi->status_naik_kelas = 0;
-                $transaksi->status = 'open';
-                $transaksi->save();
+            foreach ($request->all() as $key => $value) {
+                $resep[$i] = new Resep;
+                $resep[$i]->eksternal = $value['eksternal'];
+                
+                if ($value['id_transaksi']) {
+                    $resep[$i]->id_transaksi = $value['id_transaksi'];   
+                } else {
+                    if ($resep[$i]->eksternal) {
+                        $transaksi = new TransaksiEksternal;             
+                        $transaksi->harga_total = 0;
+                        $transaksi->status = 'open';
+                        $transaksi->nama = $value['nama'];
+                        $transaksi->alamat = $value['alamat'];
+                        $transaksi->no_telepon = $value['no_telepon'];
+                        $transaksi->umur = $value['umur'];
+                        $transaksi->save();
 
-                $transaksi = Transaksi::findOrFail($transaksi->id);
-                $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
-                $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
-                $transaksi->no_transaksi = 'INV' . $code_str;
-                $transaksi->save();
+                        $transaksi = TransaksiEksternal::findOrFail($transaksi->id);
+                        $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
+                        $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
+                        $transaksi->no_transaksi = 'EKS' . $code_str;
+                        $transaksi->save();
 
-                $resep[$i]->id_transaksi = $transaksi->id;
+                        $resep[$i]->id_transaksi_eksternal = $transaksi->id;
+                    } else {
+                        $transaksi = new Transaksi;        
+                        $transaksi->kode_jenis_pasien = 1;
+                        $transaksi->asuransi_pasien = 'tunai';        
+                        $transaksi->harga_total = 0;
+                        $transaksi->jenis_rawat = 2;
+                        $transaksi->kelas_rawat = 3;
+                        $transaksi->status_naik_kelas = 0;
+                        $transaksi->status = 'open';
+                        $transaksi->save();
+
+                        $transaksi = Transaksi::findOrFail($transaksi->id);
+                        $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
+                        $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
+                        $transaksi->no_transaksi = 'INV' . $code_str;
+                        $transaksi->save();
+
+                        $resep[$i]->id_transaksi = $transaksi->id;
+                    }
+                }
+            
+                $resep[$i]->nama_dokter = $value['nama_dokter'];
+                $resep[$i]->tebus = $value['tebus'];
+
+                $resep[$i]->save();
+
+                foreach ($value['resep_item'] as $key => $value) {
+                    $resep_item = new ResepItem;
+                    $resep_item->resep_id = $resep[$i]->id;
+                    $resep_item->aturan_pemakaian = $value['aturan_pemakaian'];
+                    $resep_item->petunjuk_peracikan = $value['petunjuk_peracikan'];
+                    $resep_item->save();
+
+                    foreach($value['racikan_item'] as $key => $value) {
+                        $racikan_item = new RacikanItem;
+                        $racikan_item->resep_item_id = $resep_item->id;
+                        $racikan_item->id_jenis_obat = $value['id_jenis_obat'];
+                        $racikan_item->jumlah = $value['jumlah'];
+                        $racikan_item->save();
+                    }
+                }
+
+                $i++;
             }
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'code' => '500',
+                'message' => $e->getMessage()
+            ], 500);
         }
-        
-        $resep[$i]->nama_dokter = $value['nama_dokter'];
-        $resep[$i]->tebus = $value['tebus'];
 
-        $resep[$i]->save();
-
-        foreach ($value['resep_item'] as $key => $value) {
-          $resep_item = new ResepItem;
-          $resep_item->resep_id = $resep[$i]->id;
-          $resep_item->aturan_pemakaian = $value['aturan_pemakaian'];
-          $resep_item->petunjuk_peracikan = $value['petunjuk_peracikan'];
-          $resep_item->save();
-
-          foreach($value['racikan_item'] as $key => $value) {
-            $racikan_item = new RacikanItem;
-            $racikan_item->resep_item_id = $resep_item->id;
-            $racikan_item->id_jenis_obat = $value['id_jenis_obat'];
-            $racikan_item->jumlah = $value['jumlah'];
-            $racikan_item->save();
-          }
-        }
-        $i++;
-      }
-      return response ($resep, 201);
+        DB::commit();
+        return response ($resep, 201);
     }
 
     /**
