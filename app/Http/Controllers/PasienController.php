@@ -45,7 +45,7 @@ class PasienController extends Controller
         $pasien->agama = $request->input('agama');
         $pasien->alamat = $request->input('alamat');
         $pasien->kontak = $request->input('kontak');
-        if (preg_match('/\d+/', $pasien->kontak)) {
+        if (preg_match('/\D+/', $pasien->kontak)) {
             return response()->json([
                 'error' => "Kontak yang dimasukkan salah."
             ], 202);

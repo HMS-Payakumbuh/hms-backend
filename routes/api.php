@@ -13,9 +13,9 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 Route::post('login', 'Auth\AuthController@login');
 Route::post('register', 'Auth\AuthController@register');
@@ -23,8 +23,32 @@ Route::post('update_user_kategori', 'Auth\AuthController@update_user_kategori');
 Route::group(['middleware' => 'jwt.auth'], function () {
   Route::get('get_user_details', 'Auth\AuthController@get_user_details');
 
-  Route::resource('poliklinik', 'PoliklinikController', ['except' => [
+
+  Route::get('ambulans/available', 'AmbulansController@getAvailable');
+  Route::resource('ambulans', 'AmbulansController', ['except' => [
     'edit', 'create'
+  ]]);
+
+  Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
+    'edit', 'create'
+  ]]);
+  
+  Route::get('tindakan/rekam_medis/{id_pasien}/{tanggal_waktu}', 'TindakanController@getTindakanOfRekamMedis');
+  Route::get('tindakan/hasil_lab/{nama_lab}', 'TindakanController@getTindakanWithoutHasilLab');
+  Route::get('tindakan/no_ambulans', 'TindakanController@getTindakanWithoutAmbulans');
+
+  Route::get('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@show');
+  Route::delete('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@destroy');
+  
+  Route::resource('tindakan', 'TindakanController', ['except' => [
+    'edit', 'create', 'show', 'destroy'
+  ]]);
+
+  Route::get('hasil_lab/empty/{no_pegawai}', 'HasilLabController@getEmptyHasilLab');
+  Route::get('hasil_lab/download/{path}', 'HasilLabController@download');
+  Route::post('hasil_lab/upload/{id}', 'HasilLabController@upload');
+  Route::resource('hasil_lab', 'HasilLabController', ['except' => [
+    'edit', 'create', 'getEmptyHasilLab', 'download', 'upload'
   ]]);
 
   Route::resource('pasien', 'PasienController', ['except' => [
@@ -120,38 +144,17 @@ Route::resource('diagnosis', 'DiagnosisController', ['except' => [
 Route::get('diagnosis/{id_pasien}', 'DiagnosisController@getDiagnosisOfPasien');
 Route::get('diagnosis/rekam_medis/{id_pasien}/{tanggal_waktu}', 'DiagnosisController@getDiagnosisOfRekamMedis');
 
-Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
-  'edit', 'create'
-]]);
-
-Route::get('tindakan/rekam_medis/{id_pasien}/{tanggal_waktu}', 'TindakanController@getTindakanOfRekamMedis');
-Route::get('tindakan/hasil_lab/{nama_lab}/{kode_pasien}', 'TindakanController@getTindakanWithoutHasilLab');
-
-Route::resource('tindakan', 'TindakanController', ['except' => [
-  'edit', 'create', 'show', 'destroy'
-]]);
-Route::get('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@show');
-Route::delete('tindakan/{no_transaksi}/{no_tindakan?}', 'TindakanController@destroy');
-
 Route::resource('tindakan_operasi', 'TindakanOperasiController', ['except' => [
   'edit', 'create'
 ]]);
 Route::get('tindakan_operasi/{pemakaianKamarOperasiId}', 'TindakanOperasiController@show');
 Route::post('tindakan_operasi/{id_tindakan}', 'TindakanOperasiController@store');
 
+Route::resource('poliklinik', 'PoliklinikController', ['except' => [
+    'edit', 'create'
+  ]]);
+
 Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
-  'edit', 'create'
-]]);
-
-Route::get('hasil_lab/download/{path}', 'HasilLabController@download');
-Route::get('hasil_lab/empty/{no_pegawai}', 'HasilLabController@getEmptyHasilLab');
-Route::post('hasil_lab/upload/{id}', 'HasilLabController@upload');
-Route::resource('hasil_lab', 'HasilLabController', ['except' => [
-  'edit', 'create', 'getEmptyHasilLab', 'download', 'upload'
-]]);
-
-Route::get('ambulans/available', 'AmbulansController@getAvailable');
-Route::resource('ambulans', 'AmbulansController', ['except' => [
   'edit', 'create'
 ]]);
 
@@ -243,6 +246,7 @@ Route::put('tempattidur/{no_kamar}/{no_tempat_tidur}', 'TempatTidurController@up
 // Route::get('resep/search_by_transaksi', 'ResepController@searchByTransaksi');
 Route::get('resep/rekam_medis/{id_pasien}/{tanggal_waktu}', 'ResepController@getResepOfRekamMedis');
 Route::get('resep/search_by_pasien', 'ResepController@searchByPasien');
+  
 // Route::get('resep/search_by_pasien_and_tanggal', 'ResepController@searchByPasienAndTanggal');
 Route::resource('resep', 'ResepController', ['except' => [
   'edit', 'create'

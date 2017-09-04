@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\ObatPindah;
 use App\StokObat;
 use Excel;
@@ -30,49 +31,60 @@ class ObatPindahController extends Controller
      */
     public function store(Request $request)
     {
-        // TO-DO: Make into transaction?
-        // TO-DO: Restriction checking (jumlah > 0 etc.)
         $obat_pindah = new ObatPindah;
         $obat_pindah->id_jenis_obat = $request->input('id_jenis_obat');
         $obat_pindah->id_stok_obat_asal = $request->input('id_stok_obat_asal');
         
         date_default_timezone_set('Asia/Jakarta');
-        $obat_pindah->waktu_pindah = date("Y-m-d H:i:s"); // Use default in DB instead?
+        $obat_pindah->waktu_pindah = date("Y-m-d H:i:s");
         
         $obat_pindah->jumlah = $request->input('jumlah');
         $obat_pindah->keterangan = $request->input('keterangan');
         $obat_pindah->asal = $request->input('asal');
         $obat_pindah->tujuan = $request->input('tujuan');        
 
-        $stok_obat_asal = StokObat::findOrFail($obat_pindah->id_stok_obat_asal);
-        $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_pindah->jumlah);
+        try {
+            DB::beginTransaction();
+        
+            $stok_obat_asal = StokObat::findOrFail($obat_pindah->id_stok_obat_asal);
+            $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_pindah->jumlah);
 
-        if ($stok_obat_asal->jumlah < 0) {
-            return response("less than 0 error", 401);
+            /* if ($stok_obat_asal->jumlah < 0) {
+                return response("less than 0 error", 401);
+            } */
+
+            $stok_obat_tujuan = StokObat::where('barcode','LIKE','%'.$stok_obat_asal->barcode.'%')
+                                        ->where('lokasi', '=', $obat_pindah->tujuan)
+                                        ->first();
+
+            if (is_null($stok_obat_tujuan)) {
+                $stok_obat_tujuan = new StokObat;
+                $stok_obat_tujuan->id_jenis_obat = $obat_pindah->id_jenis_obat;
+                $stok_obat_tujuan->nomor_batch = $stok_obat_asal->nomor_batch;
+                $stok_obat_tujuan->kadaluarsa = $stok_obat_asal->kadaluarsa;
+                $stok_obat_tujuan->barcode = $stok_obat_asal->barcode;
+                $stok_obat_tujuan->jumlah =  $obat_pindah->jumlah;  
+                $stok_obat_tujuan->lokasi = $obat_pindah->tujuan;
+            } else {
+                $stok_obat_tujuan->jumlah =  ($stok_obat_tujuan->jumlah) + ($obat_pindah->jumlah);  
+            }         
+
+            $stok_obat_asal->save();
+            $stok_obat_tujuan->save();
+
+            $obat_pindah->id_stok_obat_tujuan = $stok_obat_tujuan->id;
+            $obat_pindah->save();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'code' => '500',
+                'message' => $e->getMessage()
+            ], 500);
         }
 
-        $stok_obat_tujuan = StokObat::where('barcode','LIKE','%'.$stok_obat_asal->barcode.'%')
-                                    ->where('lokasi', '=', $obat_pindah->tujuan)
-                                    ->first();
-
-        if (is_null($stok_obat_tujuan)) {
-            $stok_obat_tujuan = new StokObat;
-            $stok_obat_tujuan->id_jenis_obat = $obat_pindah->id_jenis_obat;
-            $stok_obat_tujuan->nomor_batch = $stok_obat_asal->nomor_batch;
-            $stok_obat_tujuan->kadaluarsa = $stok_obat_asal->kadaluarsa;
-            $stok_obat_tujuan->barcode = $stok_obat_asal->barcode;
-            $stok_obat_tujuan->jumlah =  $obat_pindah->jumlah;  
-            $stok_obat_tujuan->lokasi = $obat_pindah->tujuan;
-        } else {
-            $stok_obat_tujuan->jumlah =  ($stok_obat_tujuan->jumlah) + ($obat_pindah->jumlah);  
-        }         
-
-        $stok_obat_asal->save();
-        $stok_obat_tujuan->save();
-
-        $obat_pindah->id_stok_obat_tujuan = $stok_obat_tujuan->id;
-        $obat_pindah->save();
-
+        DB::commit();
         return response ($obat_pindah, 201);
     }
 

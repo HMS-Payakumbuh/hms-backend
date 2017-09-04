@@ -332,7 +332,7 @@ class TransaksiController extends Controller
                 return response()->json([
                     'code' => 500,
                     'message' => 'Pasien Memiliki Transaksi Yang Belum Diselesaikan'
-                ], 500);
+                ], 202);
             }
         }
 

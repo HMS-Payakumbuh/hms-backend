@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\ObatMasuk;
 use App\StokObat;
 use App\LokasiObat;
@@ -33,11 +34,6 @@ class ObatMasukController extends Controller
         $today = new DateTime();
         $kadaluarsa = new DateTime($request->input('kadaluarsa'));
 
-        if ($today >= $kadaluarsa) {
-            return response ('kadaluarsa error', 401);
-        }
-
-        // TO-DO: Make into transaction?
         $lokasi_obat = LokasiObat::where('jenis','=',0)->first();
 
         $id_jenis_append = sprintf("%05d", $request->input('id_jenis_obat'));
@@ -60,20 +56,33 @@ class ObatMasukController extends Controller
             $stok_obat->jumlah = $stok_obat->jumlah + $request->input('jumlah');
         }
 
-        $stok_obat->save();
+        try {
+            DB::beginTransaction();
 
-        $obat_masuk = new ObatMasuk;
-        $obat_masuk->id_jenis_obat = $request->input('id_jenis_obat');
-        $obat_masuk->id_stok_obat = $stok_obat->id;
+            $stok_obat->save();
 
-        date_default_timezone_set('Asia/Jakarta');
-        $obat_masuk->waktu_masuk = date("Y-m-d H:i:s"); // Use default in DB instead?
-        
-        $obat_masuk->jumlah = $request->input('jumlah');
-        $obat_masuk->harga_beli_satuan = $request->input('harga_beli_satuan');
+            $obat_masuk = new ObatMasuk;
+            $obat_masuk->id_jenis_obat = $request->input('id_jenis_obat');
+            $obat_masuk->id_stok_obat = $stok_obat->id;
 
-        $obat_masuk->save();
+            date_default_timezone_set('Asia/Jakarta');
+            $obat_masuk->waktu_masuk = date("Y-m-d H:i:s");
+            
+            $obat_masuk->jumlah = $request->input('jumlah');
+            $obat_masuk->harga_beli_satuan = $request->input('harga_beli_satuan');
 
+            $obat_masuk->save();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'code' => '500',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+
+        DB::commit();
         return response ($obat_masuk, 201);
     }
 
@@ -121,16 +130,6 @@ class ObatMasukController extends Controller
         $obat_masuk->delete();
         return response ($id.' deleted', 200);
     }
-
-    /* public function getTodayObatMasukByStok($id_stok_obat)
-    {
-        date_default_timezone_set('Asia/Jakarta');
-        $obat_masuk = ObatMasuk::whereDate('waktu_masuk', '=', date("Y-m-d"))
-                                ->where('id_stok_obat', $id_stok_obat)
-                                ->get();
-        return response ($obat_masuk, 200)
-                -> header('Content-Type', 'application/json');
-    } */
 
     /*
         Get Obat Masuk with same Stok Obat ID within a time range

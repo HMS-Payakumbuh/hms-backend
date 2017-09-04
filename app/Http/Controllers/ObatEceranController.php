@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
 use App\ObatEceran;
 use App\StokObat;
 use App\ObatEceranItem;
@@ -37,54 +37,66 @@ class ObatEceranController extends Controller
         date_default_timezone_set('Asia/Jakarta');
         $obat_eceran->waktu_transaksi = date("Y-m-d H:i:s"); // Use default in DB instead?
 
-        if ($request->input('id_transaksi')) {
-            $obat_eceran->id_transaksi = $request->input('id_transaksi');               
-        } else {
-            $transaksi = new TransaksiEksternal;             
-            $transaksi->harga_total = 0;
-            $transaksi->status = 'open';
-            $transaksi->nama = $request->input('nama');
-            $transaksi->alamat = $request->input('alamat');
-            $transaksi->no_telepon = $request->input('no_telepon');
-            $transaksi->umur = $request->input('umur');
-            $transaksi->save();
+        try {
+            DB::beginTransaction();
 
-            $transaksi = TransaksiEksternal::findOrFail($transaksi->id);
-            $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
-            $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
-            $transaksi->no_transaksi = 'EKS' . $code_str;
-            $transaksi->save();
-
-            $obat_eceran->id_transaksi = $transaksi->id;  
-        }
-
-        $obat_eceran->save();
-
-        foreach ($request->input('obat_eceran_item') as $key => $value) {
-            $obat_eceran_item = new ObatEceranItem;
-
-            $obat_eceran_item->id_obat_eceran = $obat_eceran->id;
-            $obat_eceran_item->id_jenis_obat = $value['id_jenis_obat'];
-            $obat_eceran_item->id_stok_obat = $value['id_stok_obat'];
-            $obat_eceran_item->jumlah = $value['jumlah'];
-            $obat_eceran_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
-
-            $stok_obat_asal = StokObat::findOrFail($obat_eceran_item->id_stok_obat);
-            $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_eceran_item->jumlah);  
-
-            if ($stok_obat_asal->jumlah < 0) {
-                return response("less than 0 error", 401);
-            }  
-
-            if ($obat_eceran_item->save()) {
-                $transaksi = TransaksiEksternal::findOrFail($obat_eceran->id_transaksi);
-                $transaksi->harga_total += $obat_eceran_item->harga_jual_realisasi * $obat_eceran_item->jumlah;
+            if ($request->input('id_transaksi')) {
+                $obat_eceran->id_transaksi = $request->input('id_transaksi');               
+            } else {
+                $transaksi = new TransaksiEksternal;             
+                $transaksi->harga_total = 0;
+                $transaksi->status = 'open';
+                $transaksi->nama = $request->input('nama');
+                $transaksi->alamat = $request->input('alamat');
+                $transaksi->no_telepon = $request->input('no_telepon');
+                $transaksi->umur = $request->input('umur');
                 $transaksi->save();
+
+                $transaksi = TransaksiEksternal::findOrFail($transaksi->id);
+                $code_str = strtoupper(base_convert($transaksi->id, 10, 36));
+                $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
+                $transaksi->no_transaksi = 'EKS' . $code_str;
+                $transaksi->save();
+
+                $obat_eceran->id_transaksi = $transaksi->id;  
             }
 
-            $stok_obat_asal->save();
-        }   
+            $obat_eceran->save();
 
+            foreach ($request->input('obat_eceran_item') as $key => $value) {
+                $obat_eceran_item = new ObatEceranItem;
+
+                $obat_eceran_item->id_obat_eceran = $obat_eceran->id;
+                $obat_eceran_item->id_jenis_obat = $value['id_jenis_obat'];
+                $obat_eceran_item->id_stok_obat = $value['id_stok_obat'];
+                $obat_eceran_item->jumlah = $value['jumlah'];
+                $obat_eceran_item->harga_jual_realisasi = $value['harga_jual_realisasi'];
+
+                $stok_obat_asal = StokObat::findOrFail($obat_eceran_item->id_stok_obat);
+                $stok_obat_asal->jumlah = ($stok_obat_asal->jumlah) - ($obat_eceran_item->jumlah);  
+
+                if ($stok_obat_asal->jumlah < 0) {
+                    return response("less than 0 error", 401);
+                }  
+
+                if ($obat_eceran_item->save()) {
+                    $transaksi = TransaksiEksternal::findOrFail($obat_eceran->id_transaksi);
+                    $transaksi->harga_total += $obat_eceran_item->harga_jual_realisasi * $obat_eceran_item->jumlah;
+                    $transaksi->save();
+                }
+
+                $stok_obat_asal->save();
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'code' => '500',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+
+        DB::commit();
         return response($obat_eceran, 201);
     }
 

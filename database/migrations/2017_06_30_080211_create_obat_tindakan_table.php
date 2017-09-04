@@ -26,7 +26,7 @@ class CreateObatTindakanTable extends Migration
                   ->references('id')->on('stok_obat')
                   ->onDelete('restrict');
 
-            $table->dateTime('waktu_keluar');   // Atau pakai timestamp?
+            $table->dateTime('waktu_keluar');
             $table->integer('jumlah');
             $table->string('keterangan')->nullable();
 
