@@ -8,6 +8,11 @@ class ObatTebusItem extends Model
 {
     protected $table = 'obat_tebus_item';
 
+    public function pembayaran()
+    {
+        return $this->hasOne('App\Pembayaran', 'id', 'id_pembayaran')
+    }
+
     /**
     *	Get the JenisObat of the ObatTebusItem.
     */
