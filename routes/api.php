@@ -55,11 +55,12 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     'edit', 'create', 'getEmptyHasilLab', 'download', 'upload'
   ]]);
 
-  Route::get('dokter/{spesialis}', 'DokterController@getAllDokterOfSpesialis');
-  Route::post('dokter/periksa', 'DokterController@periksa');  
   Route::resource('dokter', 'DokterController', ['except' => [
     'edit', 'create', 'periksa', 'getAllDokterOfSpesialis'
   ]]);
+  Route::get('dokter/{spesialis}', 'DokterController@getAllDokterOfSpesialis');
+  Route::post('dokter/periksa', 'DokterController@periksa');  
+
 
   Route::resource('pasien', 'PasienController', ['except' => [
     'edit', 'create'
