@@ -55,6 +55,10 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     'edit', 'create'
   ]]);
 
+  Route::resource('catatan_kematian', 'CatatanKematianController', ['except' => [
+    'edit', 'create'
+  ]]);
+
   Route::resource('rekam_medis', 'RekamMedisController', ['except' => [
     'edit', 'update', 'show', 'create'
   ]]);
