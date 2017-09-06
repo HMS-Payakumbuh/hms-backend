@@ -194,6 +194,7 @@ Route::resource('tindakan_operasi', 'TindakanOperasiController', ['except' => [
   'edit', 'create'
 ]]);
 Route::get('tindakan_operasi/{pemakaianKamarOperasiId}', 'TindakanOperasiController@show');
+Route::get('tindakan_operasi/id/{id}', 'TindakanController@getTindakanById');
 Route::post('tindakan_operasi/{id_tindakan}', 'TindakanOperasiController@store');
 
 Route::resource('poliklinik', 'PoliklinikController', ['except' => [
@@ -217,13 +218,6 @@ Route::resource('jadwal_dokter', 'JadwalDokterController', ['except' => [
   'edit', 'create', 'show', 'update', 'destroy'
 ]]);
 
-Route::resource('rawatinap', 'KamarRawatInapController', ['except' => [
-  'edit', 'create'
-]]);
-
-Route::resource('rawatinap', 'KamarRawatInapController', ['except' => [
-  'edit', 'create'
-]]);
 
 Route::resource('pemakaiankamaroperasi', 'PemakaianKamarOperasiController', ['except' => [
   'edit', 'create'
@@ -249,6 +243,16 @@ Route::post('pemakaiankamaroperasi/booking', 'PemakaianKamarOperasiController@st
 Route::put('pemakaiankamaroperasi/booking/masuk/{id}', 'PemakaianKamarOperasiController@masuk');
 Route::put('pemakaiankamaroperasi/booking/keluar/{id}', 'PemakaianKamarOperasiController@keluar');
 
+Route::resource('rawatinap', 'KamarRawatInapController', ['except' => [
+  'edit', 'create'
+]]);
+
+Route::group(['middleware' => 'jwt.auth'], function () {
+
+
+
+});
+
 Route::put('pemakaiankamarrawatinap/{id}/{no_kamar}/{no_tempat_tidur}', 'PemakaianKamarRawatinapController@update');
 Route::delete('pemakaiankamarrawatinap/{id}/{no_kamar}/{no_tempat_tidur}', 'PemakaianKamarRawatinapController@destroy');
 Route::delete('pemakaiankamarrawatinap/booking/{id}', 'PemakaianKamarRawatinapController@destroyBooking');
@@ -262,7 +266,6 @@ Route::get('pemakaiankamarrawatinap/search/booked', 'PemakaianKamarRawatinapCont
 Route::get('pemakaiankamarrawatinap/now/{no_kamar}', 'PemakaianKamarRawatinapController@getAllPemakaianKamarByNoKamar');
 Route::get('pemakaiankamarrawatinap/now/tenaga_medis/{no_pegawai}', 'PemakaianKamarRawatinapController@getAllPemakaianKamarByNoPegawai');
 Route::get('pemakaiankamarrawatinap/dashboard/dokte', 'PemakaianKamarRawatinapController@indexForDokterDashboard');
-
 
 Route::resource('kamaroperasi', 'KamarOperasiController', ['except' => [
   'edit', 'create'
