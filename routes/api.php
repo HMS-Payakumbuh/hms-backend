@@ -44,10 +44,6 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     'edit', 'create', 'show', 'destroy'
   ]]);
 
-  Route::resource('poliklinik', 'PoliklinikController', ['except' => [
-    'edit', 'create'
-  ]]);
-
   Route::get('hasil_lab/empty/{no_pegawai}', 'HasilLabController@getEmptyHasilLab');
   Route::get('hasil_lab/download/{path}', 'HasilLabController@download');
   Route::post('hasil_lab/upload/{id}', 'HasilLabController@upload');
@@ -199,6 +195,10 @@ Route::resource('tindakan_operasi', 'TindakanOperasiController', ['except' => [
 ]]);
 Route::get('tindakan_operasi/{pemakaianKamarOperasiId}', 'TindakanOperasiController@show');
 Route::post('tindakan_operasi/{id_tindakan}', 'TindakanOperasiController@store');
+
+Route::resource('poliklinik', 'PoliklinikController', ['except' => [
+  'edit', 'create'
+]]);
 
 Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
   'edit', 'create'
