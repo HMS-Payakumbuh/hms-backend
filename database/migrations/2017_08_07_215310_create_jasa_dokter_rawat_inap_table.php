@@ -20,7 +20,7 @@ class CreateJasaDokterRawatinapTable extends Migration
             $table->timestamps();
 
             $table->unique(['id_pemakaian_kamar_rawatinap', 'np_tenaga_medis']);
-            $table->foreign('id_pemakaian_kamar_rawatinap')->references('id')->on('pemakaian_kamar_rawatinap')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreign('id_pemakaian_kamar_rawatinap')->references('id')->on('pemakaian_kamar_rawatinap')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('np_tenaga_medis')->references('no_pegawai')->on('tenaga_medis')->onDelete('restrict');
         });
     }

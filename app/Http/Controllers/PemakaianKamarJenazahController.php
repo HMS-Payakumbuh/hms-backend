@@ -41,6 +41,14 @@ class PemakaianKamarJenazahController extends Controller
         $pemakaianKamarJenazah->harga = $request->input('harga');
         $pemakaianKamarJenazah->save();
 
+        // $catatanKematian = new CatatanKematian;
+        // $transaksi = Transaksi::findOrFail($request->input('id_transaksi'));
+        // $catatanKematian->id_pasien = $transaksi->id_pasien;
+        // $catatanKematian->waktu_kematian = $pemakaianKamarJenazah->waktu_masuk;
+        // $catatanKematian->tempat_kematian = 'RS Payakumbuh';
+        // $catatanKematian->perkiraan_penyebab = 'Sakit hati';
+        // $catatanKematian->save();
+
         return response($pemakaianKamarJenazah, 201);
     }
 
