@@ -22,7 +22,7 @@ class CreateTindakanOperasiTable extends Migration
 
             $table->unique(['id_transaksi', 'id_tindakan', 'np_tenaga_medis']);
             $table->foreign('id_tindakan')->references('id')->on('tindakan')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_transaksi')->references('id')->on('transaksi')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreign('id_transaksi')->references('id')->on('transaksi')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('np_tenaga_medis')->references('no_pegawai')->on('tenaga_medis')->onDelete('restrict');
         });
     }

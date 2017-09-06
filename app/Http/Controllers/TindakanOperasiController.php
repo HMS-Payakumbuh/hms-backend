@@ -59,10 +59,10 @@ class TindakanOperasiController extends Controller
     {
         $tindakanOperasi = TindakanOperasi
                             ::join('tindakan', 'tindakan_operasi.id_tindakan', '=', 'tindakan.id')
-                            ->join('pemakaian_kamar_operasi','pemakaian_kamar_operasi.no_tindakan','=', 'tindakan.id' )
+                            ->join('pemakaian_kamar_operasi','pemakaian_kamar_operasi.no_tindakan','=', 'tindakan_operasi.id_tindakan')
                             ->join('tenaga_medis', 'tindakan_operasi.np_tenaga_medis', '=', 'tenaga_medis.no_pegawai')
                             ->join('dokter', 'dokter.no_pegawai', '=', 'tenaga_medis.no_pegawai')
-                            ->select(DB::raw('tindakan_operasi.id, tenaga_medis.nama, tenaga_medis.no_pegawai, dokter.spesialis, tindakan_operasi.id_tindakan, tindakan_operasi.id_transaksi'))
+                            ->select(DB::raw('tindakan_operasi.id, tenaga_medis.nama, tenaga_medis.no_pegawai, dokter.spesialis, tindakan_operasi.id_tindakan, tindakan_operasi.id_transaksi, pemakaian_kamar_operasi.id as pemakaian_id'))
                             ->where('pemakaian_kamar_operasi.id','=',$pemakaianKamarOperasiId)
                             ->get();
 
