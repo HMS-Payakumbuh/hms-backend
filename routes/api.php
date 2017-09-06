@@ -58,7 +58,7 @@ Route::group(['middleware' => 'jwt.auth'], function () {
   Route::resource('dokter', 'DokterController', ['except' => [
     'edit', 'create', 'periksa', 'getAllDokterOfSpesialis'
   ]]);
-  Route::get('dokter/{spesialis}', 'DokterController@getAllDokterOfSpesialis');
+  Route::get('dokter/spesialis/{spesialis}', 'DokterController@getAllDokterOfSpesialis');
   Route::post('dokter/periksa', 'DokterController@periksa');  
 
 
