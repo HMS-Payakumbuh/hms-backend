@@ -46,6 +46,19 @@ class DokterController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param  string  $spesialis
+     * @return \Illuminate\Http\Response
+     */
+    public function getAllDokterOfSpesialis($spesialis)
+    {
+      return Dokter::with('tenagaMedis')
+        ->where('spesialis', '=', $spesialis)
+        ->get();
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request

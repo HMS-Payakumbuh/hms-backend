@@ -9,6 +9,7 @@ use App\Transaksi;
 use App\Pasien;
 use App\Asuransi;
 use App\Poliklinik;
+use App\Rujukan;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Redis;
 
@@ -65,6 +66,9 @@ class AntrianController extends Controller
 		    		$antrian->jenis = 0;*/
                 if ($pasien->catatan_kematian) {
                     Transaksi::destroy($request->input('id_transaksi'));
+                    $rujukan = Rujukan::where('id_transaksi', '=', $request->input('id_transaksi'))->first();
+                    if ($rujukan)
+                        Rujukan::destroy($request->input('id_transaksi'));
                     return response()->json([
                         'error' => "Pasien sudah meninggal."
                     ], 202);
@@ -105,6 +109,9 @@ class AntrianController extends Controller
             } else {
                 Antrian::destroy($antrian->id_transaksi, $antrian->no_antrian);
                 Transaksi::destroy($antrian->id_transaksi);
+                $rujukan = Rujukan::where('id_transaksi', '=', $request->input('id_transaksi'))->first();
+                if ($rujukan)
+                    Rujukan::destroy($request->input('id_transaksi'));
                 return response()->json([
                     'error' => "Kuota layanan yang dituju sudah habis."
                 ], 202);
@@ -195,10 +202,12 @@ class AntrianController extends Controller
         if ($antrian->nama_layanan_poli)
             $antrian_layanan = Antrian::
                 where('nama_layanan_poli', '=', $antrian->nama_layanan_poli)
+                ->where('status', '<', 2)
                 ->get();
         else if ($antrian->nama_layanan_lab)            
             $antrian_layanan = Antrian::
                 where('nama_layanan_lab', '=', $antrian->nama_layanan_lab)
+                ->where('status', '<', 2)
                 ->get();
 
          if (count($antrian_layanan) >= 5)    

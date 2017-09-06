@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\PemakaianKamarJenazah;
-use App\CatatanKematian;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 

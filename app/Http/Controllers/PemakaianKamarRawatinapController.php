@@ -213,7 +213,7 @@ class PemakaianKamarRawatinapController extends Controller
      */
     public function update(Request $request, $id, $no_kamar, $no_tempat_tidur)
     {
-        $pemakaianKamarRawatinap = PemakaianKamarRawatinap::with('kamar_rawatinap')->findOrFail($id);
+        $pemakaianKamarRawatinap = PemakaianKamarRawatinap::with(['kamar_rawatinap'])->findOrFail($id);
 
         // $pemakaianKamarRawatinap->no_kamar = $request->input('no_kamar');
         // $pemakaianKamarRawatinap->no_tempat_tidur = $request->input('no_tempat_tidur');
@@ -236,48 +236,54 @@ class PemakaianKamarRawatinapController extends Controller
         $tempatTidur->status = 1;
         $tempatTidur->save();
 
-        $transaksi = Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'pemakaianKamarRawatInap.kamar_rawatinap', 'pembayaran'])
-            ->findOrFail($pemakaianKamarRawatinap->id_transaksi);
-        $transaksi->status = 'closed';
-        $transaksi->save();
+        // $transaksi = Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'pemakaianKamarRawatInap.kamar_rawatinap', 'pembayaran'])
+        //     ->findOrFail($pemakaianKamarRawatinap->id_transaksi);
+        // $transaksi->status = 'closed';
+        // $transaksi->save();
 
-        if ($transaksi->status == 'closed' && isset($transaksi->no_sep)) {
-            try {
-                $coder_nik = SettingBpjs::first()->coder_nik;
-                $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-                $response = json_decode($bpjs->group(1)->getBody(), true);
+        // if ($transaksi->status == 'closed' && isset($transaksi->no_sep)) {
+        //     try {
+        //         $coder_nik = SettingBpjs::first()->coder_nik;
+        //         $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+        //         $response = json_decode($bpjs->group(1)->getBody(), true);
 
-                $special_cmg = '';
-                if ($response['metadata']['code'] == 200) {
-                    if (isset($response['special_cmg_option'])) {
-                        foreach ($response['special_cmg_option'] as $key => $value) {
-                            if (substr($value['code'], 1) != 'D') {
-                                $special_cmg = $special_cmg . "#" . $value['code'];
-                            }
-                            else {
-                                $name = explode(" ", $value['description']);
-                                foreach ($transaksi['obat_tebus']['obat_tebus_item'] as $key_obat => $obat) {
-                                    if (strtolower($obat['jenis_obat']['nama_generik']) == strtolower($name[0])) {
-                                        $special_cmg = $special_cmg . "#" . $value['code'];
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    $bpjs->group(2, $special_cmg);
-                    $bpjs->finalizeClaim();
-                }
-            }
-            catch(Exception $e) {
-                $transaksi->status = 'open';
-                $transaksi->save();
-            }
-        }
+        //         $special_cmg = '';
+        //         if ($response['metadata']['code'] == 200) {
+        //             if (isset($response['special_cmg_option'])) {
+        //                 foreach ($response['special_cmg_option'] as $key => $value) {
+        //                     if (substr($value['code'], 1) != 'D') {
+        //                         $special_cmg = $special_cmg . "#" . $value['code'];
+        //                     }
+        //                     else {
+        //                         $name = explode(" ", $value['description']);
+        //                         foreach ($transaksi['obat_tebus']['obat_tebus_item'] as $key_obat => $obat) {
+        //                             if (strtolower($obat['jenis_obat']['nama_generik']) == strtolower($name[0])) {
+        //                                 $special_cmg = $special_cmg . "#" . $value['code'];
+        //                             }
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //             $bpjs->group(2, $special_cmg);
+        //             $bpjs->finalizeClaim();
+        //         }
+        //     }
+        //     catch(Exception $e) {
+        //         $transaksi->status = 'open';
+        //         $transaksi->save();
+        //     }
+        // }
 
         if ($waktuMasuk->diffInHours($waktuKeluar) <= 2) {
             $pemakaianKamarRawatinap->delete();
         }
         else {
+            if ($pemakaianKamarRawatinap->id_pembayaran === null) {
+                return response()->json([
+                    'code' => 500,
+                    'message' => 'Pasien Memiliki Transaksi Yang Belum Diselesaikan'
+                ], 500);
+            }
             $pemakaianKamarRawatinap->save();
         }
 

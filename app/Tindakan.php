@@ -8,6 +8,10 @@ class Tindakan extends Model
 {
   protected $table = 'tindakan';
 
+  public function pembayaran() {
+    return $this->hasOne('App\Pembayaran', 'id', 'id_pembayaran');
+  }
+
   public function daftarTindakan() {
     return $this->belongsTo('App\DaftarTindakan', 'kode_tindakan', 'kode');
   }
