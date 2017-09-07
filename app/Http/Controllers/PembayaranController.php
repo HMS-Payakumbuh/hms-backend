@@ -238,37 +238,30 @@ class PembayaranController extends Controller
             }
         }
 
-        try {
-            if ($pembayaran->metode_bayar != 'tunai') {
-                $transaksi = Transaksi::findOrFail($pembayaran->id_transaksi);
-                $asuransi = DB::table('asuransi')->select('id')->where([
-                    ['nama_asuransi', '=', $pembayaran->metode_bayar],
-                    ['id_pasien', '=', $transaksi->id_pasien]
-                ])->first();
+        if ($pembayaran->metode_bayar != 'tunai') {
+            $transaksi = Transaksi::findOrFail($pembayaran->id_transaksi);
+            $asuransi = DB::table('asuransi')->select('id')->where([
+                ['nama_asuransi', '=', $pembayaran->metode_bayar],
+                ['id_pasien', '=', $transaksi->id_pasien]
+            ])->first();
 
-                $klaim = new Klaim;
-                $klaim->id_pembayaran = $pembayaran->id;
-                $klaim->id_asuransi = $asuransi->id;
-                $klaim->status = 'processed';
+            $klaim = new Klaim;
+            $klaim->id_pembayaran = $pembayaran->id;
+            $klaim->id_asuransi = $asuransi->id;
+            $klaim->status = 'processed';
+            $klaim->save();
+
+            if ($pembayaran->metode_bayar == 'bpjs') {
+                $settingBpjs = SettingBpjs::first();
+                $coder_nik = $settingBpjs->coder_nik;
+                $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+
+                $bpjs->group(1);
+                $dataKlaim = json_decode($bpjs->getClaimData()->getBody(), true);
+                $tarif = $dataKlaim['response']['data']['grouper']['response']['cbg']['tariff'];
+                $klaim->tarif = $tarif;
                 $klaim->save();
-
-                if ($pembayaran->metode_bayar == 'bpjs') {
-                    $settingBpjs = SettingBpjs::first();
-                    $coder_nik = $settingBpjs->coder_nik;
-                    $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-
-                    $dataKlaim = json_decode($bpjs->getClaimData()->getBody(), true);
-                    $tarif = $dataKlaim['grouper']['response']['cbg']['tariff'];
-                    $klaim->tarif = $tarif;
-                    $klaim->save();
-                }
             }
-        }
-        catch(\Exception $e) {
-            Pembayaran::destroy($pembayaran->id);
-            return response()->json([
-                'error' => $e->getMessage()
-            ], 500);
         }
 
         if ($payload['id_transaksi'] == 0) {

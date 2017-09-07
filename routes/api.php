@@ -20,6 +20,11 @@ use Illuminate\Http\Request;
 Route::post('login', 'Auth\AuthController@login');
 Route::post('register', 'Auth\AuthController@register');
 Route::post('update_user_kategori', 'Auth\AuthController@update_user_kategori');
+
+Route::get('transaksi/export', 'TransaksiController@export');
+Route::get('klaim/export', 'KlaimController@export');
+Route::get('pembayaran/export', 'PembayaranController@export');
+
 Route::group(['middleware' => 'jwt.auth'], function () {
   Route::get('get_user_details', 'Auth\AuthController@get_user_details');
 
@@ -67,7 +72,6 @@ Route::group(['middleware' => 'jwt.auth'], function () {
   Route::get('rekam_medis_eksternal/import/{kode_pasien}/{no_rujukan}', 'RekamMedisEksternalController@getEksternalRekamMedis');
   Route::get('rekam_medis_eksternal/{id_pasien}', 'RekamMedisEksternalController@show');
 
-  Route::get('transaksi/export', 'TransaksiController@export');
   Route::resource('transaksi', 'TransaksiController', ['except' => [
     'edit', 'create'
     ]]);
@@ -81,9 +85,7 @@ Route::group(['middleware' => 'jwt.auth'], function () {
   Route::get('transaksi/{id}/bpjs', 'TransaksiController@getStatusBpjs');
   Route::get('transaksi/search/{nama_pasien}', 'TransaksiController@getRecentTransaksi');
   Route::get('transaksi/{id}/{field?}', 'TransaksiController@show');
-  Route::get('klaim/export', 'KlaimController@export');
   Route::resource('klaim', 'KlaimController');
-  Route::get('pembayaran/export', 'PembayaranController@export');
   Route::resource('pembayaran', 'PembayaranController');
 });
 

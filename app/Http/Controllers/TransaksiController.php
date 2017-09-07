@@ -109,17 +109,29 @@ class TransaksiController extends Controller
                 array()
             );
 
+
             foreach ($all_transaksi as $transaksi) {
                 $pembayaran_non_BPJS = 0;
                 $pembayaran_BPJS = 0;
                 $tarif_klaim = 0;
                 $surplus_klaim = 0;
 
+                array_push($data, array('Waktu Transaksi', 'Nomor Transaksi', 'Kode Pasien', 'Nama Pasien'));
+                $array_init = array(
+                    $transaksi->waktu_perubahan_terakhir,
+                    $transaksi->no_transaksi,
+                    $transaksi->pasien->kode_pasien,
+                    $transaksi->pasien->nama_pasien
+                );
+                array_push($data, $array_init);
+
                 if (!empty($transaksi->tindakan)) {
-                    array_push($data, array('Tindakan'));
-                    array_push($data, array('Nama', '', '', 'Harga Tindakan', 'Metode Bayar'));
+                    array_push($data, array('', '', 'Tindakan'));
+                    array_push($data, array('', '', 'Nama', '', '', 'Harga Tindakan', 'Metode Bayar'));
                     foreach ($transaksi->tindakan as $tindakan) {
                         $array = array(
+                            '',
+                            '',
                             $tindakan->daftarTindakan->nama,
                             '',
                             '',
@@ -132,12 +144,15 @@ class TransaksiController extends Controller
                 array_push($data, array());
 
                 if (!empty($transaksi->obatTebus)) {
-                    array_push($data, array('Obat'));
-                    array_push($data, array('Nama', '', '', 'Harga Total', 'Metode Bayar'));
+                    array_push($data, array('', '', 'Obat'));
+                    array_push($data, array('', '', 'Nama', '', '', 'Harga Total', 'Metode Bayar'));
+                    array_push($data, array());
                     foreach ($transaksi->obatTebus as $obatTebus) {
                         foreach ($obatTebus->obatTebusItem as $obat) {
                             $array = array(
-                                $obat->jenis_obat->merek_obat,
+                                '',
+                                '',
+                                $obat->jenisObat->merek_obat,
                                 '',
                                 '',
                                 $obat->jumlah * $obat->harga_jual_realisasi,
@@ -150,14 +165,16 @@ class TransaksiController extends Controller
                 array_push($data, array());
 
                 if (!empty($transaksi->pemakaianKamarRawatInap)) {
-                    array_push($data, array('Kamar Rawat Inap'));
-                    array_push($data, array('Kelas Kamar', '', '', 'Harga Total', 'Metode Bayar'));
+                    array_push($data, array('', '', 'Kamar Rawat Inap'));
+                    array_push($data, array('', '', 'Kelas Kamar', '', '', 'Harga Total', 'Metode Bayar'));
                     foreach ($transaksi->pemakaianKamarRawatInap as $pemakaianKamar) {
                         $waktuMasuk = Carbon::parse($pemakaianKamar->waktu_masuk);
                         $waktuKeluar = Carbon::parse($pemakaianKamar->waktu_keluar);
                         $los = $waktuMasuk->diffInDays($waktuKeluar);
                         $harga = $los * $pemakaianKamar->kamar_rawatinap->harga_per_hari;
                         $array = array(
+                            '',
+                            '',
                             $pemakaianKamar->kamar_rawatinap->jenis_kamar.' Kelas '.$pemakaianKamar->kamar_rawatinap->kelas,
                             '',
                             '',
@@ -167,7 +184,6 @@ class TransaksiController extends Controller
                         array_push($data, $array);
                     }
                 }
-                array_push($data, array());
 
                 foreach ($transaksi->pembayaran as $pembayaran) {
                     if ($pembayaran->metode_bayar == 'bpjs') {
@@ -186,22 +202,25 @@ class TransaksiController extends Controller
                         $pembayaran_non_BPJS = $pembayaran->harga_bayar;
                         $total_pembayaran_non_BPJS += $pembayaran->harga_bayar;
                         if ($pembayaran->pembayaran_tambahan == 1) {
-                            array_push($data, array('Biaya Naik Kelas', '', '', $pembayaran_non_BPJS));
+                            array_push($data, array('', '', 'Biaya Naik Kelas', '', '', $pembayaran_non_BPJS, $pembayaran->metode_bayar));
                         }
                     }
                 }
+                array_push($data, array());
             }
+            
+            array_push($data, array());
 
-            $total_array = array('Total Pembayaran Non-BPJS', '', '', $total_pembayaran_non_BPJS);
+            $total_array = array('Total Pembayaran Non-BPJS', '', $total_pembayaran_non_BPJS);
             array_push($data, $total_array);
 
-            $total_array = array('Total Pembayaran BPJS', '', '', $total_pembayaran_BPJS);
+            $total_array = array('Total Pembayaran BPJS', '', $total_pembayaran_BPJS);
             array_push($data, $total_array);
 
-            $total_array = array('Total Tarif Klaim', '', '', $total_tarif_klaim);
+            $total_array = array('Total Tarif Klaim', '', $total_tarif_klaim);
             array_push($data, $total_array);
 
-            $total_array = array('Total Surplus Klaim', '', '', $total_surplus_klaim);
+            $total_array = array('Total Surplus Klaim', '', $total_surplus_klaim);
             array_push($data, $total_array);
 
             $tanggal_awal = $tanggal_awal->format('Y/m/d');
@@ -435,8 +454,20 @@ class TransaksiController extends Controller
     public function update(Request $request, $id)
     {
         $payload = $request->input('transaksi');
-        $transaksi = Transaksi::findOrFail($id);
+        $transaksi = Transaksi::with('pemakaianKamarRawatInap.kamar_rawatinap')
+            ->findOrFail($id);
         $transaksi->update($payload);
+
+        if ($transaksi->status == 'closed') {
+            foreach ($transaksi->pemakaianKamarRawatInap as $pemakaian) {
+                if ($pemakaian->waktu_keluar == null) {
+                    return response()->json([
+                        'code' => 500,
+                        'message' => 'Pasien Belum Checkout'
+                    ], 202);
+                }
+            }
+        }
 
         if ($transaksi->status == 'closed' && isset($transaksi->no_sep)) {
             $transaksi = Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'pemakaianKamarRawatInap.kamar_rawatinap', 'pembayaran'])

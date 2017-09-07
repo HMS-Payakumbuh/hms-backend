@@ -195,10 +195,12 @@ class AntrianController extends Controller
         if ($antrian->nama_layanan_poli)
             $antrian_layanan = Antrian::
                 where('nama_layanan_poli', '=', $antrian->nama_layanan_poli)
+                ->where('status', '<', 2)
                 ->get();
         else if ($antrian->nama_layanan_lab)            
             $antrian_layanan = Antrian::
                 where('nama_layanan_lab', '=', $antrian->nama_layanan_lab)
+                ->where('status', '<', 2)
                 ->get();
 
          if (count($antrian_layanan) >= 5)    
