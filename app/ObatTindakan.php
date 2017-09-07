@@ -48,4 +48,3 @@ class ObatTindakan extends Model
         return $this->belongsTo('App\Transaksi', 'id_transaksi');
     }
 }
-}

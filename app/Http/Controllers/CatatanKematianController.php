@@ -41,7 +41,15 @@ class CatatanKematianController extends Controller
         $catatanKematian->waktu_kematian = $request->input('waktu_kematian');
         $catatanKematian->tempat_kematian = $request->input('tempat_kematian');
         $catatanKematian->perkiraan_penyebab = $request->input('perkiraan_penyebab');
-        $catatanKematian->save();
+
+        if (Carbon::now() < Carbon::parse($catatanKematian->waktu_kematian)) {
+            return response()->json([
+                'error' => "Waktu kematian salah."
+            ], 202);
+        } else {    
+            $catatanKematian->save();
+            return response($catatanKematian, 201);
+        }
     }
 
     /**
