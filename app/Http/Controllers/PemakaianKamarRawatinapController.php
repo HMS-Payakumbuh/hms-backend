@@ -47,6 +47,18 @@ class PemakaianKamarRawatinapController extends Controller
         return $pemakaianKamarRawatinap;
     }
 
+    public function checkTransaksi()
+    {
+        $pemakaianKamarRawatinap = PemakaianKamarRawatinap
+                            ::select(DB::raw('pemakaian_kamar_rawatinap.*'))
+                            ->where('pemakaian_kamar_rawatinap.waktu_masuk', '!=', null)
+                            ->where('pemakaian_kamar_rawatinap.waktu_keluar', '=', null)
+                            ->orderBy('pemakaian_kamar_rawatinap.id_transaksi')
+                            ->get();
+
+        return $pemakaianKamarRawatinap;
+    }
+
     public function getAllPemakaianKamarByNoPegawai($no_pegawai)
     {
         $pemakaianKamarRawatinap = PemakaianKamarRawatinap
