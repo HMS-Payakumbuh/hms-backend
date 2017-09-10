@@ -132,6 +132,12 @@ class TindakanController extends Controller
       }
     }
 
+    public function getTindakanById($id)
+    {
+      $tindakan = Tindakan::findOrFail($id);
+      return response($tindakan, 200);
+    }
+
     /**
      * Update the specified resource in storage.
      *
