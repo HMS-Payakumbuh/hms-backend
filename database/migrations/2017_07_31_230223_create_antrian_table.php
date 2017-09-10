@@ -25,7 +25,7 @@ class CreateAntrianTable extends Migration
             $table->dateTime('waktu_masuk_antrian');
             $table->dateTime('waktu_perubahan_antrian');
 
-            $table->unique(['id_transaksi', 'no_antrian']);
+            $table->unique(['id_transaksi', 'no_antrian', 'nama_layanan_poli', 'nama_layanan_lab']);
 
             $table->foreign('id_transaksi')
                     ->references('id')
