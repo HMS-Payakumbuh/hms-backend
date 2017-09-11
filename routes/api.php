@@ -163,9 +163,9 @@ Route::resource('antrian', 'AntrianController', ['except' => [
 Route::get('antrian/cleanup', 'AntrianController@cleanup');
 Route::get('antrian/{nama_layanan}/status/{status}', 'AntrianController@getAntrianWithStatus');
 Route::get('antrian/{nama_layanan}', 'AntrianController@show');
-Route::put('antrian/{id_transaksi}/{no_antrian}', 'AntrianController@update');
-Route::put('antrian/process/{id_transaksi}/{no_antrian}', 'AntrianController@processAntrian');
-Route::delete('antrian/{id_transaksi}/{no_antrian}', 'AntrianController@destroy');
+Route::put('antrian/{id}', 'AntrianController@update');
+Route::put('antrian/process/{id}', 'AntrianController@processAntrian');
+Route::delete('antrian/{id}', 'AntrianController@destroy');
 
 Route::get('sep/{no_rujukan}', 'SepController@insertSEP');
 Route::get('sep/rujukan/{no_rujukan}', 'SepController@getRujukan');
