@@ -215,8 +215,10 @@ class AntrianController extends Controller
 
         $antrian->kesempatan = $antrian->kesempatan - 1;
         $antrian->save();
-        if ($antrian->kesempatan <= 0)
-            $antrian->delete();
+        if ($antrian->kesempatan <= 0) {
+          $antrian->status = 2;
+          $antrian->save();
+        }
         if ($antrian->nama_layanan_poli)
             Redis::publish('antrian', json_encode(['nama_layanan' => $antrian->nama_layanan_poli]));
         else if ($antrian->nama_layanan_lab)
