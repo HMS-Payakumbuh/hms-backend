@@ -244,6 +244,6 @@ class AntrianController extends Controller
             Redis::publish('antrian', json_encode(['nama_layanan' => $antrian->nama_layanan_poli]));
         else if ($antrian->nama_layanan_lab)
             Redis::publish('antrian', json_encode(['nama_layanan' => $antrian->nama_layanan_lab]));
-        return response($antrian, 204);
+        return response($antrian, 200);
     }
 }
