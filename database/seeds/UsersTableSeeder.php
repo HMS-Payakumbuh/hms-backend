@@ -13,8 +13,9 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
       DB::table('users')->insert(array(
-          array('no_pegawai'=>'D001', 'name'=>'Dokter A', 'role'=>'dokter', 'password'=>Hash::make('dokter'), 'other'=>''),
-          array('no_pegawai'=>'D002', 'name'=>'Dokter B', 'role'=>'dokter', 'password'=>Hash::make('dokter'), 'other'=>''),
+          array('no_pegawai'=>'D001', 'name'=>'Dokter Umum', 'role'=>'dokter', 'password'=>Hash::make('dokter'), 'other'=>''),
+          array('no_pegawai'=>'D002', 'name'=>'Dokter Jantung', 'role'=>'dokter', 'password'=>Hash::make('dokter'), 'other'=>''),
+          array('no_pegawai'=>'D003', 'name'=>'Dokter Penyakit Dalam', 'role'=>'dokter', 'password'=>Hash::make('dokter'), 'other'=>''),
           array('no_pegawai'=>'P001', 'name'=>'Perawat', 'role'=>'perawat', 'password'=>Hash::make('perawat'), 'other'=>''),
           array('no_pegawai'=>'L001', 'name'=>'Petugas Administrasi Lab', 'role'=>'petugasLab', 'password'=>Hash::make('petugaslab'), 'other'=>''),
           array('no_pegawai'=>'L002', 'name'=>'Petugas Lab', 'role'=>'petugasLab', 'password'=>Hash::make('petugaslab'), 'other'=>''),
