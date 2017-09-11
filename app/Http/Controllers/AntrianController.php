@@ -177,9 +177,8 @@ class AntrianController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function processAntrian(Request $request, $id_transaksi, $no_antrian) {
-      $antrian = Antrian::where('id_transaksi', '=', $id_transaksi)
-        ->where('no_antrian', '=', $no_antrian)
+    public function processAntrian(Request $request, $id) {
+      $antrian = Antrian::where('id', '=', $id)
   	    ->first();
       $antrian->status = 2;
       $antrian->save();
@@ -193,10 +192,9 @@ class AntrianController extends Controller
      * @param  string  $no_antrian
      * @return \Illuminate\Http\Response
      */
-    public function update($id_transaksi, $no_antrian)
+    public function update($id)
     {
-		$antrian = Antrian::where('id_transaksi', '=', $id_transaksi)
-	        ->where('no_antrian', '=', $no_antrian)
+		$antrian = Antrian::where('id', '=', $id)
 	        ->first();
 
         if ($antrian->nama_layanan_poli)
@@ -234,10 +232,9 @@ class AntrianController extends Controller
      * @param  string  $no_antrian
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id_transaksi, $no_antrian)
+    public function destroy($id)
     {
-		$antrian = Antrian::where('id_transaksi', '=', $id_transaksi)
-	    ->where('no_antrian', '=', $no_antrian)
+		$antrian = Antrian::where('id', '=', $id)
 	    ->first();
 	    $antrian->status = 1;
         $antrian->save();

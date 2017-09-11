@@ -12,8 +12,9 @@ class DokterTableSeeder extends Seeder
     public function run()
     {
       DB::table('dokter')->insert(array(
-        array('no_pegawai'=>'D001', 'spesialis'=>'Jantung'),
-        array('no_pegawai'=>'D002', 'spesialis'=>'Saraf')
+        array('no_pegawai'=>'D001', 'spesialis'=>'Umum'),
+        array('no_pegawai'=>'D002', 'spesialis'=>'Jantung'),
+        array('no_pegawai'=>'D003', 'spesialis'=>'Penyakit Dalam'),
       ));
     }
 }
