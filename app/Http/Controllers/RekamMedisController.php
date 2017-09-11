@@ -361,7 +361,7 @@ class RekamMedisController extends Controller
      */
     public function store(Request $request)
     {
-        $rekam_medis = new RekamMedis;
+        $rekam_medis = new RekamMedis;                                    
         $rekam_medis->id_pasien = $request->input('id_pasien');
         $rekam_medis->tanggal_waktu = $request->input('tanggal_waktu');
         $rekam_medis->np_dokter = $request->input('np_dokter');
