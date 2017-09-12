@@ -19,7 +19,7 @@ class StokObatSeeder extends Seeder
 			array('id_jenis_obat'=>5, 'nomor_batch'=>'HOL90N28M', 'jumlah'=>315, 'kadaluarsa'=>'2018-05-19', 'barcode'=>'00005HOL90N28M20180519', 'lokasi'=>1),
 			array('id_jenis_obat'=>6, 'nomor_batch'=>'XWCHVLN7', 'jumlah'=>245, 'kadaluarsa'=>'2018-06-16', 'barcode'=>'00006XWCHVLN720180616', 'lokasi'=>1),
 			array('id_jenis_obat'=>7, 'nomor_batch'=>'NT8WWU70C', 'jumlah'=>395, 'kadaluarsa'=>'2018-06-29', 'barcode'=>'00007NT8WWU70C20180629', 'lokasi'=>1),
-			array('id_jenis_obat'=>8, 'nomor_batch'=>'9OOGG9L', 'jumlah'=>90, 'kadaluarsa'=>'2018-06-30', 'barcode'=>'000089OOGG9L20180630', 'lokasi'=>1),
+			array('id_jenis_obat'=>8, 'nomor_batch'=>'9OOGG9L', 'jumlah'=>75, 'kadaluarsa'=>'2018-06-30', 'barcode'=>'000089OOGG9L20180630', 'lokasi'=>1),
 			array('id_jenis_obat'=>9, 'nomor_batch'=>'YVQPQ6I', 'jumlah'=>200, 'kadaluarsa'=>'2018-07-07', 'barcode'=>'00009YVQPQ6I20180707', 'lokasi'=>1),
 			array('id_jenis_obat'=>10, 'nomor_batch'=>'ABJAUL6', 'jumlah'=>300, 'kadaluarsa'=>'2018-07-11', 'barcode'=>'00010ABJAUL620180711', 'lokasi'=>1),
 			array('id_jenis_obat'=>11, 'nomor_batch'=>'SJ9ET1IEU', 'jumlah'=>20, 'kadaluarsa'=>'2018-08-01', 'barcode'=>'00011SJ9ET1IEU20180801', 'lokasi'=>1),
