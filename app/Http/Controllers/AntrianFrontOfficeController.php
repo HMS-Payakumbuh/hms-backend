@@ -49,13 +49,10 @@ class AntrianFrontOfficeController extends Controller
 
         $antrian_front_office = new AntrianFrontOffice;
 
-        $all_antrian = AntrianFrontOffice::where('kategori_antrian', '=', $request->input('kategori_antrian'))->get();
+        $last_antrian = AntrianFrontOffice::where('kategori_antrian', '=', $request->input('kategori_antrian'))
+                                            ->max('no_antrian');
 
-        if (!empty($all_antrian[0])) {
-            $antrian_front_office->no_antrian = $all_antrian[count($all_antrian) - 1]->no_antrian + 1;
-        } else {
-            $antrian_front_office->no_antrian = 1;
-        }
+        $antrian_front_office->no_antrian = $last_antrian + 1;
 
         $antrian_front_office->nama_layanan_poli = $request->input('nama_layanan_poli');
         $antrian_front_office->nama_layanan_lab = $request->input('nama_layanan_lab');
