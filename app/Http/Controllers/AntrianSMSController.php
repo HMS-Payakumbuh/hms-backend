@@ -103,13 +103,10 @@ class AntrianSMSController extends Controller
                 return response($text, 500);
               }
 
-              $all_antrian = AntrianFrontOffice::where('kategori_antrian', '=', $request->input('kategori_antrian'))
-                                                ->get();
-              if (!empty($all_antrian[0])) {
-                  $antrian_front_office->no_antrian = $all_antrian[count($all_antrian) - 1]->no_antrian + 1;
-              } else {
-                  $antrian_front_office->no_antrian = 1;
-              }
+              $last_antrian = AntrianFrontOffice::where('kategori_antrian', '=', $request->input('kategori_antrian'))
+                                                ->max('no_antrian');
+                                                
+              $antrian_front_office->no_antrian = $last_antrian + 1;
 
               if (substr($pieces[1], 0, 4) === 'Poli')
                   $antrian_front_office->nama_layanan_poli = $pieces[1];

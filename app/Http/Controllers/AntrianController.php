@@ -78,21 +78,18 @@ class AntrianController extends Controller
 
         $antrian->jenis = 0;
 
-        $all_antrian = [];
+        $last_antrian = 0;
         if ($request->input('nama_layanan_poli')) {
-            $all_antrian = Antrian::where('nama_layanan_poli', '=', $request->input('nama_layanan_poli'))->get();
+            $last_antrian = Antrian::where('nama_layanan_poli', '=', $request->input('nama_layanan_poli'))
+                                    ->where('waktu_masuk_antrian', '>=', Carbon::today()->toDateTimeString())
+                                    ->max('no_antrian');
         } else if ($request->input('nama_layanan_lab')) {
-            $all_antrian = Antrian::where('nama_layanan_lab', '=', $request->input('nama_layanan_lab'))->get();
+            $last_antrian = Antrian::where('nama_layanan_lab', '=', $request->input('nama_layanan_lab'))
+                                  ->where('waktu_masuk_antrian', '>=', Carbon::today()->toDateTimeString())
+                                  ->max('no_antrian');
         }
 
-        if (!empty($all_antrian[0])) {
-            if ($all_antrian[count($all_antrian) - 1]->waktu_masuk_antrian < Carbon::today()->toDateTimeString())
-                $antrian->no_antrian = 1;
-            else
-                $antrian->no_antrian = $all_antrian[count($all_antrian) - 1]->no_antrian + 1;
-        } else {
-            $antrian->no_antrian = 1;
-        }
+        $antrian->no_antrian = $last_antrian + 1;
 
         $antrian->id_transaksi = $request->input('id_transaksi');
         $antrian->nama_layanan_poli = $request->input('nama_layanan_poli');
