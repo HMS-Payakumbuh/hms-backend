@@ -29,8 +29,8 @@ class CreateAntrianFrontOfficeTable extends Migration
             $table->dateTime('waktu_masuk_antrian');
             $table->dateTime('waktu_perubahan_antrian');
 
-            $table->unique(['nama_layanan_poli', 'no_antrian']);
-            $table->unique(['nama_layanan_lab', 'no_antrian']);
+            $table->unique(['id','nama_layanan_poli', 'no_antrian']);
+            $table->unique(['id','nama_layanan_lab', 'no_antrian']);
 
             $table->foreign('nama_layanan_poli')
                     ->references('nama')

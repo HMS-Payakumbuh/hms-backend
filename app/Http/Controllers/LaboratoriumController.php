@@ -61,9 +61,22 @@ class LaboratoriumController extends Controller
       $laboratorium->kategori_antrian = $request->input('kategori_antrian');
       $laboratorium->save();
 
+      $last_antrian = AntrianFrontOffice::where('kategori_antrian', '=', $request->input('kategori_antrian'))
+                                            ->max('no_antrian');
+      $antrian_kategori = AntrianFrontOffice::where('kategori_antrian', '=', $request->input('kategori_antrian'))
+                                            ->get();
+      $last_waktu = $laboratorium->updated_at;                                      
+      if (!empty($antrian_kategori[0])) {
+        $last_waktu = $antrian_kategori[count($antrian_kategori) - 1]->waktu_perubahan_antrian;
+      }
+
       $updateList = AntrianFrontOffice::where('nama_layanan_lab', '=', $laboratorium->nama)->get();
       foreach ($updateList as $antrian) {
         $antrian->kategori_antrian = $laboratorium->kategori_antrian;
+        $last_antrian = $last_antrian + 1;
+        $last_waktu = $last_waktu->addSeconds(1);
+        $antrian->no_antrian = $last_antrian;
+        $antrian->waktu_perubahan_antrian = $last_waktu;
         $antrian->save();
       }
       Redis::publish('antrian', json_encode(['kategori_antrian' => $kategori_antrian_lama]));

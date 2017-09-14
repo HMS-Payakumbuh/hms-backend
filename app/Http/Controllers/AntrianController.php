@@ -78,21 +78,18 @@ class AntrianController extends Controller
 
         $antrian->jenis = 0;
 
-        $all_antrian = [];
+        $last_antrian = 0;
         if ($request->input('nama_layanan_poli')) {
-            $all_antrian = Antrian::where('nama_layanan_poli', '=', $request->input('nama_layanan_poli'))->get();
+            $last_antrian = Antrian::where('nama_layanan_poli', '=', $request->input('nama_layanan_poli'))
+                                    ->where('waktu_masuk_antrian', '>=', Carbon::today()->toDateTimeString())
+                                    ->max('no_antrian');
         } else if ($request->input('nama_layanan_lab')) {
-            $all_antrian = Antrian::where('nama_layanan_lab', '=', $request->input('nama_layanan_lab'))->get();
+            $last_antrian = Antrian::where('nama_layanan_lab', '=', $request->input('nama_layanan_lab'))
+                                  ->where('waktu_masuk_antrian', '>=', Carbon::today()->toDateTimeString())
+                                  ->max('no_antrian');
         }
 
-        if (!empty($all_antrian[0])) {
-            if ($all_antrian[count($all_antrian) - 1]->waktu_masuk_antrian < Carbon::today()->toDateTimeString())
-                $antrian->no_antrian = 1;
-            else
-                $antrian->no_antrian = $all_antrian[count($all_antrian) - 1]->no_antrian + 1;
-        } else {
-            $antrian->no_antrian = 1;
-        }
+        $antrian->no_antrian = $last_antrian + 1;
 
         $antrian->id_transaksi = $request->input('id_transaksi');
         $antrian->nama_layanan_poli = $request->input('nama_layanan_poli');
@@ -177,9 +174,8 @@ class AntrianController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function processAntrian(Request $request, $id_transaksi, $no_antrian) {
-      $antrian = Antrian::where('id_transaksi', '=', $id_transaksi)
-        ->where('no_antrian', '=', $no_antrian)
+    public function processAntrian(Request $request, $id) {
+      $antrian = Antrian::where('id', '=', $id)
   	    ->first();
       $antrian->status = 2;
       $antrian->save();
@@ -193,10 +189,9 @@ class AntrianController extends Controller
      * @param  string  $no_antrian
      * @return \Illuminate\Http\Response
      */
-    public function update($id_transaksi, $no_antrian)
+    public function update($id)
     {
-		$antrian = Antrian::where('id_transaksi', '=', $id_transaksi)
-	        ->where('no_antrian', '=', $no_antrian)
+		$antrian = Antrian::where('id', '=', $id)
 	        ->first();
 
         if ($antrian->nama_layanan_poli)
@@ -217,8 +212,10 @@ class AntrianController extends Controller
 
         $antrian->kesempatan = $antrian->kesempatan - 1;
         $antrian->save();
-        if ($antrian->kesempatan <= 0)
-            $antrian->delete();
+        if ($antrian->kesempatan <= 0) {
+          $antrian->status = 2;
+          $antrian->save();
+        }
         if ($antrian->nama_layanan_poli)
             Redis::publish('antrian', json_encode(['nama_layanan' => $antrian->nama_layanan_poli]));
         else if ($antrian->nama_layanan_lab)
@@ -234,10 +231,9 @@ class AntrianController extends Controller
      * @param  string  $no_antrian
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id_transaksi, $no_antrian)
+    public function destroy($id)
     {
-		$antrian = Antrian::where('id_transaksi', '=', $id_transaksi)
-	    ->where('no_antrian', '=', $no_antrian)
+		$antrian = Antrian::where('id', '=', $id)
 	    ->first();
 	    $antrian->status = 1;
         $antrian->save();
@@ -245,6 +241,6 @@ class AntrianController extends Controller
             Redis::publish('antrian', json_encode(['nama_layanan' => $antrian->nama_layanan_poli]));
         else if ($antrian->nama_layanan_lab)
             Redis::publish('antrian', json_encode(['nama_layanan' => $antrian->nama_layanan_lab]));
-        return response($antrian, 204);
+        return response($antrian, 200);
     }
 }

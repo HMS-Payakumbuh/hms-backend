@@ -34,6 +34,16 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     'edit', 'create'
   ]]);
 
+  Route::resource('daftar_diagnosis', 'DaftarDiagnosisController', ['except' => [
+    'edit', 'create'
+  ]]);
+
+  Route::resource('diagnosis', 'DiagnosisController', ['except' => [
+    'edit', 'show', 'create'
+  ]]);
+  Route::get('diagnosis/{id_pasien}', 'DiagnosisController@getDiagnosisOfPasien');
+  Route::get('diagnosis/rekam_medis/{id_pasien}/{tanggal_waktu}', 'DiagnosisController@getDiagnosisOfRekamMedis');
+
   Route::resource('daftar_tindakan', 'DaftarTindakanController', ['except' => [
     'edit', 'create'
   ]]);
@@ -54,6 +64,10 @@ Route::group(['middleware' => 'jwt.auth'], function () {
   Route::post('hasil_lab/upload/{id}', 'HasilLabController@upload');
   Route::resource('hasil_lab', 'HasilLabController', ['except' => [
     'edit', 'create', 'getEmptyHasilLab', 'download', 'upload'
+  ]]);
+
+  Route::resource('tenaga_medis', 'TenagaMedisController', ['except' => [
+    'edit', 'create'
   ]]);
 
   Route::resource('dokter', 'DokterController', ['except' => [
@@ -151,9 +165,9 @@ Route::resource('antrian', 'AntrianController', ['except' => [
 Route::get('antrian/cleanup', 'AntrianController@cleanup');
 Route::get('antrian/{nama_layanan}/status/{status}', 'AntrianController@getAntrianWithStatus');
 Route::get('antrian/{nama_layanan}', 'AntrianController@show');
-Route::put('antrian/{id_transaksi}/{no_antrian}', 'AntrianController@update');
-Route::put('antrian/process/{id_transaksi}/{no_antrian}', 'AntrianController@processAntrian');
-Route::delete('antrian/{id_transaksi}/{no_antrian}', 'AntrianController@destroy');
+Route::put('antrian/{id}', 'AntrianController@update');
+Route::put('antrian/process/{id}', 'AntrianController@processAntrian');
+Route::delete('antrian/{id}', 'AntrianController@destroy');
 
 Route::get('sep/{no_rujukan}', 'SepController@insertSEP');
 Route::get('sep/rujukan/{no_rujukan}', 'SepController@getRujukan');
@@ -182,16 +196,6 @@ Route::resource('cob', 'CobController', ['except' => [
   'edit', 'create'
 ]]);
 
-Route::resource('daftar_diagnosis', 'DaftarDiagnosisController', ['except' => [
-  'edit', 'create'
-]]);
-
-Route::resource('diagnosis', 'DiagnosisController', ['except' => [
-  'edit', 'show', 'create'
-]]);
-Route::get('diagnosis/{id_pasien}', 'DiagnosisController@getDiagnosisOfPasien');
-Route::get('diagnosis/rekam_medis/{id_pasien}/{tanggal_waktu}', 'DiagnosisController@getDiagnosisOfRekamMedis');
-
 Route::resource('tindakan_operasi', 'TindakanOperasiController', ['except' => [
   'edit', 'create'
 ]]);
@@ -206,20 +210,6 @@ Route::resource('poliklinik', 'PoliklinikController', ['except' => [
 Route::resource('laboratorium', 'LaboratoriumController', ['except' => [
   'edit', 'create'
 ]]);
-
-Route::resource('tenaga_medis', 'TenagaMedisController', ['except' => [
-  'edit', 'create'
-]]);
-
-Route::get('jadwal_dokter/{nama_poli}/{np_dokter}/{tanggal}', 'JadwalDokterController@show');
-Route::get('jadwal_dokter/{nama_poli}', 'JadwalDokterController@showAvailable');
-Route::put('jadwal_dokter/{nama_poli}/{np_dokter}/{tanggal}', 'JadwalDokterController@update');
-Route::delete('jadwal_dokter/{nama_poli}/{np_dokter}/{tanggal}', 'JadwalDokterController@destroy');
-
-Route::resource('jadwal_dokter', 'JadwalDokterController', ['except' => [
-  'edit', 'create', 'show', 'update', 'destroy'
-]]);
-
 
 Route::resource('pemakaiankamaroperasi', 'PemakaianKamarOperasiController', ['except' => [
   'edit', 'create'
@@ -248,12 +238,6 @@ Route::put('pemakaiankamaroperasi/booking/keluar/{id}', 'PemakaianKamarOperasiCo
 Route::resource('rawatinap', 'KamarRawatInapController', ['except' => [
   'edit', 'create'
 ]]);
-
-Route::group(['middleware' => 'jwt.auth'], function () {
-
-
-
-});
 
 Route::put('pemakaiankamarrawatinap/{id}/{no_kamar}/{no_tempat_tidur}', 'PemakaianKamarRawatinapController@update');
 Route::delete('pemakaiankamarrawatinap/{id}/{no_kamar}/{no_tempat_tidur}', 'PemakaianKamarRawatinapController@destroy');
