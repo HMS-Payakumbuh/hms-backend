@@ -6,6 +6,7 @@ use App\Poliklinik;
 use App\AntrianFrontOffice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
+use Carbon\Carbon;
 
 class PoliklinikController extends Controller
 {
@@ -16,7 +17,17 @@ class PoliklinikController extends Controller
      */
     public function index()
     {
+      self::resetKapasitasPelayanan();
       return Poliklinik::all();
+    }
+
+    public function resetKapasitasPelayanan()
+    {
+      $allPoliklinik = Poliklinik::whereDay('updated_at', '<', date('d'))->get();
+      foreach ($allPoliklinik as $poliklinik) {
+        $poliklinik->sisa_pelayanan = $poliklinik->kapasitas_pelayanan;
+        $poliklinik->save();
+      }
     }
 
     /**
