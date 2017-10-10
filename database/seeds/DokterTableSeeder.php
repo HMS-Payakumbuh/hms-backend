@@ -15,6 +15,8 @@ class DokterTableSeeder extends Seeder
         array('no_pegawai'=>'D001', 'spesialis'=>'Umum'),
         array('no_pegawai'=>'D002', 'spesialis'=>'Jantung'),
         array('no_pegawai'=>'D003', 'spesialis'=>'Penyakit Dalam'),
+        array('no_pegawai'=>'D004', 'spesialis'=>'Umum'),
+        array('no_pegawai'=>'D005', 'spesialis'=>'THT'),
       ));
     }
 }

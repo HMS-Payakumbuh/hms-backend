@@ -16,6 +16,8 @@ class UsersTableSeeder extends Seeder
           array('no_pegawai'=>'D001', 'name'=>'Dokter Umum', 'role'=>'dokter', 'password'=>Hash::make('dokter'), 'other'=>''),
           array('no_pegawai'=>'D002', 'name'=>'Dokter Jantung', 'role'=>'dokter', 'password'=>Hash::make('dokter'), 'other'=>''),
           array('no_pegawai'=>'D003', 'name'=>'Dokter Penyakit Dalam', 'role'=>'dokter', 'password'=>Hash::make('dokter'), 'other'=>''),
+          array('no_pegawai'=>'D004', 'name'=>'Dokter Umum 2', 'role'=>'dokter', 'password'=>Hash::make('dokter'), 'other'=>''),
+          array('no_pegawai'=>'D005', 'name'=>'Dokter THT', 'role'=>'dokter', 'password'=>Hash::make('dokter'), 'other'=>''),
           array('no_pegawai'=>'P001', 'name'=>'Perawat', 'role'=>'perawat', 'password'=>Hash::make('perawat'), 'other'=>''),
           array('no_pegawai'=>'L001', 'name'=>'Petugas Administrasi Lab', 'role'=>'petugasLab', 'password'=>Hash::make('petugaslab'), 'other'=>''),
           array('no_pegawai'=>'L002', 'name'=>'Petugas Lab', 'role'=>'petugasLab', 'password'=>Hash::make('petugaslab'), 'other'=>''),
