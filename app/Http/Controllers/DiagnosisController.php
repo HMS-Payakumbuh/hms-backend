@@ -48,13 +48,13 @@ class DiagnosisController extends Controller
         $settingBpjs = SettingBpjs::first();
         $coder_nik = $settingBpjs->coder_nik;
         $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-        $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
-        $currentDiagnosis = $currentData['response']['data']['diagnosa']. $currentDiagnosis;
+        // $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
+        // $currentDiagnosis = $currentData['response']['data']['diagnosa']. $currentDiagnosis;
         
-        $requestSet = array(
-          'diagnosa' => $currentDiagnosis
-        );
-        $bpjs->setClaimData($requestSet);
+        // $requestSet = array(
+        //   'diagnosa' => $currentDiagnosis
+        // );
+        // $bpjs->setClaimData($requestSet);
       }
 
       return response($request->all(), 201);
