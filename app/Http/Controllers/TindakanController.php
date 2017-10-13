@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Tindakan;
 use App\DaftarTindakan;
+use App\TenagaMedis;
 use App\Transaksi;
 use App\SettingBpjs;
 use App\BpjsManager;
@@ -30,6 +31,7 @@ class TindakanController extends Controller
     public function store(Request $request)
     {
       $currentTindakan = '';
+      $np_tenaga_medis = '';
       $i = 0;
       $response = [];
       foreach ($request->all() as $key => $value) {
@@ -51,6 +53,7 @@ class TindakanController extends Controller
 
         if ($tindakan->save()) {
           $currentTindakan = $currentTindakan. "#". $tindakan->kode_tindakan;
+          $np_tenaga_medis = $tindakan->np_tenaga_medis;
           $transaksi = Transaksi::findOrFail($tindakan->id_transaksi);
           $transaksi->harga_total += $tindakan->harga;
           $transaksi->save();
@@ -59,6 +62,8 @@ class TindakanController extends Controller
 
       $transaksi = Transaksi::findOrFail($tindakan->id_transaksi);
       if ($transaksi->no_sep != null) {
+        $tenaga_medis = TenagaMedis::findOrFail($np_tenaga_medis);
+
         $settingBpjs = SettingBpjs::first();
         $coder_nik = $settingBpjs->coder_nik;
         $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
@@ -66,6 +71,7 @@ class TindakanController extends Controller
         $currentTindakan = $currentData['response']['data']['procedure']. $currentTindakan;
 
         $requestSet = array(
+          'nama_dokter' => $tenaga_medis->nama,
           'procedure' => $currentTindakan
         );
         $bpjs->setClaimData($requestSet);

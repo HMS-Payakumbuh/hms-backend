@@ -44,24 +44,28 @@ class PembayaranController extends Controller
                 ->get();
 
             $data = array(
-                array('Waktu Pembayaran', 'Nama Pasien', 'Nomor Pembayaran', 'Total Pembayaran')
+                array('Waktu Pembayaran', 'Nama Pasien', 'Kode Pasien', 'Nomor Pembayaran', 'Total Pembayaran', 'Metode Pembayaran')
             );
 
             $total_pembayaran = 0;
             foreach ($all_pembayaran as $pembayaran) {
-                $total_pembayaran += $pembayaran->harga_bayar;
+                if (isset($pembayaran->transaksi)) {
+                    $total_pembayaran += $pembayaran->harga_bayar;
 
-                $pembayaran_array = array(
-                    $pembayaran->created_at,
-                    $pembayaran->transaksi->pasien->nama_pasien,
-                    $pembayaran->no_pembayaran,
-                    $pembayaran->harga_bayar
-                );
+                    $pembayaran_array = array(
+                        $pembayaran->created_at,
+                        $pembayaran->transaksi->pasien->nama_pasien,
+                        $pembayaran->transaksi->pasien->kode_pasien,
+                        $pembayaran->no_pembayaran,
+                        $pembayaran->harga_bayar,
+                        $pembayaran->metode_bayar
+                    );
 
-                array_push($data, $pembayaran_array);
+                    array_push($data, $pembayaran_array);
+                }
             }
 
-            $total_array = array('Total', '', '', $total_pembayaran);
+            $total_array = array('Total', '', '', '', $total_pembayaran);
             array_push($data, $total_array);
 
             $tanggal_awal = $tanggal_awal->format('Y/m/d');
@@ -259,6 +263,11 @@ class PembayaranController extends Controller
                 $bpjs->group(1);
                 $dataKlaim = json_decode($bpjs->getClaimData()->getBody(), true);
                 $tarif = $dataKlaim['response']['data']['grouper']['response']['cbg']['tariff'];
+                if (isset($dataKlaim['response']['data']['grouper']['response']['special_cmg'])) {
+                    foreach ($dataKlaim['response']['data']['grouper']['response']['special_cmg'] as $cmg) {
+                        $tarif += $cmg['tariff'];
+                    }
+                }
                 $klaim->tarif = $tarif;
                 $klaim->save();
             }

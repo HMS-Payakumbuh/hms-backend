@@ -31,7 +31,7 @@ class KlaimController extends Controller
                 ->get();
 
             $data = array(
-                array('Waktu Klaim', 'Nama Pasien', 'Nomor Pembayaran', 'Total Pembayaran', 'Tarif Klaim', 'Surplus Klaim')
+                array('Waktu Klaim', 'Nama Pasien', 'Kode Pasien', 'Nomor Pembayaran', 'Total Pembayaran', 'Tarif Klaim', 'Surplus Klaim')
             );
 
             $total_pembayaran = 0;
@@ -48,6 +48,7 @@ class KlaimController extends Controller
                 $klaim_array = array(
                     $klaim->created_at,
                     $klaim->asuransi->pasien->nama_pasien,
+                    $klaim->asuransi->pasien->kode_pasien,
                     $klaim->pembayaran->no_pembayaran,
                     $klaim->pembayaran->harga_bayar,
                     $klaim->tarif,
@@ -56,7 +57,7 @@ class KlaimController extends Controller
                 array_push($data, $klaim_array);
             }
 
-            $total_array = array('Total', '', '', $total_pembayaran, $total_tarif, $total_surplus);
+            $total_array = array('Total', '', '', '', $total_pembayaran, $total_tarif, $total_surplus);
             array_push($data, $total_array);
 
             $tanggal_awal = $tanggal_awal->format('Y/m/d');

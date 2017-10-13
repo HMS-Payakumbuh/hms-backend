@@ -186,7 +186,14 @@ class TransaksiController extends Controller
                 }
 
                 foreach ($transaksi->pembayaran as $pembayaran) {
-                    if ($pembayaran->metode_bayar == 'bpjs') {
+                    if ($pembayaran->metode_bayar != 'bpjs') {
+                        $pembayaran_non_BPJS = $pembayaran->harga_bayar;
+                        $total_pembayaran_non_BPJS += $pembayaran->harga_bayar;
+                        if ($pembayaran->pembayaran_tambahan == 1) {
+                            array_push($data, array('', '', 'Biaya Naik Kelas', '', '', $pembayaran_non_BPJS, $pembayaran->metode_bayar));
+                        }
+                    }
+                    else {
                         $pembayaran_BPJS = $pembayaran->harga_bayar;
                         $total_pembayaran_BPJS += $pembayaran->harga_bayar;
 
@@ -197,13 +204,9 @@ class TransaksiController extends Controller
                             $surplus_klaim = $tarif_klaim - $pembayaran_BPJS;
                             $total_surplus_klaim += $surplus_klaim;
                         }
-                    }
-                    else {
-                        $pembayaran_non_BPJS = $pembayaran->harga_bayar;
-                        $total_pembayaran_non_BPJS += $pembayaran->harga_bayar;
-                        if ($pembayaran->pembayaran_tambahan == 1) {
-                            array_push($data, array('', '', 'Biaya Naik Kelas', '', '', $pembayaran_non_BPJS, $pembayaran->metode_bayar));
-                        }
+
+                        array_push($data, array());
+                        array_push($data, array('', '', 'Tarif Klaim', '', '', $pembayaran->klaim->tarif));
                     }
                 }
                 array_push($data, array());
@@ -315,36 +318,7 @@ class TransaksiController extends Controller
                 $transaksiLama->status = 'closed';
                 $transaksiLama->save();
                 if ($transaksiLama->status == 'closed' && isset($transaksiLama->no_sep)) {
-                    try {
-                        $coder_nik = SettingBpjs::first()->coder_nik;
-                        $bpjs =  new BpjsManager($transaksiLama->no_sep, $coder_nik);
-                        $response = json_decode($bpjs->group(1)->getBody(), true);
-
-                        $special_cmg = '';
-                        if ($response['metadata']['code'] == 200) {
-                            if (isset($response['special_cmg_option'])) {
-                                foreach ($response['special_cmg_option'] as $key => $value) {
-                                    if (substr($value['code'], 1) != 'D') {
-                                        $special_cmg = $special_cmg . "#" . $value['code'];
-                                    }
-                                    else {
-                                        $name = explode(" ", $value['description']);
-                                        foreach ($transaksiLama['obat_tebus']['obat_tebus_item'] as $key_obat => $obat) {
-                                            if (strtolower($obat['jenis_obat']['nama_generik']) == strtolower($name[0])) {
-                                                $special_cmg = $special_cmg . "#" . $value['code'];
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            $bpjs->group(2, $special_cmg);
-                            $bpjs->finalizeClaim();
-                        }
-                    }
-                    catch(Exception $e) {
-                        $transaksiLama->status = 'open';
-                        $transaksiLama->save();
-                    }
+                    $this->createPembayaranBpjs($transaksiLama->id);
                 }
             }
             else {
@@ -470,43 +444,8 @@ class TransaksiController extends Controller
         }
 
         if ($transaksi->status == 'closed' && isset($transaksi->no_sep)) {
-            $transaksi = Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'pemakaianKamarRawatInap.kamar_rawatinap', 'pembayaran'])
-                ->findOrFail($id);
-            try {
-                $coder_nik = SettingBpjs::first()->coder_nik;
-                $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-                $response = json_decode($bpjs->group(1)->getBody(), true);
-
-                $special_cmg = '';
-                if ($response['metadata']['code'] == 200) {
-                    if (isset($response['special_cmg_option'])) {
-                        foreach ($response['special_cmg_option'] as $key => $value) {
-                            if (substr($value['code'], 1) != 'D') {
-                                $special_cmg = $special_cmg . "#" . $value['code'];
-                            }
-                            else {
-                                $name = explode(" ", $value['description']);
-                                foreach ($transaksi['obat_tebus']['obat_tebus_item'] as $key_obat => $obat) {
-                                    if (strtolower($obat['jenis_obat']['nama_generik']) == strtolower($name[0])) {
-                                        $special_cmg = $special_cmg . "#" . $value['code'];
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    $bpjs->group(2, $special_cmg);
-                    $bpjs->finalizeClaim();
-                }
-            }
-            catch(Exception $e) {
-                $transaksi->status = 'open';
-                $transaksi->save();
-            }
+            $this->createPembayaranBpjs($id);
         }
-
-        return response()->json([
-            'transaksi' => $transaksi
-        ], 201);
     }
 
     /**
@@ -633,5 +572,133 @@ class TransaksiController extends Controller
         return response()->json([
             'status_bpjs' => $status_bpjs
         ], 200);
+    }
+
+    private function createPembayaranBpjs($id)
+    {
+        $transaksi = Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'rujukan_pasien', 'pembayaran', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'pemakaianKamarRawatInap.kamar_rawatinap', 'pemakaianKamarJenazah'])
+            ->findOrFail($id);
+        
+        $harga_total = 0;
+        foreach ($transaksi->tindakan as $tindakan) {
+            if ($tindakan->id_pembayaran === null) {
+                $harga_total += $tindakan->harga;
+            }
+        }
+
+        foreach ($transaksi->pemakaianKamarRawatInap as $pemakaian) {
+            if ($pemakaian->id_pembayaran === null) {
+                $waktu_masuk = Carbon::parse($pemakaian->waktu_masuk);
+                $waktu_keluar = Carbon::parse($pemakaian->waktu_keluar);
+                $days = $waktu_masuk->diffInDays($waktu_keluar);
+                $harga_total += $pemakaian->kamar_rawatinap->harga_per_hari * $days;
+            }
+        }
+
+        foreach ($transaksi->obatTebus as $obatTebus) {
+            foreach ($obatTebus->obatTebusItem as $obatItem) {
+                if ($obatItem->id_pembayaran === null) {
+                    $harga_total += $obatItem->jumlah * $obatItem->harga_jual_realisasi;
+                }
+            }
+        }
+
+        if ($harga_total > 0) {
+            $pembayaran = new Pembayaran;
+            $pembayaran->id_transaksi = $id;
+            $pembayaran->harga_bayar = $harga_total;
+            $pembayaran->metode_bayar = 'bpjs';
+            $pembayaran->pembayaran_tambahan = 0;
+            $pembayaran->save();
+
+            $pembayaran = Pembayaran::findOrFail($pembayaran->id);
+            $code_str = strtoupper(base_convert($pembayaran->id, 10, 36));
+            $code_str = str_pad($code_str, 8, '0', STR_PAD_LEFT);
+            $pembayaran->no_pembayaran = 'PMB' . $code_str;
+            $pembayaran->save();
+
+            foreach ($transaksi->tindakan as $tindakan) {
+                if ($tindakan->id_pembayaran === null) {
+                    $data_tindakan = Tindakan::findOrFail($tindakan->id);
+                    $data_tindakan->id_pembayaran = $pembayaran->id;
+                    $data_tindakan->save();
+                }
+            }
+
+            foreach ($transaksi->pemakaianKamarRawatInap as $pemakaian) {
+                if ($pemakaian->id_pembayaran === null) {
+                    $data_pemakaian = PemakaianKamarRawatInap::findOrFail($pemakaian->id);
+                    $data_pemakaian->id_pembayaran = $pembayaran->id;
+                    $data_pemakaian->save();
+                }
+            }
+
+            foreach ($transaksi->obatTebus as $obatTebus) {
+                foreach ($obatTebus->obatTebusItem as $obatItem) {
+                    if ($obatItem->id_pembayaran === null) {
+                        $data_obat = ObatTebusItem::findOrFail($obatItem->id);
+                        $data_obat->id_pembayaran = $pembayaran->id;
+                        $data_obat->save();
+                    }
+                }
+            }
+        }
+
+        $coder_nik = SettingBpjs::first()->coder_nik;
+        $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
+
+        $waktuKeluar = Carbon::now('Asia/Jakarta');
+        $requestSet = array(
+            'tgl_pulang' => $waktuKeluar->toDateTimeString()
+        );
+        $bpjs->setClaimData($requestSet);
+        $response = json_decode($bpjs->group(1)->getBody(), true);
+
+        $special_cmg = '';
+        $tariff = 0;
+        if ($response['metadata']['code'] == 200) {
+            if (isset($response['special_cmg_option'])) {
+                foreach ($response['special_cmg_option'] as $key => $value) {
+                    if (substr($value['code'], 1) != 'D') {
+                        $special_cmg = $special_cmg . "#" . $value['code'];
+                    }
+                    else {
+                        $name = explode(" ", $value['description']);
+                        foreach ($transaksi['obat_tebus']['obat_tebus_item'] as $key_obat => $obat) {
+                            if (strtolower($obat['jenis_obat']['nama_generik']) == strtolower($name[0])) {
+                                $special_cmg = $special_cmg . "#" . $value['code'];
+                            }
+                        }
+                    }
+                }
+            }
+            $response_group_2 = json_decode($bpjs->group(2, $special_cmg)->getBody(), true);
+            if ($response_group_2['metadata']['code'] == 200) {
+                if (isset($response['response']['cbg'])) {
+                    $tariff += $response['response']['cbg']['tariff'];
+                    if (isset($response['response']['special_cmg'])) {
+                        foreach ($response['response']['special_cmg'] as $cmg) {
+                            $tariff += $cmg['tariff'];
+                        }
+                    }
+                }
+            }
+
+            $asuransi = DB::table('asuransi')->select('id')->where([
+                ['nama_asuransi', '=', $pembayaran->metode_bayar],
+                ['id_pasien', '=', $transaksi->id_pasien]
+            ])->first();
+
+            $klaim = new Klaim;
+            $klaim->id_pembayaran = $pembayaran->id;
+            $klaim->id_asuransi = $asuransi->id;
+            $klaim->status = 'processed';
+            $klaim->save();
+
+            $klaim->tarif = $tariff;
+            $klaim->save();
+
+            $bpjs->finalizeClaim();
+        }
     }
 }
