@@ -260,16 +260,16 @@ class PembayaranController extends Controller
                 $coder_nik = $settingBpjs->coder_nik;
                 $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
 
-                $bpjs->group(1);
-                $dataKlaim = json_decode($bpjs->getClaimData()->getBody(), true);
-                $tarif = $dataKlaim['response']['data']['grouper']['response']['cbg']['tariff'];
-                if (isset($dataKlaim['response']['data']['grouper']['response']['special_cmg'])) {
-                    foreach ($dataKlaim['response']['data']['grouper']['response']['special_cmg'] as $cmg) {
-                        $tarif += $cmg['tariff'];
-                    }
-                }
-                $klaim->tarif = $tarif;
-                $klaim->save();
+                // $bpjs->group(1);
+                // $dataKlaim = json_decode($bpjs->getClaimData()->getBody(), true);
+                // $tarif = $dataKlaim['response']['data']['grouper']['response']['cbg']['tariff'];
+                // if (isset($dataKlaim['response']['data']['grouper']['response']['special_cmg'])) {
+                //     foreach ($dataKlaim['response']['data']['grouper']['response']['special_cmg'] as $cmg) {
+                //         $tarif += $cmg['tariff'];
+                //     }
+                // }
+                // $klaim->tarif = $tarif;
+                // $klaim->save();
             }
         }
 

@@ -67,15 +67,15 @@ class TindakanController extends Controller
         $settingBpjs = SettingBpjs::first();
         $coder_nik = $settingBpjs->coder_nik;
         $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-        $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
-        $currentTindakan = $currentData['response']['data']['procedure']. $currentTindakan;
+      //   $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
+      //   $currentTindakan = $currentData['response']['data']['procedure']. $currentTindakan;
 
-        $requestSet = array(
-          'nama_dokter' => $tenaga_medis->nama,
-          'procedure' => $currentTindakan
-        );
-        $bpjs->setClaimData($requestSet);
-      }
+      //   $requestSet = array(
+      //     'nama_dokter' => $tenaga_medis->nama,
+      //     'procedure' => $currentTindakan
+      //   );
+      //   $bpjs->setClaimData($requestSet);
+      // }
 
       return response($response, 201);
     }

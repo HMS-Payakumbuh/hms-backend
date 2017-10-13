@@ -222,13 +222,13 @@ class BpjsManager
     private function sendKlaim($payload) {
         // For production, use mc_encrypt to encrypt the payload
         // And use mc_decrypt to decrypt the response
-        $key = env('BPJS_KEY');
-    	$client = new Client();
-		$response = $client->request('POST', env('BPJS_EKLAIM_URL'), [
-			'json' => $payload
-		]);
-        sleep(1);
+  //       $key = env('BPJS_KEY');
+  //   	$client = new Client();
+		// $response = $client->request('POST', env('BPJS_EKLAIM_URL'), [
+		// 	'json' => $payload
+		// ]);
+  //       sleep(1);
 
-    	return $response;
+  //   	return $response;
     }
 }

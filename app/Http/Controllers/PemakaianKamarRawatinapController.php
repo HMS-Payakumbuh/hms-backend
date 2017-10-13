@@ -248,44 +248,6 @@ class PemakaianKamarRawatinapController extends Controller
         $tempatTidur->status = 1;
         $tempatTidur->save();
 
-        // $transaksi = Transaksi::with(['pasien', 'tindakan.daftarTindakan', 'obatTebus.obatTebusItem.jenisObat', 'obatTebus.resep', 'pemakaianKamarRawatInap.kamar_rawatinap', 'pembayaran'])
-        //     ->findOrFail($pemakaianKamarRawatinap->id_transaksi);
-        // $transaksi->status = 'closed';
-        // $transaksi->save();
-
-        // if ($transaksi->status == 'closed' && isset($transaksi->no_sep)) {
-        //     try {
-        //         $coder_nik = SettingBpjs::first()->coder_nik;
-        //         $bpjs =  new BpjsManager($transaksi->no_sep, $coder_nik);
-        //         $response = json_decode($bpjs->group(1)->getBody(), true);
-
-        //         $special_cmg = '';
-        //         if ($response['metadata']['code'] == 200) {
-        //             if (isset($response['special_cmg_option'])) {
-        //                 foreach ($response['special_cmg_option'] as $key => $value) {
-        //                     if (substr($value['code'], 1) != 'D') {
-        //                         $special_cmg = $special_cmg . "#" . $value['code'];
-        //                     }
-        //                     else {
-        //                         $name = explode(" ", $value['description']);
-        //                         foreach ($transaksi['obat_tebus']['obat_tebus_item'] as $key_obat => $obat) {
-        //                             if (strtolower($obat['jenis_obat']['nama_generik']) == strtolower($name[0])) {
-        //                                 $special_cmg = $special_cmg . "#" . $value['code'];
-        //                             }
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //             $bpjs->group(2, $special_cmg);
-        //             $bpjs->finalizeClaim();
-        //         }
-        //     }
-        //     catch(Exception $e) {
-        //         $transaksi->status = 'open';
-        //         $transaksi->save();
-        //     }
-        // }
-
         if ($waktuMasuk->diffInHours($waktuKeluar) <= 2) {
             $pemakaianKamarRawatinap->delete();
         }
@@ -372,18 +334,18 @@ class PemakaianKamarRawatinapController extends Controller
 
                 if ($kamar->jenis_kamar == "ICU") {
                     if ($transaksi->no_sep != null) {
-                        $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
-                        $currentIcuLos = $currentData['response']['data']['icu_los'];
-                        $carbon = Carbon::parse($transaksi->waktu_masuk_pasien);
+                        // $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
+                        // $currentIcuLos = $currentData['response']['data']['icu_los'];
+                        // $carbon = Carbon::parse($transaksi->waktu_masuk_pasien);
 
-                        $requestSet = array(
-                            'tgl_masuk' => $carbon->toDateTimeString(),
-                            'tgl_pulang' => $now->toDateTimeString(),
-                            'icu_indikator' => 1,
-                            'icu_los' => $los + $currentIcuLos
-                        );
-                        $bpjs->setClaimData($requestSet);
-                        $bpjs->group(1);
+                        // $requestSet = array(
+                        //     'tgl_masuk' => $carbon->toDateTimeString(),
+                        //     'tgl_pulang' => $now->toDateTimeString(),
+                        //     'icu_indikator' => 1,
+                        //     'icu_los' => $los + $currentIcuLos
+                        // );
+                        // $bpjs->setClaimData($requestSet);
+                        // $bpjs->group(1);
                     }
                 }
                 else {
@@ -397,18 +359,18 @@ class PemakaianKamarRawatinapController extends Controller
                                 $kelas = $kelas . $kamar->kelas;
                             }
 
-                            $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
-                            $currentUpgradeLos = $currentData['response']['data']['upgrade_class_los'];
+                            // $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
+                            // $currentUpgradeLos = $currentData['response']['data']['upgrade_class_los'];
 
-                            $requestSet = array(
-                                'tgl_pulang' => $now->toDateTimeString(),
-                                'upgrade_class_ind' => $transaksi->status_naik_kelas,
-                                'upgrade_class_class' => $kelas,
-                                'upgrade_class_los' => $los + $currentUpgradeLos,
-                                'add_payment_pct' => $settingBpjs->add_payment_pct
-                            );
-                            $bpjs->setClaimData($requestSet);
-                            $bpjs->group(1);
+                            // $requestSet = array(
+                            //     'tgl_pulang' => $now->toDateTimeString(),
+                            //     'upgrade_class_ind' => $transaksi->status_naik_kelas,
+                            //     'upgrade_class_class' => $kelas,
+                            //     'upgrade_class_los' => $los + $currentUpgradeLos,
+                            //     'add_payment_pct' => $settingBpjs->add_payment_pct
+                            // );
+                            // $bpjs->setClaimData($requestSet);
+                            // $bpjs->group(1);
                         }
                     }
                     else {

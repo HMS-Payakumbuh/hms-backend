@@ -351,8 +351,6 @@ class TransaksiController extends Controller
         $transaksi->status = 'open'; //status transaksi (open/closed)
         $transaksi->save();
 
-        $newClaimResponse = '';
-        $setClaimResponse = '';
         if (isset($payload['no_sep']) && $transaksi->kode_jenis_pasien == 2 && $transaksi->asuransi_pasien
              == 'bpjs') {
             $transaksi->no_sep = $payload['no_sep'];
@@ -371,8 +369,8 @@ class TransaksiController extends Controller
                 'tgl_lahir' => $pasien->tanggal_lahir,
                 'gender' => $pasien->jender
             );
-
-            $newClaimResponse = $bpjs->newClaim($requestNew);
+            
+            $bpjs->newClaim($requestNew);
 
             $carbon = Carbon::instance($transaksi->waktu_masuk_pasien)->format('Y-m-d H:i:s');
             $requestSet = array(
@@ -387,9 +385,7 @@ class TransaksiController extends Controller
                 'payor_id' => 3,
                 'payor_cd' => 'JKN'
             );
-            \Log::info($requestSet);
-            $setClaimResponse = $bpjs->setClaimData($requestSet);
-            $setClaimResponse = "Set Claim";
+            $bpjs->setClaimData($requestSet);
         }
 
         $transaksi = Transaksi::findOrFail($transaksi->id);
@@ -399,9 +395,7 @@ class TransaksiController extends Controller
         $transaksi->save();
 
         return response()->json([
-            'transaksi' => $transaksi,
-            'new_claim' => $newClaimResponse,
-            'set_claim' => $setClaimResponse
+            'transaksi' => $transaksi
         ], 201);
     }
 
@@ -545,16 +539,16 @@ class TransaksiController extends Controller
                 }
                 else {
                     if ($kamar->jenis_kamar == "ICU") {
-                        $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
-                        $currentIcuLos = $currentData['response']['data']['icu_los'];
+                        // $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
+                        // $currentIcuLos = $currentData['response']['data']['icu_los'];
 
-                        $requestSet = array(
-                            'tgl_masuk' => $carbon->toDateTimeString(),
-                            'tgl_pulang' => $waktuKeluar->toDateTimeString(),
-                            'icu_indikator' => 1,
-                            'icu_los' => $los
-                        );
-                        $bpjs->setClaimData($requestSet);
+                        // $requestSet = array(
+                        //     'tgl_masuk' => $carbon->toDateTimeString(),
+                        //     'tgl_pulang' => $waktuKeluar->toDateTimeString(),
+                        //     'icu_indikator' => 1,
+                        //     'icu_los' => $los
+                        // );
+                        // $bpjs->setClaimData($requestSet);
                     }
                 }
 
@@ -565,8 +559,9 @@ class TransaksiController extends Controller
                 $bpjs->group(1);
 
             }
-            $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
-            $status_bpjs = $currentData['response']['data'];
+            // $currentData = json_decode($bpjs->getClaimData()->getBody(), true);
+            // $status_bpjs = $currentData['response']['data'];
+            $status_bpjs = "";
         }
 
         return response()->json([
@@ -652,53 +647,53 @@ class TransaksiController extends Controller
             'tgl_pulang' => $waktuKeluar->toDateTimeString()
         );
         $bpjs->setClaimData($requestSet);
-        $response = json_decode($bpjs->group(1)->getBody(), true);
+        // $response = json_decode($bpjs->group(1)->getBody(), true);
 
         $special_cmg = '';
         $tariff = 0;
-        if ($response['metadata']['code'] == 200) {
-            if (isset($response['special_cmg_option'])) {
-                foreach ($response['special_cmg_option'] as $key => $value) {
-                    if (substr($value['code'], 1) != 'D') {
-                        $special_cmg = $special_cmg . "#" . $value['code'];
-                    }
-                    else {
-                        $name = explode(" ", $value['description']);
-                        foreach ($transaksi['obat_tebus']['obat_tebus_item'] as $key_obat => $obat) {
-                            if (strtolower($obat['jenis_obat']['nama_generik']) == strtolower($name[0])) {
-                                $special_cmg = $special_cmg . "#" . $value['code'];
-                            }
-                        }
-                    }
-                }
-            }
-            $response_group_2 = json_decode($bpjs->group(2, $special_cmg)->getBody(), true);
-            if ($response_group_2['metadata']['code'] == 200) {
-                if (isset($response['response']['cbg'])) {
-                    $tariff += $response['response']['cbg']['tariff'];
-                    if (isset($response['response']['special_cmg'])) {
-                        foreach ($response['response']['special_cmg'] as $cmg) {
-                            $tariff += $cmg['tariff'];
-                        }
-                    }
-                }
-            }
+        // if ($response['metadata']['code'] == 200) {
+        //     if (isset($response['special_cmg_option'])) {
+        //         foreach ($response['special_cmg_option'] as $key => $value) {
+        //             if (substr($value['code'], 1) != 'D') {
+        //                 $special_cmg = $special_cmg . "#" . $value['code'];
+        //             }
+        //             else {
+        //                 $name = explode(" ", $value['description']);
+        //                 foreach ($transaksi['obat_tebus']['obat_tebus_item'] as $key_obat => $obat) {
+        //                     if (strtolower($obat['jenis_obat']['nama_generik']) == strtolower($name[0])) {
+        //                         $special_cmg = $special_cmg . "#" . $value['code'];
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     $response_group_2 = json_decode($bpjs->group(2, $special_cmg)->getBody(), true);
+        //     if ($response_group_2['metadata']['code'] == 200) {
+        //         if (isset($response['response']['cbg'])) {
+        //             $tariff += $response['response']['cbg']['tariff'];
+        //             if (isset($response['response']['special_cmg'])) {
+        //                 foreach ($response['response']['special_cmg'] as $cmg) {
+        //                     $tariff += $cmg['tariff'];
+        //                 }
+        //             }
+        //         }
+        //     }
 
-            $asuransi = DB::table('asuransi')->select('id')->where([
-                ['nama_asuransi', '=', $pembayaran->metode_bayar],
-                ['id_pasien', '=', $transaksi->id_pasien]
-            ])->first();
+        //     $asuransi = DB::table('asuransi')->select('id')->where([
+        //         ['nama_asuransi', '=', $pembayaran->metode_bayar],
+        //         ['id_pasien', '=', $transaksi->id_pasien]
+        //     ])->first();
 
-            $klaim = new Klaim;
-            $klaim->id_pembayaran = $pembayaran->id;
-            $klaim->id_asuransi = $asuransi->id;
-            $klaim->status = 'processed';
-            $klaim->save();
+        //     $klaim = new Klaim;
+        //     $klaim->id_pembayaran = $pembayaran->id;
+        //     $klaim->id_asuransi = $asuransi->id;
+        //     $klaim->status = 'processed';
+        //     $klaim->save();
 
-            $klaim->tarif = $tariff;
-            $klaim->save();
+        //     $klaim->tarif = $tariff;
+        //     $klaim->save();
 
-            $bpjs->finalizeClaim();
-        }
+        //     $bpjs->finalizeClaim();
+        // }
     }
 }
