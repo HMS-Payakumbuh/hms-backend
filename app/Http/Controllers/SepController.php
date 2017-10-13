@@ -162,7 +162,7 @@ class SepController extends Controller
 		        ),
 		        'nama' => 'JONO KARSO',
 		        'nik' => null,
-		        'noKartu' => '0000099799751',
+		        'noKartu' => '0000099799726', //51
 		        'noMr' => null,
 		        'pisa' => '1',
 		        'provUmum' => array(
