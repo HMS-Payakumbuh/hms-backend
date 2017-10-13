@@ -98,16 +98,39 @@ class DokterController extends Controller
       $no_pegawai = $request->input('no_pegawai');
       $nama_poli = $request->input('nama_poli');
       $id_transaksi = $request->input('id_transaksi');
+      $antrian = $request->input('antrian');
       $response = json_encode([
         'no_pegawai' => $no_pegawai,
         'nama_poli' => $nama_poli,
-        'id_transaksi' => $id_transaksi
+        'id_transaksi' => $id_transaksi,
+        'antrian' => $antrian
       ]);
       Redis::publish('periksa', json_encode([
         'no_pegawai' => $no_pegawai,
         'nama_poli' => $nama_poli,
-        'id_transaksi' => $id_transaksi
+        'id_transaksi' => $id_transaksi,
+        'antrian' => $antrian
       ]));
       return response($response, 200);
     }
+
+    /**
+     * Sends id transaksi to assigned dokter.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+     public function rujukan(Request $request)
+     {
+       $nama_poli = $request->input('nama_poli');
+       $response = json_encode([
+         'rujukan' => true,
+         'nama_poli' => $nama_poli
+       ]);
+       Redis::publish('rujukan', json_encode([
+        'rujukan' => true,
+        'nama_poli' => $nama_poli
+       ]));
+       return response($response, 200);
+     }
 }

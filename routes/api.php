@@ -71,11 +71,11 @@ Route::group(['middleware' => 'jwt.auth'], function () {
   ]]);
 
   Route::resource('dokter', 'DokterController', ['except' => [
-    'edit', 'create', 'periksa', 'getAllDokterOfSpesialis'
+    'edit', 'create', 'periksa', 'rujukan', 'getAllDokterOfSpesialis'
   ]]);
   Route::get('dokter/spesialis/{spesialis}', 'DokterController@getAllDokterOfSpesialis');
-  Route::post('dokter/periksa', 'DokterController@periksa');  
-
+  Route::post('dokter/periksa', 'DokterController@periksa');
+  Route::post('dokter/rujukan', 'DokterController@rujukan');
 
   Route::resource('pasien', 'PasienController', ['except' => [
     'edit', 'create'
@@ -235,7 +235,7 @@ Route::post('pemakaiankamaroperasi/booking', 'PemakaianKamarOperasiController@st
 Route::put('pemakaiankamaroperasi/booking/masuk/{id}', 'PemakaianKamarOperasiController@masuk');
 Route::put('pemakaiankamaroperasi/booking/keluar/{id}', 'PemakaianKamarOperasiController@keluar');
 
-Route::resource('rawatinap', 'KamarRawatInapController', ['except' => [
+Route::resource('rawatinap', 'KamarRawatinapController', ['except' => [
   'edit', 'create'
 ]]);
 
@@ -262,15 +262,15 @@ Route::resource('kamarjenazah', 'KamarJenazahController', ['except' => [
   'edit', 'create'
 ]]);
 
-Route::get('rawatinap/available/{tanggal}/booked', 'KamarRawatInapController@getAvailableKamarMinusBookedByNamaKamar');
-Route::get('rawatinap/available/{tanggal}/now', 'KamarRawatInapController@getAvailableKamarMinusNowByNamaKamar');
-Route::get('rawatinap/list/all', 'KamarRawatInapController@getAll');
-Route::get('rawatinap/{no_kamar}', 'KamarRawatInapController@show');
-Route::put('rawatinap/{no_kamar}', 'KamarRawatInapController@update');
+Route::get('rawatinap/available/{tanggal}/booked', 'KamarRawatinapController@getAvailableKamarMinusBookedByNamaKamar');
+Route::get('rawatinap/available/{tanggal}/now', 'KamarRawatinapController@getAvailableKamarMinusNowByNamaKamar');
+Route::get('rawatinap/list/all', 'KamarRawatinapController@getAll');
+Route::get('rawatinap/{no_kamar}', 'KamarRawatinapController@show');
+Route::put('rawatinap/{no_kamar}', 'KamarRawatinapController@update');
 Route::post('rawatinap/{no_kamar}', 'PemakaianKamarRawatInapController@store');
 Route::put('rawatinap/booking/{id}', 'PemakaianKamarRawatInapController@masuk');
-Route::get('rawatinap/booking/{tanggal}/now', 'KamarRawatInapController@getAvailableKamarMinusNow');
-Route::get('rawatinap/booking/{tanggal}/booked', 'KamarRawatInapController@getAvailableKamarMinusBooked');
+Route::get('rawatinap/booking/{tanggal}/now', 'KamarRawatinapController@getAvailableKamarMinusNow');
+Route::get('rawatinap/booking/{tanggal}/booked', 'KamarRawatinapController@getAvailableKamarMinusBooked');
 
 Route::put('tempattidur/{no_kamar}/{no_tempat_tidur}', 'TempatTidurController@update');
 

@@ -12,7 +12,7 @@ class AmbulansTableSeeder extends Seeder
     public function run()
     {
       DB::table('ambulans')->insert(array(
-        array('nama'=>'Tidak ada ambulans', 'status'=>'Available'),
+        array('nama'=>'Ambulans belum dipilih', 'status'=>'Available'),
         array('nama'=>'D 8348 HR', 'status'=>'Available'),
         array('nama'=>'D 2170 KR', 'status'=>'Available'),
         array('nama'=>'D 0111 VN', 'status'=>'Available')

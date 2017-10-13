@@ -12,6 +12,9 @@ redis.subscribe('antrian', function(err, count) {
 redis.subscribe('periksa', function(err, count) {
 
 });
+redis.subscribe('rujukan', function(err, count) {
+	
+});
 redis.subscribe('sms', function(err, count) {
 
 });
@@ -27,7 +30,11 @@ http.listen(80, function() {
 		    io.emit('antrianLayanan'+message.nama_layanan, message);
 
       if (message.no_pegawai != null)
-        io.emit(message.no_pegawai, message);
+				io.emit(message.no_pegawai, message);
+
+			if (message.rujukan)
+				io.emit(message.nama_poli, message);
+
    	  if (message.text) {
    	  	c.Messages.send({text: message.text, phones: message.sender_phone}, function(err, res){
 		    console.log('Messages.send()', err, res);
